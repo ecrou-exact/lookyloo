@@ -238,4 +238,9 @@ cookies, page content). Treat all of it as attacker-controlled.
   APIs, D3 v7 for the tree.
 - No frontend build tooling exists; introducing one (Vite, Tailwind CLI, …) means
   also wiring it into `update.py`/Dockerfile/CI and SRI generation — discuss first.
-- Commit message prefixes used upstream: `new:`, `chg:`, `fix:`.
+- Commit messages (ui-redesign branch): `<type>: [<section>] <description>`, in
+  English, with `<type>` one of `add` (new feature/file), `chg` (change,
+  refactor, docs), `fix` (bug fix). Never `feat:`. No AI/Co-Authored-By
+  attribution. Examples: `add: [icons] SVG sprite built from misp-iconify`,
+  `fix: [tree] Modal listeners crash when a module is disabled`.
+- Every feature or component ships with its documentation in the same commit.

@@ -6,8 +6,9 @@ captures with their known context.
 
 Columns:
 
-- **Resource**: icon of the generic type (`generic_type(mimetype)` -> Bootstrap
-  icon, `type_icons` in the template; links to the download by hash), file name
+- **Resource**: the original Lookyloo type icon (`get_icon(generic_type(mimetype))`,
+  PNG in `static/images/icons/`, the same as in the capture tree; links to the
+  download by hash), file name
   (link to the pivot page), mimetype, short SHA512 with a copy button.
 - **Context**: pill from `find_known_content()` (`lookyloo/context.py`):
   Malicious (with type/target), Legitimate (on which domains), Library (SaneJS:

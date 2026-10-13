@@ -32,11 +32,6 @@
 {{ page_header('Resources', description='Files (scripts, images, styles...) loaded by the recent captures, identified by their hash.', icon_name='misp:attributes/sha256', crumbs=[('Explore', None)]) }}
 {% endblock %}
 
-{% set type_icons = {'js': 'bi:filetype-js', 'css': 'bi:filetype-css', 'html': 'bi:filetype-html',
-                     'json': 'bi:filetype-json', 'text': 'bi:file-text', 'image': 'bi:file-image',
-                     'font': 'bi:fonts', 'exe': 'bi:filetype-exe', 'video': 'bi:file-play',
-                     'audio': 'bi:file-music', 'livestream': 'bi:broadcast', 'iframe': 'bi:window'} %}
-
 {% macro context_badge(context) -%}
 {% if not context %}
   <span class="lk-ctx lk-ctx-unknown">{{ icon('bi:question-circle') }} Unknown</span>
@@ -87,8 +82,10 @@
           <div class="lk-resource">
             {% set gt = generic_type(mimetype) %}
             <a class="lk-resource-icon lk-resource-type-{{ gt }}" href="{{ url_for('ressource_by_hash', sha512=h) }}"
-               title="{{ gt }} - download the file" aria-label="Download the file">
-              {{ icon(type_icons.get(gt, 'bi:file-earmark')) }}
+               title="{{ (get_icon(gt) or get_icon('unset_mimetype'))['tooltip'] }}. Click to download." aria-label="Download the file">
+              {# The original Lookyloo type icons (same as in the capture tree) #}
+              {% set type_icon = get_icon(gt) or get_icon('unset_mimetype') %}
+              <img src="{{ url_for('static', filename='images/icons/' ~ type_icon['icon']) }}" alt="{{ type_icon['tooltip'] }}" width="24" height="24">
             </a>
             <div class="lk-resource-body">
               <a class="lk-resource-name" href="{{ url_for('body_hash_details', body_hash=h) }}" title="{{ filename }}">{{ filename or 'No filename' }}</a>

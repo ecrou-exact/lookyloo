@@ -40,6 +40,12 @@
   font-size: 1.25rem;
 }
 
+.lk-resource-icon img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
 .lk-resource-icon:hover {
   background: var(--lk-color-accent-soft);
   text-decoration: none;

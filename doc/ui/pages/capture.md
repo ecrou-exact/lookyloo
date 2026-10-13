@@ -37,3 +37,20 @@ reads the names, `js/capture.js` toggles the ids (`singleCaptureField`,
 `collapseMonitoringConfiguration`, `collapseMailConfiguration`...). Only the
 wrapper `collapsePrivacySettings` was removed (unused by JS). To check after an
 edit: compare `grep -o 'name="[^"]*"'` and the ids before/after.
+
+## Invalid submissions
+
+A submission with an error never creates a capture: the form is shown again
+(`back_to_form()` in `capture_web`), with what was entered and the errors as
+flashed messages. Errors are:
+
+- a malformed URL (`_invalid_capture_url()` in `website/web/__init__.py`):
+  spaces, a scheme other than http / https, no hostname or a hostname with
+  invalid characters. Without a scheme, `http://` is assumed. In the
+  multiple URLs mode, one invalid URL stops the whole submission;
+- an invalid proxy or storage state;
+- capture settings refused by `enqueue_capture()` (`CaptureSettingsError`);
+- an empty document.
+
+`GET /capture?url=` and the takedown form (`/simple_capture`) check URLs the
+same way.

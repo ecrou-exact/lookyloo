@@ -2555,6 +2555,30 @@ def _prepare_capture_template(user_ua: str | None, predefined_settings: dict[str
                            categories=sorted(get_indexing(flask_login.current_user).categories))
 
 
+def _invalid_capture_url(url: str) -> str | None:
+    '''Why a URL submitted in the capture forms cannot be captured, None if it can.
+    Without a scheme, http:// is assumed (as the capture does).'''
+    url = url.strip()
+    if not url:
+        return 'The URL is empty.'
+    if any(c.isspace() for c in url):
+        return Markup('Invalid URL "{}": it contains spaces.').format(url)
+    to_check = url if '://' in url else f'http://{url}'
+    try:
+        parsed = urlparse(to_check)
+        hostname = parsed.hostname
+        parsed.port  # raises ValueError on an invalid port
+    except ValueError:
+        return Markup('Invalid URL "{}".').format(url)
+    if parsed.scheme.lower() not in ('http', 'https'):
+        return Markup('Invalid URL "{}": only http and https URLs can be captured.').format(url)
+    if not hostname or '.' not in hostname.strip('.') and hostname != 'localhost' and not hostname.startswith('['):
+        return Markup('Invalid URL "{}": it has no valid hostname.').format(url)
+    if any(not (c.isalnum() or c in '.-_[]:') for c in hostname):
+        return Markup('Invalid URL "{}": the hostname contains invalid characters.').format(url)
+    return None
+
+
 @app.route('/recapture/<uuid:tree_uuid>', methods=['GET'])
 def recapture(tree_uuid: str) -> str | Response | WerkzeugResponse:
     cache = lookyloo.capture_cache(tree_uuid)
@@ -2679,6 +2703,8 @@ def capture_web() -> str | Response | WerkzeugResponse:
             return _prepare_capture_template(user_ua=request.headers.get('User-Agent'))
 
         capture_query: dict[str, Any] = {}
+        # Errors in the settings: the form is shown again, nothing is captured
+        form_errors = False
         # check if the post request has the file part
         if 'cookies' in request.files and request.files['cookies'].filename:
             capture_query['cookies'] = request.files['cookies'].stream.read()
@@ -2688,6 +2714,7 @@ def capture_web() -> str | Response | WerkzeugResponse:
                     capture_query['storage'] = StorageStateSettings.model_validate(orjson.loads(_storage))
                 except orjson.JSONDecodeError:
                     flash(Markup('Invalid storage state: must be a JSON: {}.').format(_storage.decode()), 'error')
+                    form_errors = True
                     app.logger.info(f'Invalid storage state: must be a JSON: {_storage.decode()}.')
 
         if request.form.get('device_name'):
@@ -2800,10 +2827,13 @@ def capture_web() -> str | Response | WerkzeugResponse:
                             capture_query['proxy'] = proxy
                         else:
                             flash('You need to enter a username AND a password for your proxy.', 'error')
+                            form_errors = True
                     else:
                         flash('Proxy scheme not supported: must be http(s) or socks5.', 'error')
+                        form_errors = True
                 else:
                     flash('Invalid proxy: Check that you entered a scheme, a hostname and a port.', 'error')
+                    form_errors = True
 
         # auto monitoring
         if request.form.get('monitor_capture'):
@@ -2829,44 +2859,73 @@ def capture_web() -> str | Response | WerkzeugResponse:
             # Video recoring, admin only.
             capture_query['with_video'] = True if request.form.get('with_video') else False
 
-        if request.form.get('url'):
-            capture_query['url'] = request.form['url']
-            perma_uuid, seed = lookyloo.enqueue_capture(capture_query, source='web', user=user,
-                                                        authenticated=flask_login.current_user.is_authenticated,
-                                                        seed_expire=seed_expire)
-            time.sleep(2)
-            return redirect(url_for('tree', tree_uuid=perma_uuid, seed=seed))
-        elif request.form.get('urls'):
-            # bulk query
-            bulk_captures = []
-            for url in request.form['urls'].strip().split('\n'):
-                if not url:
-                    continue
-                query = capture_query.copy()
-                query['url'] = url
-                new_capture_uuid, seed = lookyloo.enqueue_capture(query, source='web', user=user,
-                                                                  authenticated=flask_login.current_user.is_authenticated,
-                                                                  seed_expire=seed_expire)
-                bulk_captures.append((new_capture_uuid, url, seed))
+        def back_to_form(*errors: str) -> str:
+            '''An error in the submission: no capture, the form again with what was entered.'''
+            for error in errors:
+                flash(error, 'error')
+            return _prepare_capture_template(user_ua=request.headers.get('User-Agent'),
+                                             predefined_settings=capture_query, user_config=user_config)
 
-            return render_template('capture/bulk_captures.html', bulk_captures=bulk_captures)
-        elif 'document' in request.files:
+        if form_errors:
+            return back_to_form()
+
+        try:
+            if request.form.get('url'):
+                capture_query['url'] = request.form['url'].strip()
+                if error := _invalid_capture_url(capture_query['url']):
+                    return back_to_form(error)
+                perma_uuid, seed = lookyloo.enqueue_capture(capture_query, source='web', user=user,
+                                                            authenticated=flask_login.current_user.is_authenticated,
+                                                            seed_expire=seed_expire)
+                time.sleep(2)
+                return redirect(url_for('tree', tree_uuid=perma_uuid, seed=seed))
+            elif request.form.get('urls'):
+                # bulk query: nothing is captured if one of the URLs is invalid
+                urls = [url.strip() for url in request.form['urls'].strip().split('\n') if url.strip()]
+                capture_query['urls'] = '\n'.join(urls)
+                if errors := [e for e in map(_invalid_capture_url, urls) if e]:
+                    return back_to_form(*errors)
+                bulk_captures = []
+                for url in urls:
+                    query = {k: v for k, v in capture_query.items() if k != 'urls'}
+                    query['url'] = url
+                    new_capture_uuid, seed = lookyloo.enqueue_capture(query, source='web', user=user,
+                                                                      authenticated=flask_login.current_user.is_authenticated,
+                                                                      seed_expire=seed_expire)
+                    bulk_captures.append((new_capture_uuid, url, seed))
+
+                return render_template('capture/bulk_captures.html', bulk_captures=bulk_captures)
+        except CaptureSettingsError as e:
+            if e.pydantic_validation_errors:
+                return back_to_form(Markup('Unable to validate capture settings: {}').format(e.pydantic_validation_errors.errors()))
+            return back_to_form(escape(e))
+
+        if 'document' in request.files and request.files['document'].filename:
             # File upload
             capture_query['document'] = base64.b64encode(request.files['document'].stream.read()).decode()
             if request.files['document'].filename:
                 capture_query['document_name'] = request.files['document'].filename
             else:
                 capture_query['document_name'] = 'unknown_name.bin'
-            perma_uuid, seed = lookyloo.enqueue_capture(capture_query, source='web', user=user,
-                                                        authenticated=flask_login.current_user.is_authenticated,
-                                                        seed_expire=seed_expire)
+            if not capture_query['document']:
+                return back_to_form('The document is empty.')
+            try:
+                perma_uuid, seed = lookyloo.enqueue_capture(capture_query, source='web', user=user,
+                                                            authenticated=flask_login.current_user.is_authenticated,
+                                                            seed_expire=seed_expire)
+            except CaptureSettingsError as e:
+                return back_to_form(escape(e))
             time.sleep(2)
             return redirect(url_for('tree', tree_uuid=perma_uuid, seed=seed))
         else:
-            flash('Invalid submission: please submit at least a URL or a document.', 'error')
+            return back_to_form('Invalid submission: please submit at least a URL or a document.')
     elif request.method == 'GET' and request.args.get('url'):
         url = unquote_plus(request.args['url']).strip()
         capture_query = {'url': url}
+        if error := _invalid_capture_url(url):
+            flash(error, 'error')
+            return _prepare_capture_template(user_ua=request.headers.get('User-Agent'),
+                                             predefined_settings=capture_query, user_config=user_config)
         perma_uuid, seed = lookyloo.enqueue_capture(capture_query, source='web', user=user,
                                                     authenticated=flask_login.current_user.is_authenticated,
                                                     seed_expire=None)
@@ -2885,8 +2944,13 @@ def simple_capture() -> str | Response | WerkzeugResponse:
             flash('Invalid submission: please submit at least a URL.', 'error')
             return render_template('capture/simple_capture.html')
         capture_query: dict[str, Any] = {}
+        urls = [request.form['url']] if request.form.get('url') else request.form.get('urls', '').strip().split('\n')
+        if errors := [e for e in map(_invalid_capture_url, [u for u in urls if u.strip()]) if e]:
+            for error in errors:
+                flash(error, 'error')
+            return render_template('capture/simple_capture.html')
         if request.form.get('url'):
-            capture_query['url'] = request.form['url']
+            capture_query['url'] = request.form['url'].strip()
             perma_uuid, seed = lookyloo.enqueue_capture(capture_query, source='web', user=user,
                                                         authenticated=flask_login.current_user.is_authenticated,
                                                         seed_expire=None)

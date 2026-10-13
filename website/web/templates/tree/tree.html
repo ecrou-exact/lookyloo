@@ -151,7 +151,11 @@
         {% if favicon %}<img class="lk-capture-favicon" src="data:{{ mime_favicon }};base64,{{ favicon }}" alt="" width="16" height="16">{% endif %}
         <span>{{ page_title or 'Untitled page' }}</span>
       </h1>
-      <div class="lk-capture-url">{{ shorten_string(info.url, with_copy_button=True) }}</div>
+      <p class="lk-capture-url">
+        <span>{{ info.url }}</span>
+        <button type="button" class="lk-copy js-copy" data-bs-toggle="tooltip" data-copy="{{ info.url }}"
+                title="Copy the URL" data-bs-original-title="Copy the URL" aria-label="Copy the URL">{{ icon('bi:copy') }}</button>
+      </p>
       <ul class="lk-capture-meta">
         {% if info.timestamp %}
         <li>{{ icon('bi:clock') }} <span data-lk-time="{{ info.timestamp.isoformat() }}">{{ info.timestamp.strftime('%Y-%m-%d %H:%M') }}</span></li>
@@ -170,6 +174,18 @@
 
   <nav class="lk-capture-actions" id="menu_horizontal" aria-label="Capture actions">
     <div id="menu_horizontal_content" class="lk-capture-toolbar">
+      {# Text search over the nodes (js/tree.js, applyTreeFilter): hostname, IDNA, IPs #}
+      <div class="lk-tree-search" role="search">
+        <label for="tree-search" class="visually-hidden">Search the tree</label>
+        {{ icon('bi:search', classes='lk-tree-search-icon') }}
+        <input type="search" id="tree-search" placeholder="Search a hostname or an IP…" autocomplete="off" spellcheck="false"
+               aria-describedby="tree-search-count">
+        <kbd class="lk-tree-search-key" title="Press / to search">/</kbd>
+        <span class="lk-tree-search-count" id="tree-search-count" aria-live="polite"></span>
+        <button type="button" class="lk-tree-search-nav" id="tree-search-prev" title="Previous match" aria-label="Previous match" hidden>{{ icon('bi:chevron-up') }}</button>
+        <button type="button" class="lk-tree-search-nav" id="tree-search-next" title="Next match" aria-label="Next match" hidden>{{ icon('bi:chevron-down') }}</button>
+      </div>
+
       <button type="button" class="btn btn-sm lk-tool-btn" data-bs-toggle="modal" data-bs-target="#detailsModal"
               title="Details about the capture configuration">{{ icon('bi:info-circle') }}<span>Details</span></button>
 
@@ -308,16 +324,12 @@
   {# Centred in the tree area while js/tree.js loads the tree (hidden by tree.js) #}
   <div id="tree-loading">{{ loader('Tree loading, please wait', size='lg') }}</div>
 
-  {# Text search over the nodes (js/tree.js, applyTreeFilter): hostname, IDNA, IPs #}
-  <div class="lk-tree-search" role="search">
-    <label for="tree-search" class="visually-hidden">Search the tree</label>
-    {{ icon('bi:search', classes='lk-tree-search-icon') }}
-    <input type="search" id="tree-search" placeholder="Search a hostname or an IP…" autocomplete="off" spellcheck="false"
-           aria-describedby="tree-search-count">
-    <kbd class="lk-tree-search-key" title="Press / to search">/</kbd>
-    <span class="lk-tree-search-count" id="tree-search-count" aria-live="polite"></span>
-    <button type="button" class="lk-tree-search-nav" id="tree-search-prev" title="Previous match" aria-label="Previous match" hidden>{{ icon('bi:chevron-up') }}</button>
-    <button type="button" class="lk-tree-search-nav" id="tree-search-next" title="Next match" aria-label="Next match" hidden>{{ icon('bi:chevron-down') }}</button>
+  {# Layout of the tree (js/tree.js, setupTreeControls) #}
+  <div class="lk-tree-controls" role="toolbar" aria-label="Tree layout">
+    <button type="button" id="tree-orientation" title="Draw the tree from top to bottom" aria-label="Draw the tree from top to bottom">{{ icon('bi:arrow-down-up') }}</button>
+    <button type="button" id="tree-collapse-all" title="Collapse every node" aria-label="Collapse every node">{{ icon('bi:arrows-collapse') }}</button>
+    <button type="button" id="tree-expand-all" title="Expand every node" aria-label="Expand every node">{{ icon('bi:arrows-expand') }}</button>
+    <span class="lk-tree-controls-status" id="tree-controls-status" role="status" hidden></span>
   </div>
 
   {# Shown while a node and its neighbours are focused (click on a card, js/tree.js) #}

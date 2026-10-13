@@ -12,7 +12,8 @@ top block    (#capture_top, sticky)  stays visible while the page scrolls:
   messages    (.lk-capture-flashes)  flash messages, dismissible
 tree area    (.lk-tree-area)         exactly the rest of the screen:
   tree       (#tree_viewport)        scrolls in both directions, holds #tree_svg
-  search     (.lk-tree-search)       text search over the nodes, top left corner
+  controls   (.lk-tree-controls)     orientation, collapse all, expand all, top right corner
+  focus pill (#tree-focus)           "Neighbours of …", top left corner, while a node is focused
   loader     (#tree-loading)         centred in the tree area while the tree loads
   legend     (tree/legend.html)      legend & icon filter, bottom right corner
 footer       (partials/footer.html)  the site footer, at the bottom of the page
@@ -30,12 +31,15 @@ remembered in `localStorage` (`lk-capture-bar-folded`).
 
 ## Capture bar
 
-- **Identity**: thumbnail of the screenshot (opens `#screenshotModal`),
-  favicon and title of the page, captured URL (with copy button), capture time
+- **Identity** (keeps at least 30rem; the toolbar goes to the next line
+  first): thumbnail of the screenshot (opens `#screenshotModal`),
+  favicon and title of the page, captured URL (wraps when it is long, copy
+  button), capture time
   (relative, absolute on hover), number of redirects, *Private* flag,
   *Malicious* flag (`capture_verdict()` on the categories) and the category
   tags (`category_tag()`).
-- **Toolbar** (`.lk-capture-toolbar`): *Details* button, then menus with an
+- **Toolbar** (`.lk-capture-toolbar`): the **search** field over the tree
+  (see *Search*), the *Details* button, then menus with an
   icon per entry (macros `menu_item` / `menu_link` at the top of `tree.html`):
   - **Capture**: details, statistics, storage state, console messages,
     downloads, video, screenshot, MISP export;
@@ -146,7 +150,7 @@ still written in `tree.html`.
 
 ## Search
 
-The field at the top left of the tree (`#tree-search`, `setupTreeSearch()` in
+The field in the toolbar of the capture bar (`#tree-search`, `setupTreeSearch()` in
 `js/tree.js`) searches the hostname, its IDNA form and the resolved IPs of
 each node (`nodeText()`). It is a filter like the icons of the legend: a node
 is highlighted when it matches the text **and** at least one of the selected
@@ -165,3 +169,31 @@ under the search says which node is focused. Click the card again, the
 background of the tree, the pill's ✕ or press Esc to show everything. It is a
 third filter, combined with the search and the icons (`isNeighbour()` in
 `nodeMatches()`).
+
+## Scrolling to a node
+
+Every "show this node" (search matches, bookmarks, located node, rendered
+page, root after a layout change) uses `centerInViewport(element)` in
+`js/tree.js`: it scrolls **only** `#tree_viewport`, never the page
+(`scrollIntoView()` would also scroll the page and move the top block).
+`js/tree_modals.js` uses it through `window.centerInViewport`.
+
+## Tree controls
+
+The buttons at the top right of the tree (`setupTreeControls()` in `js/tree.js`):
+
+- **Orientation**: left to right (default) or top to bottom, remembered in
+  `localStorage` (`lk-tree-orientation`). Every position goes through
+  `nodePos()` / `nodeTransform()` (d3.tree gives `x` = breadth, `y` = depth):
+  horizontal uses `[y, x]`, one column per depth; vertical uses `[x, y]`, one
+  row per depth (`VERTICAL_ROW`) and one column (the widest card) per leaf.
+  Links go from the right of the parent to the left of the child, or from its
+  bottom to the top of the child; the background stripes follow (columns /
+  rows).
+- **Collapse all**: every node but the root is collapsed (the first level stays
+  visible).
+- **Expand all**: expands level after level while the tree stays under
+  `MAX_EXPANDED_NODES` (400) shown nodes, to keep the page fast; when some are
+  left collapsed, a message says how many nodes are shown out of the total.
+
+After a change the root is centred once the nodes have moved.

@@ -29,6 +29,40 @@ let search_index = -1;   // match centred by the previous / next buttons
 // Node focused by a click on its card: it and its neighbours (parent, children) stay lit
 let focus_uuid = null;
 
+// Orientation of the tree: 'horizontal' (root on the left) or 'vertical' (root at
+// the top), switched with the tree controls and remembered (localStorage).
+let orientation = 'horizontal';
+try {
+    if (localStorage.getItem('lk-tree-orientation') === 'vertical') orientation = 'vertical';
+} catch (e) { /* storage unavailable */ }
+// Vertical: height of a depth row (card + thumbnail of the rendered node + gap)
+const VERTICAL_ROW = 190;
+let tree_root = null;
+
+// Centre an element of the tree in #tree_viewport, scrolling only the viewport
+// (scrollIntoView would also scroll the page).
+function centerInViewport(element, smooth=true) {
+    const viewport = tree_viewport.getBoundingClientRect();
+    const box = element.getBoundingClientRect();
+    tree_viewport.scrollTo({
+        left: tree_viewport.scrollLeft + box.left - viewport.left - (viewport.width - box.width) / 2,
+        top: tree_viewport.scrollTop + box.top - viewport.top - (viewport.height - box.height) / 2,
+        behavior: smooth && !reduce_motion ? 'smooth' : 'auto',
+    });
+}
+window.centerInViewport = centerInViewport;   // also used by js/tree_modals.js (LocateNode)
+
+// Position of a node on screen (d3.tree gives x = breadth, y = depth)
+function nodePos(d, previous=false) {
+    const x = previous ? d.x0 : d.x;
+    const y = previous ? d.y0 : d.y;
+    return orientation === 'horizontal' ? [y, x] : [x, y];
+}
+function nodeTransform(d, previous=false) {
+    const [px, py] = nodePos(d, previous);
+    return `translate(${px}, ${py})`;
+}
+
 // First display: the tree grows from the root, one depth column after the other
 // (animateTreeEntry). Off with prefers-reduced-motion.
 const reduce_motion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -91,9 +125,11 @@ try {
   root.y0 = 0;
 
   document.getElementById("tree-loading").style.display = "none";
+  tree_root = root;
   update(root);
   setupLegendFilter(root);
   setupTreeSearch();
+  setupTreeControls();
   // Scroll once the nodes are in place
   await animateTreeEntry(root);
 
@@ -103,7 +139,7 @@ try {
   }
   else {
     let rendered_node = document.getElementById('screenshot_thumbnail');
-    rendered_node.scrollIntoView({behavior: "smooth", block: "end", inline: "center"});
+    centerInViewport(rendered_node);
   }
 
   if (parent_uuid != null) {
@@ -206,14 +242,14 @@ function animateTreeEntry(root) {
     const links = node_container.selectAll('path.link');
     nodes.interrupt()
         .attr('opacity', 0)
-        .attr('transform', `translate(${root.y}, ${root.x})`);
+        .attr('transform', nodeTransform(root));
     links.interrupt().attr('opacity', 0);
     const moved = nodes.transition('entry')
         .delay(d => d.depth * ENTRY_STEP_MS)
         .duration(ENTRY_MOVE_MS)
         .ease(d3.easeCubicOut)
         .attr('opacity', 1)
-        .attr('transform', d => `translate(${d.y}, ${d.x})`)
+        .attr('transform', d => nodeTransform(d))
         .end();
     const shown = links.transition('entry')
         .delay(d => d.depth * ENTRY_STEP_MS + ENTRY_MOVE_MS * 0.6)
@@ -305,7 +341,7 @@ function focusMatch(step) {
     if (!nodes.length) return;
     search_index = (search_index + step + nodes.length) % nodes.length;
     const node = nodes[search_index];
-    node.scrollIntoView({behavior: reduce_motion ? 'auto' : 'smooth', block: 'center', inline: 'center'});
+    centerInViewport(node);
     node_container.selectAll('g.node').classed('is-search-current', false);
     d3.select(node).classed('is-search-current', true);
     const count = document.getElementById('tree-search-count');
@@ -328,6 +364,101 @@ function clearNeighbours() {
     focus_uuid = null;
     document.getElementById('tree-focus').hidden = true;
     applyTreeFilter();
+}
+
+// ****************** Tree controls: orientation, collapse / expand all ******************
+
+// Expanding more nodes than this at once would make the page too slow
+const MAX_EXPANDED_NODES = 400;
+
+// Every node, shown or collapsed
+function allNodes(root) {
+    const nodes = [];
+    (function walk(d) {
+        nodes.push(d);
+        (d.children || d._children || []).forEach(walk);
+    })(root);
+    return nodes;
+}
+
+function controlsStatus(message) {
+    const status = document.getElementById('tree-controls-status');
+    status.textContent = message;
+    status.hidden = false;
+    clearTimeout(controlsStatus.timer);
+    controlsStatus.timer = setTimeout(() => { status.hidden = true; }, 5000);
+}
+
+function relayout() {
+    update(tree_root);
+    // Centre the root once the nodes have moved (300 ms transition)
+    setTimeout(() => {
+        const root_node = document.getElementById(`node_${tree_root.data.uuid}`);
+        if (root_node) centerInViewport(root_node.querySelector('.node-card') || root_node);
+    }, reduce_motion ? 0 : 350);
+}
+
+function showOrientation() {
+    const button = document.getElementById('tree-orientation');
+    const label = orientation === 'horizontal' ? 'Draw the tree from top to bottom' : 'Draw the tree from left to right';
+    button.title = label;
+    button.setAttribute('aria-label', label);
+    button.classList.toggle('is-vertical', orientation === 'vertical');
+}
+
+function setupTreeControls() {
+    const orientation_button = document.getElementById('tree-orientation');
+    if (!orientation_button) return;
+    showOrientation();
+    orientation_button.addEventListener('click', () => {
+        orientation = orientation === 'horizontal' ? 'vertical' : 'horizontal';
+        try { localStorage.setItem('lk-tree-orientation', orientation); } catch (e) { /* not remembered */ }
+        showOrientation();
+        relayout();
+    });
+
+    // Collapse every node but the root: the first level stays visible
+    document.getElementById('tree-collapse-all').addEventListener('click', () => {
+        allNodes(tree_root).forEach(d => {
+            if (d === tree_root) {
+                d.children = d.children || d._children;
+                d._children = null;
+            } else if (d.children) {
+                d._children = d.children;
+                d.children = null;
+            }
+        });
+        relayout();
+    });
+
+    // Expand level after level, as long as the tree stays under MAX_EXPANDED_NODES
+    document.getElementById('tree-expand-all').addEventListener('click', () => {
+        let shown = tree_root.descendants().length;
+        let level = tree_root.descendants().filter(d => d._children);
+        let stopped = false;
+        while (level.length) {
+            const added = level.reduce((sum, d) => sum + allNodes(d).length - 1, 0);
+            if (shown + added > MAX_EXPANDED_NODES) {
+                // Only the next level of this one, if it still fits
+                const next = level.reduce((sum, d) => sum + d._children.length, 0);
+                if (shown + next > MAX_EXPANDED_NODES) { stopped = true; break; }
+                level.forEach(d => { d.children = d._children; d._children = null; });
+                shown += next;
+                level = level.flatMap(d => d.children.filter(c => c._children));
+                continue;
+            }
+            level.forEach(d => allNodes(d).forEach(n => {
+                if (n._children) { n.children = n._children; n._children = null; }
+            }));
+            shown += added;
+            break;
+        }
+        relayout();
+        const total = allNodes(tree_root).length;
+        if (stopped || shown < total) {
+            controlsStatus(`${shown} of ${total} nodes shown: expanding all of them would slow the page down. Expand the others one by one.`);
+        }
+    });
 }
 
 function setupTreeSearch() {
@@ -471,7 +602,7 @@ function UnbookmarkHostNode(hostnode_uuid) {
 
 function NodeHighlight(hostnode_uuid) {
     let element = document.getElementById(`node_${hostnode_uuid}`);
-    element.scrollIntoView({behavior: "smooth", block: "center", inline: "nearest"});
+    centerInViewport(element);
 
     d3.select(`#node_${hostnode_uuid}`).select('.node_data').classed('is-bookmarked', true);
     d3.select(`#node_${hostnode_uuid}`).select("#bookmark")
@@ -644,37 +775,42 @@ function update(root, computed_node_width=0) {
 
   if (computed_node_width != 0) {
     computed_node_width += 30;
-    // Re-compute SVG size depending on the generated tree
-    let svgWidth = Math.max((max_depth + 1) * computed_node_width, node_width);
-    // Update height
-    // node_height is the height of a node, menuHeight * 3 is the minimum so the root node isn't behind the menu
-    let svgHeight = Math.max(root.descendants().reverse().length * node_height, min_height);
-    tree.size([svgHeight, svgWidth])
+    let svgWidth, svgHeight, pageWidth, pageHeight;
+    if (orientation === 'horizontal') {
+      // One column per depth, one line per node
+      svgWidth = Math.max((max_depth + 1) * computed_node_width, node_width);
+      svgHeight = Math.max(root.descendants().length * node_height, min_height);
+      tree.size([svgHeight, svgWidth]);
+      pageWidth = svgWidth + (margin.right + margin.left) * 2;
+      pageHeight = svgHeight + margin.top + margin.bottom;
+      pattern.attr('width', computed_node_width * 2).attr('height', pageHeight);
+      pattern.select('rect').attr('width', computed_node_width).attr('height', pageHeight);
+    } else {
+      // One row per depth, one column (the widest card) per leaf
+      svgWidth = Math.max(root.leaves().length * computed_node_width, min_width);
+      svgHeight = Math.max((max_depth + 1) * VERTICAL_ROW, min_height);
+      tree.size([svgWidth, svgHeight]);
+      pageWidth = svgWidth + margin.left + margin.right + computed_node_width;
+      pageHeight = svgHeight + margin.top + margin.bottom + VERTICAL_ROW;
+      pattern.attr('width', pageWidth).attr('height', VERTICAL_ROW * 2);
+      pattern.select('rect').attr('width', pageWidth).attr('height', VERTICAL_ROW);
+    }
 
-    // Set background based on the computed width and height
-    let background = main_svg.insert('rect', ':first-child')
-      .attr('class', 'tree-background')
-      .attr('y', 0)
-      // Note: We want the background width with an extra computed_node_width
-      // in order to make sure the last node is completely covered
-      .attr('width', svgWidth + (margin.right + margin.left + computed_node_width))
-      .attr('height', svgHeight + margin.top + margin.bottom)
-      .style('fill', "url(#backstripes)");
+    // Background (stripes), one rect reused by every update
+    let background = main_svg.select('rect.tree-background');
+    if (background.empty()) {
+      background = main_svg.insert('rect', ':first-child')
+        .attr('class', 'tree-background')
+        .style('fill', "url(#backstripes)");
+    }
+    background.attr('y', 0).attr('width', pageWidth).attr('height', pageHeight);
+    // Vertical rows start under the top margin, aligned on the cards
+    pattern.attr('x', orientation === 'horizontal' ? margin.left : 0)
+           .attr('y', orientation === 'horizontal' ? 0 : margin.top - 40);
 
-    // Update size
-    main_svg
-      .attr("width", svgWidth + (margin.right + margin.left)*2)
-      .attr("height", svgHeight + margin.top + margin.bottom)
-
-    // Update pattern
-    main_svg.selectAll('pattern')
-      .attr('width', `${computed_node_width * 2}px`)
-    pattern.selectAll('rect')
-      .attr('width', `${computed_node_width}px`)
-
-    let tree_bbox = main_svg.node().getBBox()
-    document.getElementById('tree_svg').style.width = Math.max(tree_bbox.width, min_width);
-    document.getElementById('tree_svg').style.height = Math.max(tree_bbox.height, min_height);
+    main_svg.attr("width", pageWidth).attr("height", pageHeight);
+    document.getElementById('tree_svg').style.width = `${Math.max(pageWidth, min_width)}px`;
+    document.getElementById('tree_svg').style.height = `${Math.max(pageHeight, min_height)}px`;
   }
 
   // Assigns the x and y position for the nodes
@@ -710,7 +846,7 @@ function update(root, computed_node_width=0) {
             let node_group = enter.append('g')
                 .attr('class', 'node')
                 .attr("id", d => `node_${d.data.uuid}`)
-                .attr("transform", `translate(${root.y0}, ${root.x0})`);
+                .attr("transform", nodeTransform(root, true));
 
             let node_data = node_group
               .append('svg')
@@ -1006,7 +1142,7 @@ function update(root, computed_node_width=0) {
         exit => exit
             .transition()
               // Remove any exiting nodes
-              .attr("transform", node => `translate(${node.y0}, ${node.x0})`)
+              .attr("transform", node => nodeTransform(node, true))
               // On exit reduce the node circles size to 0
               .attr('r', 1e-6)
               // On exit reduce the opacity of text labels
@@ -1015,7 +1151,7 @@ function update(root, computed_node_width=0) {
     ).call(node => {
       // After the entry animation, expanding / collapsing moves the nodes smoothly
       (tree_entry_done && !reduce_motion ? node.transition().duration(300).ease(d3.easeCubicOut) : node)
-        .attr("transform", node => `translate(${node.y}, ${node.x})`);
+        .attr("transform", node => nodeTransform(node));
       node
         // Update the node attributes and style
         .select('circle.node')
@@ -1038,12 +1174,18 @@ function update(root, computed_node_width=0) {
   // ****************** links section ***************************
 
   // Update the links...
-  const link = node_container.selectAll('path.link').data(links, d => d.id);
+  const link = node_container.selectAll('path.link').data(links, d => d.data.uuid);
 
-  // Creates a curved (diagonal) path from parent to the child nodes
-  let diagonal = d3.linkHorizontal()
-                        .source(d => {return [d.y, d.x]})
-                        .target(d => {return [d.parent.y + d.parent.node_width, d.parent.x]});
+  // Creates a curved (diagonal) path from parent to the child nodes:
+  // horizontal: right side of the parent -> left side of the child,
+  // vertical: bottom of the parent -> top of the child (cards are drawn from y = -30)
+  let diagonal = orientation === 'horizontal'
+      ? d3.linkHorizontal()
+          .source(d => [d.y, d.x])
+          .target(d => [d.parent.y + d.parent.node_width, d.parent.x])
+      : d3.linkVertical()
+          .source(d => [d.x + (d.node_width || 0) / 2, d.y - 30])
+          .target(d => [d.parent.x + (d.parent.node_width || 0) / 2, d.parent.y + 35]);
 
   link.join(
     enter => enter

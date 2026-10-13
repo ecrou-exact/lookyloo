@@ -94,7 +94,8 @@ const downloadSvg = () => {
 
 function LocateNode(hostnode_uuid) {
     let element = document.getElementById(`node_${hostnode_uuid}`);
-    element.scrollIntoView({behavior: "smooth", block: "center", inline: "center"});
+    // Scrolls only the tree viewport (js/tree.js)
+    window.centerInViewport ? window.centerInViewport(element) : element.scrollIntoView({block: "center", inline: "center"});
 
     let line_arrow = d3.select(`#node_${hostnode_uuid}`)
                        .append('g')

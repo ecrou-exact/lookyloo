@@ -79,8 +79,11 @@
   --lk-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
   --lk-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
 
-  /* Capture tree (tree.css) */
-  --lk-color-tree-node: #4682B4;
+  /* Capture tree (tree.css, js/tree.js) */
+  --lk-color-tree-node: #2B4BEE;
+  --lk-color-tree-stripe: #F1F3F6;
+  --lk-color-tree-link: #C3CAD5;
+  --lk-color-tree-icon-bg: transparent;
 
   /* Tag tints (category tags, css/components/tag.css): text + background */
   --lk-tag-blue: #1D4ED8;    --lk-tag-blue-bg: #E6EDFD;
@@ -153,7 +156,11 @@
   --lk-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
   --lk-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
 
-  --lk-color-tree-node: #6FA8DC;
+  --lk-color-tree-node: #7C93FF;
+  --lk-color-tree-stripe: #18181C;
+  --lk-color-tree-link: #3E4350;
+  /* The node icons are PNGs drawn for light backgrounds: light chips in dark mode */
+  --lk-color-tree-icon-bg: #E9EAEE;
 
   --lk-tag-blue: #93B4FF;    --lk-tag-blue-bg: #1A2747;
   --lk-tag-teal: #5ED3C4;    --lk-tag-teal-bg: #12302D;

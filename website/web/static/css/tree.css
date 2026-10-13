@@ -79,7 +79,13 @@ body.lk-capture-page .lk-header { position: static; flex: none; }
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.lk-capture-favicon { flex: none; border-radius: 3px; }
+.lk-capture-favicon {
+  flex: none;
+  box-sizing: content-box;
+  padding: 2px;
+  border-radius: 4px;
+  background: var(--lk-color-tree-icon-bg);
+}
 
 .lk-capture-url {
   margin: 2px 0 0;
@@ -247,12 +253,99 @@ body.lk-capture-page .lk-header { position: static; flex: none; }
 .lk-tree-legend li { display: flex; align-items: center; gap: var(--lk-space-2); color: var(--lk-color-ink); }
 .lk-tree-legend img { flex: none; }
 
-/* ---------- D3 tree (drawn by js/tree.js) ---------- */
+/* ---------- D3 tree (drawn by js/tree.js) ----------
+ * js/tree.js only sets classes: every colour of the tree is here, from the
+ * --lk-color-tree-* tokens (css/theme.css), so it follows light / dark.
+ */
 
-.node circle {
-  fill: var(--lk-color-surface);
-  stroke: var(--lk-color-tree-node);
-  stroke-width: 3px;
+.tree-stripe { fill: var(--lk-color-tree-stripe); }
+
+path.link {
+  fill: none;
+  stroke: var(--lk-color-tree-link);
+  stroke-width: 1.5px;
 }
 
-.node text { font: 12px sans-serif; }
+/* Node card: hostname, URL count, icons, badges */
+.node-card {
+  fill: var(--lk-color-surface);
+  stroke: var(--lk-color-rule-strong);
+  stroke-width: 1px;
+  filter: drop-shadow(0 1px 1.5px rgba(0, 0, 0, 0.08));
+  transition: stroke var(--lk-transition-fast);
+}
+.node_data:hover .node-card { stroke: var(--lk-color-accent); }
+
+.node-host {
+  fill: var(--lk-color-ink);
+  font-family: var(--lk-font-sans);
+  font-size: 15px;
+  font-weight: 600;
+}
+.node-host:hover { fill: var(--lk-color-accent); text-decoration: underline; }
+.node-host-idna,
+.node-count {
+  fill: var(--lk-color-muted);
+  font-family: var(--lk-font-sans);
+  font-size: 13px;
+  font-weight: 400;
+}
+.node-host-idna { font-size: 11px; }
+
+.node-icon-chip { fill: var(--lk-color-tree-icon-bg); }
+.node-icon-count {
+  fill: var(--lk-color-muted);
+  font-family: var(--lk-font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+}
+
+.node-badge {
+  fill: var(--lk-color-tree-icon-bg);
+  stroke: var(--lk-color-rule-strong);
+  stroke-width: 1px;
+}
+.node-thumb-frame {
+  fill: var(--lk-color-surface);
+  stroke: var(--lk-color-rule-strong);
+  stroke-width: 1px;
+}
+.node-bookmark { font-size: 15px; }
+
+/* Bookmarked node (Extras > bookmarks) */
+.node_data.is-bookmarked .node-card { fill: var(--lk-color-accent-soft); stroke: var(--lk-color-accent); stroke-width: 2px; }
+.node_data.is-bookmarked .node-host { fill: var(--lk-color-accent); }
+
+/* Expand / collapse circle on the right of a node with children */
+circle.node {
+  fill: var(--lk-color-surface);
+  stroke: var(--lk-color-tree-node);
+  stroke-width: 2.5px;
+  transition: fill var(--lk-transition-fast);
+}
+circle.node:hover { fill: var(--lk-color-accent-soft); }
+circle.node.is-collapsed { fill: var(--lk-color-tree-node); }
+
+/* "This capture was triggered from a previous capture" box above the root */
+.tree-parent-box {
+  fill: var(--lk-color-surface);
+  stroke: var(--lk-color-rule-strong);
+  stroke-width: 1px;
+}
+.tree-parent-text { fill: var(--lk-color-muted); font-family: var(--lk-font-sans); font-size: 12px; }
+.tree-parent-link { fill: var(--lk-color-link); text-decoration: underline; }
+.tree-parent-arrow { fill: none; stroke: var(--lk-color-muted); stroke-width: 1.5px; }
+
+/* Tooltip of the tree (div#tooltip, positioned by js/tree.js) */
+#tooltip {
+  z-index: 1080;
+  pointer-events: none;
+  max-width: 22rem;
+  padding: var(--lk-space-1) var(--lk-space-2);
+  border-radius: var(--lk-radius-sm);
+  background: var(--lk-color-ink);
+  color: var(--lk-color-surface);
+  font-size: var(--lk-font-size-xs);
+  box-shadow: var(--lk-shadow-sm);
+  transition: opacity var(--lk-transition-fast);
+}

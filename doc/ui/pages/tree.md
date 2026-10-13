@@ -49,3 +49,29 @@ The menu ids (`#capture-menu`, `#tools-menu`, `#actions-menu`, `#extra-menu`,
 `#tree_viewport` scrolls; `js/tree.js` draws in `#tree_svg` inside it, with at
 least the size of the viewport (it no longer depends on the old floating menus).
 `scrollIntoView()` (located node, rendered page) works inside the viewport.
+
+## The tree (D3, `js/tree.js`)
+
+`tree.js` only sets **classes** on what it draws; every colour, font and stroke
+is in `css/tree.css`, from the `--lk-color-tree-*` tokens (`doc/ui/theme.md`),
+so the tree follows the light and dark themes.
+
+| Class | What |
+|---|---|
+| `.tree-stripe` | every other depth column in the background |
+| `path.link` | links between nodes |
+| `.node-card` | the card of a node (hover: accent border) |
+| `.node-host`, `.node-host-idna`, `.node-count` | hostname (opens the hostname pop-up), IDNA form, number of URLs |
+| `.node-icon-chip`, `.node-icon-count` | chip behind each PNG icon (light in dark mode only), its counter |
+| `.node-badge` | insecure / malicious / known / empty badges, inside the card on the right |
+| `.node-thumb-frame` | frame of the screenshot thumbnail of the rendered node |
+| `circle.node`, `.is-collapsed` | expand / collapse circle (filled when collapsed) |
+| `.node_data.is-bookmarked` | bookmarked node (Extras) |
+| `.tree-parent-*` | "triggered from a previous capture" box above the root |
+| `#tooltip` | tooltip of the tree |
+
+The PNG export (*Get forensic acquisition* > tree) copies the computed styles
+into the exported SVG (`inlineSvgStyles` in `js/tree_modals.js`) and paints
+the page background colour behind it, so the image matches the screen. Web
+fonts are not embedded in the image (the browser falls back to a system font).
+The "node located" arrow uses the `--lk-color-ink` / `--lk-color-danger` colours.

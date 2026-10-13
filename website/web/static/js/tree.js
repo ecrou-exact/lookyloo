@@ -45,10 +45,11 @@ let pattern = defs.append('pattern')
     .attr("height", min_height)
     .attr('patternUnits', "userSpaceOnUse" )
 
+// Colours of the tree come from css/tree.css (--lk-color-tree-* tokens), not from attributes
 pattern.append('rect')
+    .attr('class', 'tree-stripe')
     .attr('width', node_width)
-    .attr('height', min_height)
-    .attr("fill", "#EEEEEE");
+    .attr('height', min_height);
 
 // append the svg object to the body of the page
 // appends a 'group' element to 'svg'
@@ -91,15 +92,10 @@ try {
       let parent_box_x = root.x - 150;
 
       let parent_rect = node_container.append('rect')
-        .attr("rx", 6)
-        .attr("ry", 6)
+        .attr('class', 'tree-parent-box')
+        .attr("rx", 8)
+        .attr("ry", 8)
         .attr("transform", `translate(${parent_box_y}, ${parent_box_x})`)
-        .style("opacity", "0.5")
-        .attr("stroke", 'black')
-        .attr('stroke-opacity', "0.8")
-        .attr("stroke-width", "2")
-        .attr("stroke-linecap", "round")
-        .attr("fill", "white")
 
       let text = node_container
           .data([
@@ -111,8 +107,8 @@ try {
               }
           ])
           .append('text')
+          .attr('class', 'tree-parent-text')
           .attr("dy", 0)
-          .style("font-size", "12px")
           .style('text-align', 'center')
           .attr("transform", `translate(${parent_box_y + 3}, ${parent_box_x + 15})`);
 
@@ -131,7 +127,7 @@ try {
           .attr("x", 30)
           .attr("dy", 20)
           .text(d => d.line3)
-          .style('fill', '#0000EE')
+          .attr('class', 'tree-parent-link')
           .attr('cursor', 'pointer')
           .on('click', (event, d) => { openTreeInNewTab(d.parent_uuid) } );
 
@@ -156,15 +152,11 @@ try {
 
       line_arrow
           .append("path")
-          .attr('stroke-opacity', "0.7")
-          .attr("stroke-width", "2")
-          .attr("stroke", "black")
-          .attr("fill", "none")
+          .attr('class', 'tree-parent-arrow')
           .data([{
               source: {x: 0, y: parent_box_x + parent_rect.node().getBBox().height},
               target: {x: 50, y: parent_box_x + parent_rect.node().getBBox().height + 42}
           }])
-          .attr("class", "line")
           .attr("d", d => line(
               [{lx: d.source.x, ly: d.source.y},
                {lx: d.target.x, ly: d.source.y},
@@ -174,11 +166,8 @@ try {
 
       line_arrow
           .append("path")
+          .attr('class', 'tree-parent-arrow tree-parent-arrow-tip')
           .attr("d", line_tip)
-          .attr("stroke", 'black')
-          .attr('stroke-opacity', "0.8")
-          .style('stroke-width', '1.5')
-          .attr("fill-opacity", '0')
           .attr("transform", `translate(50, ${parent_box_x + parent_rect.node().getBBox().height + 48}) rotate(60)`);
   };
 } catch (error) {
@@ -196,8 +185,7 @@ function open_hostnode_popup(hostnode_uuid) {
 }
 
 function UnbookmarkAllNodes() {
-    d3.selectAll('.node_data').select('rect').style('fill', 'white');
-    d3.selectAll('.node_data').select('text').style('fill', 'black');
+    d3.selectAll('.node_data').classed('is-bookmarked', false);
     d3.selectAll('.node_data').select("#bookmark")
         .text("🏁")
         .on('click', (event, d) => NodeHighlight(d.data.uuid))
@@ -219,8 +207,7 @@ function MarkAsKnown(capture_uuid, hostnode_uuid=null, urlnode_uuid=null) {
 };
 
 function UnbookmarkHostNode(hostnode_uuid) {
-    d3.select(`#node_${hostnode_uuid}`).select('rect').style('fill', 'white');
-    d3.select(`#node_${hostnode_uuid}`).select('text').style('fill', 'black');
+    d3.select(`#node_${hostnode_uuid}`).select('.node_data').classed('is-bookmarked', false);
     d3.select(`#node_${hostnode_uuid}`).select("#bookmark")
         .text("🏁")
         .on('click', (event, d) => NodeHighlight(d.data.uuid))
@@ -238,8 +225,7 @@ function NodeHighlight(hostnode_uuid) {
     let element = document.getElementById(`node_${hostnode_uuid}`);
     element.scrollIntoView({behavior: "smooth", block: "center", inline: "nearest"});
 
-    d3.select(`#node_${hostnode_uuid}`).select('rect').style('fill', 'black');
-    d3.select(`#node_${hostnode_uuid}`).select('text').style('fill', 'white');
+    d3.select(`#node_${hostnode_uuid}`).select('.node_data').classed('is-bookmarked', true);
     d3.select(`#node_${hostnode_uuid}`).select("#bookmark")
         .text('❌')
         .on('click', (event, d) => UnbookmarkHostNode(d.data.uuid))
@@ -301,8 +287,19 @@ function icon_list(relative_x_pos, relative_y_pos, d) {
                 .append("svg")
                 .attr('class', 'icon')
                 .attr("id", `icons_${key}`);
+          // Light chip behind the PNG (visible in dark mode only, --lk-color-tree-icon-bg)
+          icon_group
+              .append('rect')
+              .attr('class', 'node-icon-chip')
+              .attr('x', 0)
+              .attr('y', 0)
+              .attr('rx', 3)
+              .attr('width', icon_size + 2)
+              .attr('height', icon_size + 2);
           icon_group
               .append('image')
+              .attr('x', 1)
+              .attr('y', 1)
               .attr("width", icon_size)
               .attr("height", icon_size)
               .attr("xlink:href", icon_details.path)
@@ -317,9 +314,9 @@ function icon_list(relative_x_pos, relative_y_pos, d) {
           if (counter > 0) {
             icon_group
                 .append('text')
-                .attr("dy", 8)
-                .style("font-size", "10px")
-                .attr('x', icon_size + 1)
+                .attr('class', 'node-icon-count')
+                .attr("dy", 11)
+                .attr('x', icon_size + 4)
                 .text(counter);
           };
         };
@@ -337,11 +334,8 @@ function text_entry(relative_x_pos, relative_y_pos, d) {
 
     // Add labels for the nodes
     nodeContent.append("text")
+          .attr('class', 'node-host')
           .attr('dy', '.9em')
-          .attr("stroke", "white")
-          .style("font-size", "16px")
-          .attr("stroke-width", ".2px")
-          .style("opacity", .9)
           .attr('cursor', 'pointer')
           .on('click', (event, d) => open_hostnode_popup(d.data.uuid))
           .on('mouseover', (event, d) => {
@@ -367,12 +361,9 @@ function text_entry(relative_x_pos, relative_y_pos, d) {
 
     if (d.data.idna) {
     nodeContent.append("text")
+          .attr('class', 'node-host-idna')
           .attr('dy', '2.6em')
           .attr('dx', '2em')
-          .attr("stroke", "white")
-          .style("font-size", "10px")
-          .attr("stroke-width", ".2px")
-          .style("opacity", .9)
           .attr('cursor', 'pointer')
           .on('click', (event, d) => open_hostnode_popup(d.data.uuid))
           .on('mouseover', (event, d) => {
@@ -477,17 +468,12 @@ function update(root, computed_node_width=0) {
               .attr('y', -30);
 
             node_data.append('rect')
-              .attr("rx", 6)
-              .attr("ry", 6)
+              .attr('class', 'node-card')
+              .attr("rx", 8)
+              .attr("ry", 8)
               .attr('x', 0)
               .attr('y', 0)
               .attr('width', 10)
-              .style("opacity", "0.5")
-              .attr("stroke", 'black')
-              .attr('stroke-opacity', "0.8")
-              .attr("stroke-width", "2")
-              .attr("stroke-linecap", "round")
-              .attr("fill", "white")
 
             // Set Hostname text
             node_data
@@ -501,7 +487,7 @@ function update(root, computed_node_width=0) {
                 let cur_icon_list_len = 0;
                 d3.select(this).selectAll('.icon').each(function(){
                     d3.select(this).attr('x', cur_icon_list_len);
-                    cur_icon_list_len += d3.select(this).node().getBBox().width;
+                    cur_icon_list_len += d3.select(this).node().getBBox().width + 6;
                 });
 
                 // Rectangle around the domain name & icons
@@ -520,12 +506,9 @@ function update(root, computed_node_width=0) {
                 if (d.data.urls_count > 1) {
                     d3.select(this).append("text")
                         .attr('x', d => d3.select(this).select('text').node().getBBox().width + 13)
+                        .attr('class', 'node-count')
                         .attr('y', 5)
                         .attr('dy', '.9em')
-                        .attr("stroke", "white")
-                        .style("font-size", "16px")
-                        .attr("stroke-width", ".2px")
-                        .style("opacity", .9)
                         .on('mouseover', (event, d) => {
                             d3.select('#tooltip')
                                 .style('opacity', 1)
@@ -544,7 +527,7 @@ function update(root, computed_node_width=0) {
                     d3.select(this).append("text")
                         .attr('x', `${selected_node_bbox.width - 12}px`)
                         .attr('y', '20px')
-                        .style("font-size", "16px")
+                        .attr('class', 'node-bookmark')
                         .attr("id", "bookmark")
                         .text("🏁")
                         .attr('cursor', 'pointer')
@@ -563,6 +546,14 @@ function update(root, computed_node_width=0) {
                 if (d.data.contains_rendered_urlnode) {
                   center_node = d.data.uuid;
                   if (favicon) {
+                    // Chip behind the favicon: a dark favicon stays visible in dark mode
+                    d3.select(this).append('rect')
+                      .attr('class', 'node-icon-chip')
+                      .attr('x', selected_node_bbox.width/6 - 3)
+                      .attr('y', node_height - 4)
+                      .attr('rx', 6)
+                      .attr('width', 38)
+                      .attr('height', 38);
                     d3.select(this).append('image')
                       .attr('x', selected_node_bbox.width/6)
                       .attr('y', node_height - 1)
@@ -582,10 +573,9 @@ function update(root, computed_node_width=0) {
                   d3.select(this).append("svg").append('rect')
                     .attr('x', selected_node_bbox.width/2)
                     .attr('y', node_height - 3)
+                    .attr('class', 'node-thumb-frame')
                     .attr('width', thumbnail_size)
-                    .attr('height', thumbnail_size)
-                    .attr('fill', 'white')
-                    .attr('stroke', 'black');
+                    .attr('height', thumbnail_size);
 
                   d3.select(this).append('image')
                     .attr('x', selected_node_bbox.width/2)
@@ -616,16 +606,16 @@ function update(root, computed_node_width=0) {
                 if (d.data.http_content) {
                     // set lock insecure connection
                     d3.select(this).append("svg").append('rect')
-                        .attr('x', selected_node_bbox.width - 22)
-                        .attr('y', selected_node_bbox.height - 13)
+                        .attr('x', selected_node_bbox.width - 40)
+                        .attr('y', selected_node_bbox.height - http_icon_size - 6)
+                        .attr('class', 'node-badge')
+                        .attr('rx', 4)
                         .attr('width', http_icon_size)
-                        .attr('height', http_icon_size)
-                        .attr('fill', 'white')
-                        .attr('stroke', 'black');
+                        .attr('height', http_icon_size);
 
                     d3.select(this).append('image')
-                        .attr('x', selected_node_bbox.width - 22)
-                        .attr('y', selected_node_bbox.height - 13)
+                        .attr('x', selected_node_bbox.width - 40)
+                        .attr('y', selected_node_bbox.height - http_icon_size - 6)
                         .attr('id', 'insecure_image')
                         .attr("width", http_icon_size)
                         .attr("height", http_icon_size)
@@ -643,16 +633,16 @@ function update(root, computed_node_width=0) {
                 if (d.data.malicious) {
                     // set bomb
                     d3.select(this).append("svg").append('rect')
-                        .attr('x', selected_node_bbox.width - 22 - http_icon_size)
-                        .attr('y', selected_node_bbox.height - 13)
+                        .attr('x', selected_node_bbox.width - 40 - http_icon_size - 4)
+                        .attr('y', selected_node_bbox.height - http_icon_size - 6)
+                        .attr('class', 'node-badge')
+                        .attr('rx', 4)
                         .attr('width', context_icon_size)
-                        .attr('height', context_icon_size)
-                        .attr('fill', 'white')
-                        .attr('stroke', 'black');
+                        .attr('height', context_icon_size);
 
                     d3.select(this).append('image')
-                        .attr('x', selected_node_bbox.width - 22 - http_icon_size)
-                        .attr('y', selected_node_bbox.height - 13)
+                        .attr('x', selected_node_bbox.width - 40 - http_icon_size - 4)
+                        .attr('y', selected_node_bbox.height - http_icon_size - 6)
                         .attr('id', 'malicious_image')
                         .attr("width", context_icon_size)
                         .attr("height", context_icon_size)
@@ -668,16 +658,16 @@ function update(root, computed_node_width=0) {
                 } else if (d.data.legitimate) {
                     // set checkmark
                     d3.select(this).append("svg").append('rect')
-                        .attr('x', selected_node_bbox.width - 22 - http_icon_size)
-                        .attr('y', selected_node_bbox.height - 13)
+                        .attr('x', selected_node_bbox.width - 40 - http_icon_size - 4)
+                        .attr('y', selected_node_bbox.height - http_icon_size - 6)
+                        .attr('class', 'node-badge')
+                        .attr('rx', 4)
                         .attr('width', context_icon_size)
-                        .attr('height', context_icon_size)
-                        .attr('fill', 'white')
-                        .attr('stroke', 'black');
+                        .attr('height', context_icon_size);
 
                     d3.select(this).append('image')
-                        .attr('x', selected_node_bbox.width - 22 - http_icon_size)
-                        .attr('y', selected_node_bbox.height - 13)
+                        .attr('x', selected_node_bbox.width - 40 - http_icon_size - 4)
+                        .attr('y', selected_node_bbox.height - http_icon_size - 6)
                         .attr('id', 'known_image')
                         .attr("width", context_icon_size)
                         .attr("height", context_icon_size)
@@ -693,16 +683,16 @@ function update(root, computed_node_width=0) {
               } else if (d.data.all_empty && !d.data.contains_rendered_urlnode) {
                 // set empty
                 d3.select(this).append("svg").append('rect')
-                    .attr('x', selected_node_bbox.width - 22 - http_icon_size)
-                    .attr('y', selected_node_bbox.height - 13)
+                    .attr('x', selected_node_bbox.width - 40 - http_icon_size - 4)
+                    .attr('y', selected_node_bbox.height - http_icon_size - 6)
+                    .attr('class', 'node-badge')
+                    .attr('rx', 4)
                     .attr('width', context_icon_size)
-                    .attr('height', context_icon_size)
-                    .attr('fill', 'white')
-                    .attr('stroke', 'black');
+                    .attr('height', context_icon_size);
 
                 d3.select(this).append('image')
-                    .attr('x', selected_node_bbox.width - 22 - http_icon_size)
-                    .attr('y', selected_node_bbox.height - 13)
+                    .attr('x', selected_node_bbox.width - 40 - http_icon_size - 4)
+                    .attr('y', selected_node_bbox.height - http_icon_size - 6)
                     .attr('id', 'empty_image')
                     .attr("width", context_icon_size)
                     .attr("height", context_icon_size)
@@ -724,7 +714,7 @@ function update(root, computed_node_width=0) {
                   .attr('r', 1e-6)
                   .attr('cx', d => d.node_width)
                   .attr('cy', d => node_height/2)
-                  .style("fill", d => d._children ? "lightsteelblue" : "#fff")
+                  .classed('is-collapsed', d => !!d._children)
                   .on('mouseover', (event, d) => {
                       if (d.children || d._children) {
                         d3.select('#tooltip')
@@ -768,8 +758,8 @@ function update(root, computed_node_width=0) {
         .attr("transform", node => `translate(${node.y}, ${node.x})`)
         // Update the node attributes and style
         .select('circle.node')
-          .attr('r', 10)
-          .style("fill", node => node._children ? "lightsteelblue" : "#fff")
+          .attr('r', 9)
+          .classed('is-collapsed', node => !!node._children)
           .attr('cursor', (d) => {
             if (d.children || d._children) {
               return 'pointer';
@@ -799,10 +789,7 @@ function update(root, computed_node_width=0) {
         // Enter any new links at the parent's previous position.
         .insert('path', "g")
         .attr("class", "link")
-        .attr('d', diagonal)
-        .style('fill', 'none')
-        .style('stroke', '#ccc')
-        .style('stroke-width', '2px'),
+        .attr('d', diagonal),
     update => update,
     exit => exit.call(exit => exit.attr('d', diagonal).remove())
   ).call(link => link.attr('d', diagonal));

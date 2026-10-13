@@ -22,9 +22,24 @@ function mispSelector() {
 };
 
 //download the tree as png file
+// The colours of the tree come from css/tree.css: copy the computed styles in the
+// copy, or the exported image would lose them.
+const SVG_STYLE_PROPERTIES = ['fill', 'stroke', 'stroke-width', 'stroke-opacity', 'fill-opacity',
+                              'opacity', 'font-family', 'font-size', 'font-weight', 'text-decoration'];
+function inlineSvgStyles(source, copy) {
+    const sources = source.querySelectorAll('*');
+    const copies = copy.querySelectorAll('*');
+    sources.forEach((element, i) => {
+        const computed = getComputedStyle(element);
+        copies[i].setAttribute('style', SVG_STYLE_PROPERTIES
+            .map(property => `${property}:${computed.getPropertyValue(property)}`).join(';'));
+    });
+}
+
 const downloadSvg = () => {
-    const svg = document.querySelector('svg');
+    const svg = document.querySelector('#tree_svg > svg');
     const svgCopy = svg.cloneNode(true);
+    inlineSvgStyles(svg, svgCopy);
     const images = svgCopy.querySelectorAll('image');
     const promises = [];
     images.forEach((imageElement) => {
@@ -56,10 +71,11 @@ const downloadSvg = () => {
         let img = new Image();
         img.onload = function() {
             let canvas = document.createElement('canvas');
-            canvas.width = svgCopy.width.baseVal.value;
-            canvas.height = svgCopy.height.baseVal.value;
+            // Size of the tree on the page (the detached copy can't resolve it)
+            canvas.width = parseFloat(svg.getAttribute('width'));
+            canvas.height = parseFloat(svg.getAttribute('height'));
             let ctx = canvas.getContext('2d');
-            ctx.fillStyle='white';
+            ctx.fillStyle = getComputedStyle(document.body).backgroundColor;
             ctx.fillRect(0,0,canvas.width,canvas.height)
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
@@ -97,10 +113,16 @@ function LocateNode(hostnode_uuid) {
                     .size(200);
 
 
+    // Theme colours (css/theme.css): the arrow glows from ink to danger
+    const theme = getComputedStyle(document.documentElement);
+    const ink = theme.getPropertyValue('--lk-color-ink').trim();
+    const danger = theme.getPropertyValue('--lk-color-danger').trim();
+    const surface = theme.getPropertyValue('--lk-color-surface').trim();
+
     let path = line_arrow
         .append("path")
         .attr("stroke-width", "3")
-        .attr("stroke", "black")
+        .attr("stroke", ink)
         .attr("fill", "none")
         .data([{
             source: {x: 100, y: -100},
@@ -117,19 +139,19 @@ function LocateNode(hostnode_uuid) {
     let arrow = line_arrow
         .append("path")
         .attr("d", line_tip)
-        .attr("stroke", 'black')
+        .attr("stroke", ink)
         .style('stroke-width', '3')
-        .attr("fill", 'white')
+        .attr("fill", surface)
         .attr("transform", `translate(50, -50) rotate(60)`);
 
     let glow = () => {
         line_arrow.selectAll('path')
             .transition().duration(1000)  //Set transition
             .style('stroke-width', '7')
-            .style('stroke', 'red')
+            .style('stroke', danger)
             .transition().duration(1000)  //Set transition
             .style('stroke-width', '3')
-            .style('stroke', 'black')
+            .style('stroke', ink)
             .on("end", () => {
                 if (++i > 15) {
                     line_arrow.remove();

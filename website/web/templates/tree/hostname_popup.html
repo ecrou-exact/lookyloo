@@ -1,6 +1,5 @@
 {% extends "layouts/main.html" %}
 
-{% from 'bootstrap5/utils.html' import render_icon %}
 
 {% from "macros/macros.html" import known_content_details %}
 {% from "macros/macros.html" import ressource_legitimacy_details %}
@@ -176,9 +175,9 @@
         <div class="col-1 text-end">
           {# HTTPs or not #}
           {% if url['encrypted'] %}
-          {{ render_icon('lock-fill') }}
+          {{ icon('bi:lock-fill') }}
           {% else %}
-          {{ render_icon('unlock-fill') }}
+          {{ icon('bi:unlock-fill') }}
           {%endif%}
         </div>
         {# URL #}

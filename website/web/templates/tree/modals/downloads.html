@@ -1,4 +1,3 @@
-{% from 'bootstrap5/utils.html' import render_icon %}
 {% from "macros/macros.html" import pandora_submit %}
 
 {% if from_popup %}
@@ -20,7 +19,7 @@
   </a>
   {% else %}
   <a href="{{ url_for('downloads', tree_uuid=tree_uuid, from_popup=True, seed=seed) }}" class="btn btn-light">
-    {{ render_icon('share') }}
+    {{ icon('bi:share') }}
   </a>
   {% endif %}
 </center>
@@ -56,7 +55,7 @@
       {% endif %}
       <td>
         <a href="{{ url_for('get_downloaded_file', tree_uuid=tree_uuid, index_in_zip=loop.index - 1, seed=seed) }}" type="button" class="btn btn-light">
-          {{ render_icon('cloud-download', title="Download the file") }}
+          {{ icon('bi:cloud-download', title="Download the file") }}
         </a>
       </td>
     </tr>

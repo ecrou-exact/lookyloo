@@ -1,10 +1,8 @@
-{% from 'bootstrap5/utils.html' import render_icon %}
 
 {% if from_popup %}
 
 {% extends "layouts/main.html" %}
 {% from 'bootstrap5/utils.html' import render_messages %}
-{% from 'bootstrap5/utils.html' import render_icon %}
 {% block title %}Storage State{% endblock %}
 
 {%endif%}
@@ -15,7 +13,7 @@
   This is the storage state at the end of the capture.
   <br>
   <a href="{{ url_for('storage_state_download', tree_uuid=tree_uuid, seed=seed) }}" class="btn btn-info">
-    {{ render_icon('download', title="Download the full storage state") }}
+    {{ icon('bi:download', title="Download the full storage state") }}
   </a>
   {% if from_popup %}
   <a href="{{ url_for('tree', tree_uuid=tree_uuid, seed=seed) }}" class="btn btn-info">
@@ -23,7 +21,7 @@
   </a>
   {% else %}
   <a href="{{ url_for('storage_state', tree_uuid=tree_uuid, from_popup=True, seed=seed) }}" class="btn btn-light">
-    {{ render_icon('share') }}
+    {{ icon('bi:share') }}
   </a>
   {% endif %}
 </center>
@@ -88,23 +86,23 @@
               {% endfor %}
               </ul>
             {% else %}
-              <center>{{ render_icon("x-lg") }}</center>
+              <center>{{ icon('bi:x-lg') }}</center>
             {% endif %}
           </td>
           <td>{{ (cookie['expires'] * 1000) | int }}</td>
           <td class="text-break">{{ cookie['path'] }}</td>
           <td class="text-center">
             {% if cookie['httpOnly'] %}
-              {{ render_icon("check-lg", title='True') }}
+              {{ icon('bi:check-lg', title='True') }}
             {% else %}
-              {{ render_icon("x-lg", title='False') }}
+              {{ icon('bi:x-lg', title='False') }}
             {% endif %}
           </td>
           <td class="text-center">
             {% if cookie['secure'] %}
-              {{ render_icon("check-lg", title='True') }}
+              {{ icon('bi:check-lg', title='True') }}
             {% else %}
-              {{ render_icon("x-lg", title='False') }}
+              {{ icon('bi:x-lg', title='False') }}
             {% endif %}
           </td>
           <td>{{ cookie['sameSite'] }}</td>
@@ -223,7 +221,7 @@
                   <td class="text-break">
                     {% if entry['base64'] %}
                     <button type="button" class="btn btn-light downloadOpfsFileButton" data-mimetype="{{entry['mimetype']}}" data-b64="{{entry['base64']}}" data-filename="{{tree_uuid}}_{{entry['filename']}}">
-                      {{ render_icon('cloud-download', title="Download the file") }}
+                      {{ icon('bi:cloud-download', title="Download the file") }}
                      </button>
                     {% else %}
                       N/A

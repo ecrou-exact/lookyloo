@@ -12,6 +12,7 @@ import ipaddress
 import logging
 import logging.config
 import os
+import re
 import time
 
 import markdown
@@ -260,6 +261,45 @@ def get_sri(directory: str, filename: str) -> str:
     return Markup('integrity="sha512-{}"').format(sri_load()[directory][filename])
 
 
+ICON_SPRITE = 'images/icons/sprite.svg'
+ICON_NAME = re.compile(r'^(bi:[a-z0-9-]+|misp:[a-z0-9-]+/[a-z0-9_-]+)$')
+
+
+@functools.lru_cache(1)
+def icon_sprite_symbols() -> frozenset[str]:
+    sprite = get_homedir() / 'website' / 'web' / 'static' / ICON_SPRITE
+    if not sprite.exists():
+        return frozenset()
+    return frozenset(re.findall(r'<symbol id="([^"]+)"', sprite.read_text()))
+
+
+def icon_sprite_url() -> str:
+    url = url_for('static', filename=ICON_SPRITE)
+    if not ignore_sri and (sri := sri_load()['static'].get(ICON_SPRITE)):
+        # <use> has no integrity attribute: version the URL so browsers refetch an updated sprite
+        url += '?v=' + re.sub(r'[^A-Za-z0-9]', '', sri)[:12]
+    return url
+
+
+def icon(name: str, title: str | None=None, classes: str='', size: str | None=None) -> Markup:
+    '''Render an icon from the sprite built by tools/build_icons.py (doc/ui/icons.md).
+    name: "bi:<name>" (Bootstrap Icons) or "misp:<set>/<name>" (misp-iconify).
+    title: accessible label + tooltip, the icon is decorative (aria-hidden) without it.'''
+    if not ICON_NAME.match(name):
+        raise ValueError(f'Invalid icon name: {name}')
+    symbol = name.replace(':', '-').replace('/', '-')
+    if symbol not in icon_sprite_symbols():
+        app.logger.warning(f'Icon {name} missing from the sprite, run tools/build_icons.py')
+    href = f'{icon_sprite_url()}#{symbol}'
+    size_attrs = Markup(' width="{s}" height="{s}"').format(s=size) if size else ''
+    css_class = f'lk-icon {classes}'.strip()
+    if title:
+        return Markup('<svg class="{c}"{size} role="img" aria-label="{t}"><title>{t}</title><use href="{h}"></use></svg>').format(
+            c=css_class, size=size_attrs, t=title, h=href)
+    return Markup('<svg class="{c}"{size} aria-hidden="true" focusable="false"><use href="{h}"></use></svg>').format(
+        c=css_class, size=size_attrs, h=href)
+
+
 # Inspired by: https://stackoverflow.com/questions/59157322/overflow-ellipsis-in-middle-of-a-string
 class SafeMiddleEllipsisString():
 
@@ -421,6 +461,7 @@ app.jinja_env.globals.update(
      'get_sri': get_sri,
      'shorten_string': shorten_string,
      'get_icon': get_icon,
+     'icon': icon,
      'generic_type': mimetype_to_generic,
      'hash_icon': hash_icon_render,
      'tz_info': get_tz_info,
@@ -3128,12 +3169,11 @@ index_link_template = app.jinja_env.from_string(source='''
 ''')
 
 redir_chain_template = app.jinja_env.from_string(source='''
-{% from 'bootstrap5/utils.html' import render_icon %}
 
 <div class="text-center">
  <div class="row"><div class="col">{{shorten_string(redirects[0], with_copy_button=True)}}</div></div>
  {% for r in redirects[1:] %}
-   <div class="row"><div class="col">{{ render_icon("arrow-down") }}</div></div>
+   <div class="row"><div class="col">{{ icon('bi:arrow-down') }}</div></div>
    <div class="row"><div class="col">{{ shorten_string(r, with_copy_button=True) }}</div></div>
  {% endfor %}
 </div>
@@ -3142,9 +3182,8 @@ redir_chain_template = app.jinja_env.from_string(source='''
 
 
 favicon_download_button_template = app.jinja_env.from_string(source='''
-{% from 'bootstrap5/utils.html' import render_icon %}
 <button type="button" class="btn btn-light downloadFaviconButton" data-mimetype="{{mimetype}}" data-b64favicon="{{b64_favicon}}" data-filename="favicon.ico">
-  {{render_icon("cloud-download", title="Download the favicon")}}
+  {{icon('bi:cloud-download', title="Download the favicon")}}
 </button>''')
 
 

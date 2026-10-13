@@ -1,0 +1,22 @@
+/*
+ * lk-icon: SVG icons from the sprite (static/images/icons/sprite.svg),
+ * rendered by the icon() Jinja helper. Doc: doc/ui/icons.md
+ *
+ * Icons take the current text colour (currentColor) and the current font
+ * size (1em): style them through color / font-size on the parent, or with
+ * the size modifiers below.
+ */
+
+.lk-icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.125em;
+  fill: currentColor;
+  flex-shrink: 0;
+}
+
+.lk-icon-sm { width: 0.875em; height: 0.875em; }
+.lk-icon-lg { width: 1.25em; height: 1.25em; vertical-align: -0.2em; }
+.lk-icon-xl { width: 1.5em; height: 1.5em; vertical-align: -0.3em; }
+.lk-icon-2x { width: 2em; height: 2em; vertical-align: -0.5em; }

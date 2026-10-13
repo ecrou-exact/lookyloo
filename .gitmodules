@@ -1,0 +1,5 @@
+[submodule "tools/misp-iconify"]
+	path = tools/misp-iconify
+	url = https://github.com/MISP/misp-iconify.git
+	update = none
+	shallow = true

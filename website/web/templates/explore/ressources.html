@@ -4,13 +4,24 @@
 {% from 'bootstrap5/utils.html' import render_messages %}
 {% from 'macros/macros.html' import context_form %}
 
-{% block title %}Ressources{% endblock %}
+{% block title %}Resources · Lookyloo{% endblock %}
+{#
+  Resources (body hashes) seen in the recent captures, with their known context
+  (lookyloo/context.py find_known_content). Doc: doc/ui/pages/resources.md
+#}
+
+{% block page_styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/resources.css') }}"
+      {{get_sri('static', 'css/resources.css')}}
+      crossorigin="anonymous">
+{% endblock %}
 
 {% block scripts %}
 {{ super() }}
 <script type="text/javascript" nonce="{{ csp_nonce() }}">
     new DataTable('#table', {
         "order": [[ 2, "desc" ]],
+        "columnDefs": [{ "targets": 2, "className": "text-end" }],
         "pageLength": 10
     });
 </script>
@@ -21,34 +32,88 @@
 {{ page_header('Resources', description='Files (scripts, images, styles...) loaded by the recent captures, identified by their hash.', icon_name='misp:attributes/sha256', crumbs=[('Explore', None)]) }}
 {% endblock %}
 
+{% set type_icons = {'js': 'bi:filetype-js', 'css': 'bi:filetype-css', 'html': 'bi:filetype-html',
+                     'json': 'bi:filetype-json', 'text': 'bi:file-text', 'image': 'bi:file-image',
+                     'font': 'bi:fonts', 'exe': 'bi:filetype-exe', 'video': 'bi:file-play',
+                     'audio': 'bi:file-music', 'livestream': 'bi:broadcast', 'iframe': 'bi:window'} %}
+
+{% macro context_badge(context) -%}
+{% if not context %}
+  <span class="lk-ctx lk-ctx-unknown">{{ icon('bi:question-circle') }} Unknown</span>
+{% elif context['type'] == 'malicious' %}
+  <span class="lk-ctx lk-ctx-malicious">{{ icon('bi:exclamation-octagon-fill') }} Malicious</span>
+  {% set d = context['details'] %}
+  {% if d.get('tag') %}<p class="lk-ctx-details">Type: {{ d['tag']|join(', ') }}</p>{% endif %}
+  {% if d.get('target') %}<p class="lk-ctx-details">Target: {{ d['target']|join(', ') }}</p>{% endif %}
+{% elif context['type'] == 'legitimate_on_domain' %}
+  <span class="lk-ctx lk-ctx-legitimate">{{ icon('bi:check-circle-fill') }} Legitimate</span>
+  <p class="lk-ctx-details">On {{ context['details']|sort|join(', ') }}</p>
+{% elif context['type'] == 'sanejs' %}
+  {% set libname, version, path, count = context['details'] %}
+  <span class="lk-ctx lk-ctx-library">{{ icon('bi:box-seam') }} Library</span>
+  <p class="lk-ctx-details"><strong>{{ libname }}</strong> {{ version }} <span class="lk-mono">{{ path }}</span>
+    {% if count > 1 %}({{ count }} known locations){% endif %}</p>
+{% elif context['type'] == 'generic' %}
+  <span class="lk-ctx lk-ctx-generic">{{ icon('bi:info-circle') }} Generic</span>
+  <p class="lk-ctx-details">{{ context['details'] }}</p>
+{% else %}
+  <span class="lk-ctx lk-ctx-generic">{{ context['type'] }}</span>
+  <p class="lk-ctx-details">{{ context['details'] }}</p>
+{% endif %}
+{%- endmacro %}
+
 {% block content %}
+<div class="lk-card lk-resources">
+  <div class="lk-resources-legend" aria-label="Context legend">
+    <span class="lk-ctx lk-ctx-malicious">{{ icon('bi:exclamation-octagon-fill') }} Malicious</span>
+    <span class="lk-ctx lk-ctx-legitimate">{{ icon('bi:check-circle-fill') }} Legitimate</span>
+    <span class="lk-ctx lk-ctx-library">{{ icon('bi:box-seam') }} Library</span>
+    <span class="lk-ctx lk-ctx-generic">{{ icon('bi:info-circle') }} Generic</span>
+    <span class="lk-ctx lk-ctx-unknown">{{ icon('bi:question-circle') }} Unknown</span>
+  </div>
   <div class="table-responsive">
-  <table id="table" class="table" style="width:96%">
+  <table id="table" class="table lk-resources-table" style="width:100%">
     <thead>
      <tr>
-       <th>SHA 521</th>
-       <th>Frequency</th>
+       <th>Resource</th>
        <th>Context</th>
-       <th>Mimetype</th>
-       <th>Filename</th>
+       <th>Captures</th>
      </tr>
     </thead>
     <tbody>
       {% for h, freq, context, capture_uuid, urlnode_uuid, filename, mimetype in ressources %}
       <tr>
-        <td>
-          <a href="{{ url_for('body_hash_details', body_hash=h) }}">{{ shorten_string(h) }}</a><br>
-          {{ hash_icon(capture_uuid, urlnode_uuid, mimetype, h) }}
+        <td data-search="{{ filename }} {{ mimetype }} {{ h }}">
+          <div class="lk-resource">
+            {% set gt = generic_type(mimetype) %}
+            <a class="lk-resource-icon lk-resource-type-{{ gt }}" href="{{ url_for('ressource_by_hash', sha512=h) }}"
+               title="{{ gt }} - download the file" aria-label="Download the file">
+              {{ icon(type_icons.get(gt, 'bi:file-earmark')) }}
+            </a>
+            <div class="lk-resource-body">
+              <a class="lk-resource-name" href="{{ url_for('body_hash_details', body_hash=h) }}" title="{{ filename }}">{{ filename or 'No filename' }}</a>
+              <div class="lk-resource-meta">
+                <span class="lk-resource-mime">{{ mimetype }}</span>
+                <span class="lk-resource-hash" title="SHA512">{{ h[:16] }}…</span>
+                <button type="button" class="lk-copy js-copy" data-bs-toggle="tooltip" data-copy="{{ h }}"
+                        title="Copy the SHA512" data-bs-original-title="Copy the SHA512" aria-label="Copy the SHA512">{{ icon('bi:copy') }}</button>
+              </div>
+            </div>
+          </div>
         </td>
-        <td>{{ freq }}</td>
-        <td> {{ context['type'] }} - {{ context['details'] }}<br>
-          {{ context_form(capture_uuid, urlnode_uuid, h, 'ressources') }}
+        <td data-search="{{ context['type'] if context else 'unknown' }}" data-order="{{ context['type'] if context else 'zz' }}">
+          <div class="lk-resource-ctx">
+            {{ context_badge(context) }}
+            {% if can_add_context %}
+            <div class="lk-resource-ctx-form">{{ context_form(capture_uuid, urlnode_uuid, h, 'ressources') }}</div>
+            {% endif %}
+          </div>
         </td>
-        <td>{{ mimetype }}</td>
-        <td>{{ shorten_string(filename, with_copy_button=True) }}</td>
+        <td data-order="{{ freq }}"><span class="lk-resource-count">{{ freq }}</span></td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
   </div>
+</div>
 {% endblock %}

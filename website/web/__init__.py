@@ -2406,7 +2406,8 @@ def ressources() -> str:
                 continue
             ressources.append((h, freq, context.get(h), capture_uuid, url_node, ressource[0], ressource[2]))
             break
-    return render_template('explore/ressources.html', ressources=ressources)
+    return render_template('explore/ressources.html', ressources=ressources,
+                           can_add_context=enable_context_by_users and flask_login.current_user.is_authenticated)
 
 
 @app.route('/categories', methods=['GET'])

@@ -1,18 +1,20 @@
 "use strict";
 // From : https://bl.ocks.org/d3noob/43a860bc0024792f8803bba8ca0d5ecd
 
-// Set the dimensions and margins of the diagram
+// Set the dimensions and margins of the diagram.
+// The tree is drawn in a scrolling viewport under the capture bar (tree/tree.html),
+// so it only needs room for the parent-capture box above the root.
 let margin = {
-    top: document.getElementById('menu_horizontal_content').clientHeight + 30,
+    top: 40,
     right: 200,
-    bottom: 10,
+    bottom: 40,
     left: 90
 };
 
-let menuHeight = document.getElementById('menu_vertical').clientHeight + 60;
-let min_height = menuHeight * 2;
-
-let min_width = document.getElementById('menu_vertical').clientWidth + document.getElementById('menu_horizontal').clientWidth;
+// The SVG covers at least the visible part of the viewport
+const tree_viewport = document.getElementById('tree_viewport');
+let min_height = Math.max(tree_viewport.clientHeight - margin.top - margin.bottom, 300);
+let min_width = Math.max(tree_viewport.clientWidth - margin.left - margin.right, 600);
 
 let node_width = 10;
 let node_height = 55;

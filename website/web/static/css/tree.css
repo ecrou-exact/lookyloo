@@ -1,20 +1,253 @@
 /*
- * Capture page (tree/tree.html): D3 tree, sticky menus, legend.
- * Loaded through the page_styles block of layouts/main.html.
- * IDs here are bound by js/tree.js: keep them in sync.
- * Doc: doc/ui/css.md
+ * Capture page (tree/tree.html): site header, capture bar, the D3 tree in a
+ * scrolling viewport, legend. Loaded through the page_styles block.
+ * IDs here are bound by js/tree.js and js/tree_modals.js: keep them in sync.
+ * Doc: doc/ui/pages/tree.md
  */
 
-#tree_svg {
-  position: relative;
+/* ---------- Page: header + bar at the top, the tree takes the rest ---------- */
+
+body.lk-capture-page {
+  height: 100vh;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--lk-color-bg);
 }
+
+body.lk-capture-page .lk-header { position: static; flex: none; }
+
+/* ---------- Capture bar ---------- */
+
+.lk-capture-bar {
+  flex: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--lk-space-3) var(--lk-space-5);
+  padding: var(--lk-space-3) var(--lk-space-5);
+  background: var(--lk-color-surface);
+  border-bottom: 1px solid var(--lk-color-rule);
+}
+
+.lk-capture-identity {
+  display: flex;
+  align-items: center;
+  gap: var(--lk-space-3);
+  min-width: 0;
+  flex: 1 1 28rem;
+}
+
+.lk-capture-thumb {
+  flex: none;
+  padding: 0;
+  border: 1px solid var(--lk-color-rule);
+  border-radius: var(--lk-radius-md);
+  background: var(--lk-color-surface-2);
+  overflow: hidden;
+  line-height: 0;
+  cursor: zoom-in;
+  transition: border-color var(--lk-transition-fast), box-shadow var(--lk-transition-fast);
+}
+.lk-capture-thumb:hover,
+.lk-capture-thumb:focus-visible {
+  border-color: var(--lk-color-accent);
+  box-shadow: var(--lk-shadow-sm);
+}
+.lk-capture-thumb img {
+  width: 96px;
+  height: 60px;
+  object-fit: cover;
+  object-position: top;
+}
+
+.lk-capture-text { min-width: 0; }
+
+.lk-capture-title {
+  display: flex;
+  align-items: center;
+  gap: var(--lk-space-2);
+  margin: 0;
+  font-size: 1.0625rem;
+  font-weight: var(--lk-font-weight-semibold);
+  color: var(--lk-color-ink);
+}
+.lk-capture-title span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.lk-capture-favicon { flex: none; border-radius: 3px; }
+
+.lk-capture-url {
+  margin: 2px 0 0;
+  font-family: var(--lk-font-mono);
+  font-size: var(--lk-font-size-sm);
+  color: var(--lk-color-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.lk-capture-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--lk-space-1) var(--lk-space-3);
+  margin: var(--lk-space-1) 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--lk-font-size-xs);
+  color: var(--lk-color-muted);
+}
+.lk-capture-meta li { display: inline-flex; align-items: center; gap: 0.3em; }
+.lk-capture-meta .lk-relative-time { display: inline; }
+.lk-capture-meta .lk-absolute-time { display: inline; margin-left: 0.4em; opacity: 0.75; font-family: var(--lk-font-mono); }
+
+.lk-capture-flag {
+  padding: 1px var(--lk-space-2);
+  border-radius: var(--lk-radius-pill);
+  background: var(--lk-color-surface-2);
+  color: var(--lk-color-ink);
+  font-weight: var(--lk-font-weight-medium);
+}
+.lk-capture-flag-danger {
+  background: var(--lk-color-danger-soft);
+  color: var(--lk-color-danger);
+}
+
+/* ---------- Toolbar ---------- */
+
+.lk-capture-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--lk-space-2);
+}
+
+.lk-tool-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--lk-space-2);
+  border: 1px solid var(--lk-color-rule);
+  background: var(--lk-color-surface);
+  color: var(--lk-color-ink);
+  font-weight: var(--lk-font-weight-medium);
+}
+.lk-tool-btn:hover,
+.lk-tool-btn:focus-visible,
+.lk-tool-btn.show {
+  border-color: var(--lk-color-accent);
+  background: var(--lk-color-accent-soft);
+  color: var(--lk-color-ink);
+}
+.lk-tool-btn.btn-outline-danger { border-color: var(--lk-color-danger-border); color: var(--lk-color-danger); }
+.lk-tool-btn.btn-outline-danger:hover { background: var(--lk-color-danger-soft); border-color: var(--lk-color-danger); color: var(--lk-color-danger); }
+.lk-tool-icon { padding-inline: var(--lk-space-2); }
+
+.lk-tool-menu { min-width: 16rem; max-height: 70vh; overflow-y: auto; }
+.lk-tool-menu .dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: var(--lk-space-2);
+  white-space: normal;
+}
+.lk-tool-menu .dropdown-item .lk-icon { flex: none; color: var(--lk-color-muted); }
+.lk-tool-menu .dropdown-item:hover .lk-icon,
+.lk-tool-menu .dropdown-item:focus .lk-icon { color: inherit; }
+.lk-tool-warning,
+.lk-tool-warning .lk-icon { color: var(--lk-color-warning) !important; }
+.lk-tool-danger,
+.lk-tool-danger .lk-icon { color: var(--lk-color-danger) !important; }
+.lk-tool-note {
+  display: flex;
+  gap: var(--lk-space-2);
+  font-size: var(--lk-font-size-sm);
+  color: var(--lk-color-danger);
+}
+
+@media (max-width: 767.98px) {
+  .lk-capture-bar { padding: var(--lk-space-3); }
+  .lk-tool-btn span { display: none; }
+  .lk-tool-btn { padding-inline: var(--lk-space-2); }
+}
+
+/* ---------- Messages (flash) under the bar ---------- */
+
+.lk-capture-flashes {
+  flex: none;
+  padding: var(--lk-space-2) var(--lk-space-5) 0;
+  background: var(--lk-color-bg);
+}
+.lk-capture-flashes .alert {
+  margin-bottom: var(--lk-space-2);
+  padding-block: var(--lk-space-2);
+  font-size: var(--lk-font-size-sm);
+}
+.lk-capture-flashes .alert .btn-close { padding-block: var(--lk-space-3); }
+
+/* ---------- Tree viewport ---------- */
+
+.lk-tree-viewport {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  position: relative;
+  outline: none;
+}
+
+#tree_svg { position: relative; }
 
 #tree-loading {
   position: absolute;
-  top: 50%;
-  left: 50%;
+  top: 40vh;
+  left: 50vw;
   transform: translate(-50%, -50%);
 }
+
+#screenshot_thumbnail { scroll-margin: 50px; }
+
+/* ---------- Legend ---------- */
+
+.lk-tree-legend {
+  position: fixed;
+  right: var(--lk-space-4);
+  bottom: var(--lk-space-4);
+  z-index: 1020;
+  max-height: calc(100vh - 12rem);
+  overflow: auto;
+  background: var(--lk-color-surface);
+  border: 1px solid var(--lk-color-rule);
+  border-radius: var(--lk-radius-lg);
+  box-shadow: var(--lk-shadow-md);
+  font-size: var(--lk-font-size-sm);
+}
+.lk-tree-legend summary {
+  display: flex;
+  align-items: center;
+  gap: var(--lk-space-2);
+  padding: var(--lk-space-2) var(--lk-space-3);
+  cursor: pointer;
+  font-weight: var(--lk-font-weight-medium);
+  list-style: none;
+  user-select: none;
+}
+.lk-tree-legend summary::-webkit-details-marker { display: none; }
+.lk-tree-legend[open] summary { border-bottom: 1px solid var(--lk-color-rule); }
+.lk-tree-legend ul {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(9rem, auto));
+  gap: var(--lk-space-1) var(--lk-space-4);
+  margin: 0;
+  padding: var(--lk-space-3);
+  list-style: none;
+}
+.lk-tree-legend li { display: flex; align-items: center; gap: var(--lk-space-2); color: var(--lk-color-ink); }
+.lk-tree-legend img { flex: none; }
+
+/* ---------- D3 tree (drawn by js/tree.js) ---------- */
 
 .node circle {
   fill: var(--lk-color-surface);
@@ -22,173 +255,4 @@
   stroke-width: 3px;
 }
 
-.node text {
-  font: 12px sans-serif;
-}
-
-/* Class set by bootstrap-flask's render_messages() */
-.flashed-messages {
-  position: fixed;
-  bottom: 5px;
-  text-align: center;
-  width: 50%;
-  transform: translate(50%);
-}
-
-#screenshot_thumbnail {
-  scroll-margin: 50px;
-}
-
-#help {
-  text-align: center;
-  border-style: solid;
-  border-color: var(--lk-color-accent);
-  border-radius: var(--lk-radius-pill);
-  text-decoration: none;
-  height: 50px;
-  width: 50px;
-  padding: 5px;
-  align-content: center;
-  background-color: var(--lk-color-accent);
-  color: var(--lk-color-on-accent);
-}
-
-#help:hover {
-  background-color: var(--lk-color-accent-hover);
-  color: var(--lk-color-on-accent);
-}
-
-/* Generic parts of menus */
-hr {
-  display: block;
-  margin-top: 0.1em;
-  margin-bottom: 0.5em;
-  margin-left: auto;
-  margin-right: auto;
-  border-color: var(--lk-color-rule-strong);
-  border-style: inset;
-  border-width: 1px;
-}
-
-#menu-tree-top {
-  display: flex;
-  flex-direction: row;
-  position: fixed;
-  width: 0;
-}
-
-/* menu vertical */
-#tree_logo {
-  width: 205px;
-}
-
-#menu_container_vertical {
-  position: sticky;
-  top: 5px;
-  left: 5px;
-  width: fit-content;
-  background-color: var(--lk-color-surface);
-}
-
-#menu_vertical {
-  position: sticky;
-  top: 5px;
-  left: 5px;
-  border: 2px solid;
-  padding: 5px;
-}
-
-.menu_vertical_header {
-  padding: 5px;
-}
-
-#menu_container_vertical ul.components {
-    padding: 10px 0;
-}
-
-#menu_container_vertical ul li a {
-    padding: 5px;
-    font-size: 1.1em;
-    display: block;
-    text-align: center;
-}
-
-/* menu horizontal */
-
-#menu_container_horizontal {
-  position: sticky;
-  top: 5px;
-  left: 217px;
-  width: 80%;
-}
-
-#menu_horizontal {
-  position: sticky;
-  top: 5px;
-  border: 2px solid;
-  background-color: var(--lk-color-surface);
-  width: fit-content;
-}
-
-.hstack{
-  height: 106.6px;
-}
-
-
-/* Dropdown Menus */
-.dropbtn {
-  font-size: 16px;
-  width: 180px;
-  text-align: center;
-  height: 50px;
-}
-
-.dropdown-menu {
-  width: 180px;
-}
-
-.dropdown-item {
-  text-wrap: wrap;
-}
-
-/* Show the dropdown menus on hover */
-#capture-menu:hover #capture-menu-content {
-  display: block;
-}
-#actions-menu:hover #actions-menu-content {
-  display: block;
-}
-#tools-menu:hover #tools-menu-content {
-  display: block;
-}
-#admin-menu:hover #admin-menu-content {
-  display: block;
-}
-#extra-menu:hover #extra-menu-content {
-  display: block;
-}
-
-/* legend */
-#legend_container {
-  position: fixed;
-  bottom: 5px;
-  right: 5px;
-  padding: 5px;
-}
-
-#legend {
-  position: fixed;
-  top: 60%;
-  right: 5px;
-  background-color: var(--lk-color-surface);
-  color: var(--lk-color-ink);
-  border: 2px solid;
-  padding: 5px;
-}
-
-#legend_show {
-  position: fixed;
-  top: 85vw;
-  right: 10px;
-  width: 70px;
-}
+.node text { font: 12px sans-serif; }

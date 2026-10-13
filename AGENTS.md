@@ -205,8 +205,8 @@ Filters: `markdown`, `b64encode`. Some HTML is also built in Python
   `LOOKYLOO_VENDOR_DIR=DIR` (see `doc/ui/offline.md`).
 - **IDs and data-attributes are an API**: `render_tables.js` binds to element
   IDs (`#IndexTable`, `#categoriesTable`, `#HHHDetailsTable`, …) and to the
-  JSON shape returned by `post_table`; `tree.js` reads `#menu_horizontal_content`,
-  `#menu_vertical`, `#tree_svg` and `data-remote`/`data-urlnode` on `#tree_js`;
+  JSON shape returned by `post_table`; `tree.js` reads `#tree_viewport`, `#tree_svg` and
+  `data-remote`/`data-urlnode` on `#tree_js` (doc/ui/pages/tree.md);
   modals load HTML fragments by `data-remote`. Keep them or update both sides.
 - **Playwright tests** (`tests/test_generic.py`) rely on page titles and some
   selectors/texts; update them along with the UI.

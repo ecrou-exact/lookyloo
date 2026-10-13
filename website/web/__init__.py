@@ -514,6 +514,7 @@ app.jinja_env.globals.update(
      'get_icon': get_icon,
      'icon': icon,
      'category_tag': category_tag,
+     'capture_verdict': capture_verdict,
      'generic_type': mimetype_to_generic,
      'hash_icon': hash_icon_render,
      'tz_info': get_tz_info,

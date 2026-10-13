@@ -1,0 +1,38 @@
+{#
+  Legend of the capture tree (tree/tree.html): what the icons of a node mean.
+  A <details> panel at the bottom right of the tree, closed by default.
+  The icons are the ones drawn by js/tree.js. Doc: doc/ui/pages/tree.md
+#}
+{% set legend = [
+  ('insecure.svg', 'Unencrypted requests', 'This node contains at least one insecure (not HTTPS) request'),
+  ('empty.svg', 'Empty responses', 'This node contains only empty responses'),
+  ('send-arrow-up.svg', 'POST requests', 'This node contains POST requests'),
+  ('cookie_received.png', 'Cookie received', 'Number of cookies received in the responses of this node'),
+  ('cookie_read.png', 'Cookie read', 'Number of cookies sent in the requests of this node'),
+  ('redirect.png', 'Redirect', 'Number of redirects initiated by the responses of this node'),
+  ('ifr.png', 'iFrame', 'Number of resources loaded from iFrames in the responses in this node'),
+  ('javascript.png', 'JavaScript', 'Number of JavaScript in the responses in this node'),
+  ('font.png', 'Font', 'Number of fonts in the responses in this node'),
+  ('html.png', 'HTML', 'Number of HTML in the responses in this node'),
+  ('json.png', 'JSON', 'Number of JSON in the responses in this node'),
+  ('css.png', 'CSS', 'Number of CSS in the responses in this node'),
+  ('exe.png', 'Executable', 'Number of executables in the responses in this node'),
+  ('img.png', 'Image', 'Number of images in the responses in this node'),
+  ('video.png', 'Video', 'Number of videos in the responses in this node'),
+  ('wtf.png', 'Unknown content', 'Number of unknown resources in the responses in this node'),
+  ('download.png', 'Downloaded file', 'The node contains a downloaded file'),
+  ('websocket.svg', 'Websocket', 'The node contains a websocket session'),
+  ('bomb.svg', 'Known malicious', 'This node contains known malicious content'),
+  ('check.svg', 'Known content only', 'This node has only known content'),
+] %}
+<details class="lk-tree-legend" id="legend">
+  <summary>{{ icon('bi:info-square') }}<span>Legend</span></summary>
+  <ul>
+    {% for file, label, title in legend %}
+    <li title="{{ title }}">
+      <img src="{{ url_for('static', filename='images/icons/' ~ file) }}" alt="" width="18" height="18">
+      <span>{{ label }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+</details>

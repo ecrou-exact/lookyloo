@@ -85,11 +85,11 @@ for its utilities. Keep both in sync when changing a colour.
 | `--lk-content-max-width` | `1440px` | Wide layout |
 | `--lk-transition-fast` | `120ms ease` | Hover transitions |
 
-Geist and Geist Mono (v1.7.2, SIL Open Font License 1.1, from the npm package
-`geist`) are self-hosted in `static/fonts/geist/` and declared in `css/fonts.css`.
-They are variable fonts: one file per family covers every weight. To update
-them, replace the two `.woff2` files (and `OFL.txt`), change the version in the
-`fonts.css` header, then regenerate the SRI.
+Geist and Geist Mono (v1.7.2, SIL Open Font License 1.1, npm package `geist`)
+are not committed: `tools/3rdparty.py` downloads the package, checks its npm
+integrity and installs the two variable fonts + `OFL.txt` in
+`static/vendor/fonts/geist/`; `css/fonts.css` declares them. To update, bump
+`geist_version` and `GEIST_INTEGRITY` in `tools/3rdparty.py`.
 
 ## Adding or changing a token
 

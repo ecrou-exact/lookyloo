@@ -2,13 +2,16 @@
 
 """Build the SVG icon sprite used by the web interface.
 
-The sprite (website/web/static/images/icons/sprite.svg) is committed and only
-contains the icons actually used, so instances never need the icon sources.
+The sprite (website/web/static/vendor/icons/sprite.svg) is built at install time
+by tools/3rdparty.py (no third-party file is committed) and only contains the
+icons actually used.
 
 Icon names:
     bi:<name>          Bootstrap Icons, from the sprite shipped by bootstrap-flask
-    misp:<set>/<name>  MISP icons, from the misp-iconify submodule (tools/misp-iconify),
-                       <set> is a folder of src/svg/ (attributes, objects, galaxies, ...)
+    misp:<set>/<name>  MISP icons from misp-iconify (https://github.com/MISP/misp-iconify),
+                       <set> is a folder of src/svg/ (attributes, objects, galaxies, ...).
+                       Fetched from GitHub at MISP_ICONIFY_COMMIT, only the icons in
+                       use, cached in static/vendor/icons/misp/ (offline: see 3rdparty.py)
 
 Used icons are found by scanning templates and Python files for quoted icon names
 ('bi:...' / 'misp:<set>/...', in icon() calls or macro parameters such as icon_name),
@@ -17,7 +20,7 @@ plus the names listed in tools/icons_extra.txt (icons built dynamically).
 Every SVG is sanitised against a whitelist (elements, attributes, local url(#id)
 references only) and its internal ids are prefixed to stay unique in the sprite.
 
-    poetry run tools/build_icons.py            # (re)build the sprite
+    poetry run tools/build_icons.py            # (re)build the sprite (also done by 3rdparty.py)
     poetry run tools/build_icons.py --check    # exit 1 if the sprite is outdated
     poetry run tools/build_icons.py --list misp:attributes   # list available icons
 
@@ -31,14 +34,19 @@ import re
 import sys
 import xml.etree.ElementTree as ET
 
+import requests
+
 from importlib.util import find_spec
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 WEB = ROOT / 'website' / 'web'
-SPRITE = WEB / 'static' / 'images' / 'icons' / 'sprite.svg'
+SPRITE = WEB / 'static' / 'vendor' / 'icons' / 'sprite.svg'
 EXTRA = ROOT / 'tools' / 'icons_extra.txt'
-MISP_SRC = ROOT / 'tools' / 'misp-iconify' / 'src' / 'svg'
+# misp-iconify is not vendored: its SVGs are fetched at this commit (bump to update)
+MISP_ICONIFY_COMMIT = '191c7481a4dea3aad043e579ec3e6af8dc41e1e6'
+MISP_ICONIFY_RAW = f'https://raw.githubusercontent.com/MISP/misp-iconify/{MISP_ICONIFY_COMMIT}/src/svg'
+MISP_CACHE = WEB / 'static' / 'vendor' / 'icons' / 'misp'
 
 SVG_NS = 'http://www.w3.org/2000/svg'
 ET.register_namespace('', SVG_NS)
@@ -161,20 +169,27 @@ def load_sources(names: set[str], existing: dict[str, ET.Element]) -> dict[str, 
 
     for name in names - bi_names:
         icon_set, icon = name[5:].split('/', 1)
-        path = MISP_SRC / icon_set / f'{icon}.svg'
-        if path.exists():
-            symbols[name] = sanitize(ET.parse(path).getroot(), symbol_id(name))
-        elif not MISP_SRC.exists() and symbol_id(name) in existing:
-            # Submodule not checked out: keep the symbol already in the sprite
-            print(f'WARNING: {name} reused from the current sprite (misp-iconify not checked out)',
-                  file=sys.stderr)
-            symbols[name] = existing[symbol_id(name)]
-        elif not MISP_SRC.exists():
-            raise IconError(f'{name} needs the MISP sources: '
-                            'git submodule update --init --checkout tools/misp-iconify')
-        else:
-            raise IconError(f'Unknown MISP icon "{name}" ({path.relative_to(ROOT)} does not exist)')
+        symbols[name] = sanitize(ET.fromstring(misp_svg(icon_set, icon)), symbol_id(name))
     return symbols
+
+
+def misp_svg(icon_set: str, icon: str) -> bytes:
+    '''SVG of a misp-iconify icon: from the local cache, else fetched from GitHub
+    (pinned commit) and cached. The cache can be filled offline by 3rdparty.py --from-dir.'''
+    cached = MISP_CACHE / icon_set / f'{icon}.svg'
+    if cached.exists():
+        return cached.read_bytes()
+    url = f'{MISP_ICONIFY_RAW}/{icon_set}/{icon}.svg'
+    try:
+        response = requests.get(url, timeout=30)
+    except requests.RequestException as e:
+        raise IconError(f'Unable to fetch misp:{icon_set}/{icon} ({e}). Offline? Install the icons with tools/3rdparty.py --from-dir.')
+    if response.status_code == 404:
+        raise IconError(f'Unknown MISP icon "misp:{icon_set}/{icon}" (not in misp-iconify at {MISP_ICONIFY_COMMIT[:8]})')
+    response.raise_for_status()
+    cached.parent.mkdir(parents=True, exist_ok=True)
+    cached.write_bytes(response.content)
+    return response.content
 
 
 def existing_symbols() -> dict[str, ET.Element]:
@@ -198,11 +213,13 @@ def list_icons(prefix: str) -> None:
         ids = sorted(s.get('id', '') for s in ET.parse(bootstrap_icons_sprite()).getroot())
         print('\n'.join(f'bi:{i}' for i in ids))
     elif prefix.startswith('misp:'):
-        folder = MISP_SRC / prefix[5:]
-        if not folder.is_dir():
-            sets = ', '.join(sorted(p.name for p in MISP_SRC.iterdir())) if MISP_SRC.exists() else 'submodule not checked out'
-            raise IconError(f'Unknown MISP set "{prefix[5:]}" (available: {sets})')
-        print('\n'.join(f'{prefix}/{p.stem}' for p in sorted(folder.glob('*.svg'))))
+        api = f'https://api.github.com/repos/MISP/misp-iconify/contents/src/svg/{prefix[5:]}?ref={MISP_ICONIFY_COMMIT}'
+        response = requests.get(api, timeout=30)
+        if response.status_code == 404:
+            raise IconError(f'Unknown MISP set "{prefix[5:]}" (sets: attributes, objects, objects-framed, '
+                            'galaxies, galaxies-orbit, simple, hexagone)')
+        response.raise_for_status()
+        print('\n'.join(f'{prefix}/{entry["name"][:-4]}' for entry in response.json() if entry['name'].endswith('.svg')))
     else:
         raise IconError('--list takes "bi" or "misp:<set>"')
 
@@ -225,15 +242,15 @@ def main() -> int:
     current = SPRITE.read_text() if SPRITE.exists() else ''
     if args.check:
         if current != content:
-            print('The icon sprite is outdated: run tools/build_icons.py then tools/generate_sri.py',
+            print('The icon sprite is outdated: run tools/build_icons.py (or tools/3rdparty.py)',
                   file=sys.stderr)
             return 1
         print(f'Icon sprite up to date ({len(used)} icons).')
         return 0
     if current != content:
+        SPRITE.parent.mkdir(parents=True, exist_ok=True)
         SPRITE.write_text(content)
-        print(f'Icon sprite written: {len(used)} icons, {len(content.encode())} bytes. '
-              'Now run tools/generate_sri.py')
+        print(f'Icon sprite written: {len(used)} icons, {len(content.encode())} bytes.')
     else:
         print(f'Icon sprite already up to date ({len(used)} icons).')
     return 0

@@ -144,6 +144,8 @@ website/web/static/vendor/d3.min.js
 website/web/static/vendor/datatables.min.css
 website/web/static/vendor/datatables.min.js
 website/web/static/vendor/jquery.*
+# Everything in vendor/ is installed by tools/3rdparty.py (libraries, fonts, icon sprite)
+website/web/static/vendor/
 
 # Modules
 circl_pypdns

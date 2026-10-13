@@ -22,7 +22,7 @@ same commit as the code.
 | [errors.md](errors.md) | Error pages (404, 500) with the Lookyloo eyes |
 | [loader.md](loader.md) | Loading indicator with the Lookyloo eyes (`loader()` macro) |
 | [css.md](css.md) | How the stylesheets are organised: files, load order, where to put new CSS, rules |
-| [icons.md](icons.md) | Icons: `icon()` helper, Bootstrap Icons + misp-iconify sprite, adding an icon, the submodule |
+| [icons.md](icons.md) | Icons: `icon()` helper, Bootstrap Icons + misp-iconify sprite, adding an icon, where the MISP icons come from |
 | [theme.md](theme.md) | Design tokens (`--lk-*`): colours, typography, radii, spacing, light/dark, how to add a theme |
 
 Architecture, template map and security constraints: see `AGENTS.md` at the

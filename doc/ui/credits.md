@@ -10,4 +10,4 @@ jquery.json-viewer) and the main server components.
 Licenses were checked against the package metadata / npm registry / licence
 files. **When adding a library, a font or an icon set, add it to this page**
 (macro `credit(name, role, license, url, license_url)` in the template).
-Fonts also keep their licence file next to them (`static/fonts/geist/OFL.txt`).
+Fonts also keep their licence file next to them (`static/vendor/fonts/geist/OFL.txt`, installed by `tools/3rdparty.py`).

@@ -1,7 +1,8 @@
 # Icons
 
 All UI icons come from **one SVG sprite** committed in the repository,
-`website/web/static/images/icons/sprite.svg`, and are rendered with the
+`website/web/static/vendor/icons/sprite.svg`, built at install time by
+`tools/3rdparty.py` (not committed, like every third-party resource), and are rendered with the
 `icon()` Jinja helper. The sprite only contains the icons actually used (a few
 KB), so pages no longer download bootstrap-flask's full 1.1 MB sprite.
 
@@ -10,7 +11,7 @@ Two icon sets are available:
 | Prefix | Set | Source | Browse |
 |--------|-----|--------|--------|
 | `bi:<name>` | [Bootstrap Icons](https://icons.getbootstrap.com/) (~2000 generic UI icons) | sprite shipped by bootstrap-flask (Python dependency) | icons.getbootstrap.com, or `tools/build_icons.py --list bi` |
-| `misp:<set>/<name>` | [misp-iconify](https://github.com/MISP/misp-iconify) (MISP attribute types, objects, galaxies…) | git submodule `tools/misp-iconify` | its README, or `tools/build_icons.py --list misp:attributes` |
+| `misp:<set>/<name>` | [misp-iconify](https://github.com/MISP/misp-iconify) (MISP attribute types, objects, galaxies…) | fetched from GitHub at a pinned commit by `build_icons.py` | its README, or `tools/build_icons.py --list misp:attributes` |
 
 MISP sets (folders of `src/svg/`): `attributes`, `objects`, `objects-framed`,
 `galaxies`, `galaxies-orbit`, `simple`, `hexagone`.
@@ -41,7 +42,7 @@ Output:
 
 ```html
 <svg class="lk-icon" aria-hidden="true" focusable="false">
-  <use href="/static/images/icons/sprite.svg?v=Bel40tiHDFNq#bi-share"></use>
+  <use href="/static/vendor/icons/sprite.svg?v=Bel40tiHDFNq#bi-share"></use>
 </svg>
 ```
 
@@ -78,7 +79,8 @@ parent's `color`.
    poetry run tools/generate_sri.py
    ```
 
-3. Commit the template, `sprite.svg` and `sri.txt` together.
+3. Commit the template and `sri.txt` (the sprite itself is not committed: every
+   instance builds it with `tools/3rdparty.py`, which `poetry run update` runs).
 
 `build_icons.py` finds the icons by scanning `website/web/templates/**/*.html`
 and `website/web/*.py` for quoted icon names (`'bi:…'`, `'misp:<set>/…'`): in
@@ -93,29 +95,15 @@ the sprite; the icon then renders empty.
 `poetry run tools/build_icons.py --check` exits with an error if the sprite is
 not up to date (usable in CI).
 
-## The misp-iconify submodule
+## Where the MISP icons come from
 
-MISP icons need the sources, which are a git submodule configured with
-`update = none` and `shallow = true`. Lookyloo instances never download it (the
-sprite is committed), and `git submodule update` skips it. To work on icons:
-
-```bash
-git submodule update --init --checkout tools/misp-iconify
-```
-
-Do **not** use `--recursive`: misp-iconify has its own submodules
-(misp-objects, misp-galaxy) with SSH URLs, which are not needed here.
-
-To update the MISP icons to a newer version:
-
-```bash
-git -C tools/misp-iconify pull origin main
-poetry run tools/build_icons.py && poetry run tools/generate_sri.py
-git add tools/misp-iconify website/web/static/images/icons/sprite.svg website/web/sri.txt
-```
-
-If the submodule is not checked out, `build_icons.py` keeps the MISP symbols
-already in the sprite (with a warning), so Bootstrap icons can still be added.
+misp-iconify is not vendored nor a submodule: `build_icons.py` fetches only the
+SVGs in use from GitHub, at the commit pinned in `MISP_ICONIFY_COMMIT`
+(`raw.githubusercontent.com/MISP/misp-iconify/<commit>/src/svg/<set>/<name>.svg`),
+and caches them in `static/vendor/icons/misp/` (git-ignored). Bump the constant
+to update the icons. Offline instances get them with
+`tools/3rdparty.py --export` / `--from-dir` ([offline.md](offline.md)).
+`--list misp:<set>` lists a set through the GitHub API.
 
 ## Security
 

@@ -302,7 +302,7 @@ def category_tag(category: str, link: bool=True) -> Markup:
     return Markup('<span class="lk-tag lk-tag-{t}" title="{c}">{content}</span>').format(t=tint, c=category, content=content)
 
 
-ICON_SPRITE = 'images/icons/sprite.svg'
+ICON_SPRITE = 'vendor/icons/sprite.svg'  # built by tools/3rdparty.py (tools/build_icons.py)
 ICON_NAME = re.compile(r'^(bi:[a-z0-9-]+|misp:[a-z0-9-]+/[a-z0-9_-]+)$')
 
 

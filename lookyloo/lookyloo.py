@@ -647,6 +647,7 @@ class Lookyloo():
         removed_captures_dir.mkdir(parents=True, exist_ok=True)
         capture_dir = self._captures_index.get_capture_cache(capture_uuid).capture_dir
         shutil.move(str(capture_dir), str(removed_captures_dir / capture_dir.name))
+        self._captures_index.forget(capture_uuid, str(capture_dir))
 
     def update_tree_cache_info(self, process_id: int, classname: str) -> None:
         self.redis.hset('tree_cache', f'{process_id}|{classname}', str(self._captures_index.lru_cache_status()))

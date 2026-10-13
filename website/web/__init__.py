@@ -3100,8 +3100,11 @@ def preview_bulk_captures_remove() -> WerkzeugResponse:
     except ValueError:
         flash('Invalid capture UUID.', 'error')
         return redirect(url_for('preview_bulk_captures'))
-    lookyloo.remove_capture(capture_uuid)
-    flash(f'{capture_uuid} successfully removed.', 'success')
+    try:
+        lookyloo.remove_capture(capture_uuid)
+        flash(f'{capture_uuid} successfully removed.', 'success')
+    except (UUIDMissingInCache, MissingCaptureDirectory):
+        flash(f'{capture_uuid} was already removed.', 'warning')
     return redirect(url_for('preview_bulk_captures'))
 
 @app.route('/stats', methods=['GET'])

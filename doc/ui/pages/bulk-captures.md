@@ -22,3 +22,10 @@ which removes the capture and comes back to the preview. The browser asks for
 confirmation first (`js/confirm_delete.js`: any `form.lk-confirm-delete`, the
 question in `data-lk-confirm`). The column is not shown on the real page,
 after a submission.
+
+A removed capture disappears at once from every list: `Lookyloo.remove_capture()`
+moves its directory to `removed_captures/`, then `CapturesIndex.forget()` drops
+it from the recent captures in Valkey (`lookup_dirs`, `recent_captures`,
+`recent_captures_public`) and from the cache of the process. The other web
+workers drop their cached copy when they see that its directory is gone. Deleting
+it a second time (an old tab) only says it was already removed.

@@ -237,6 +237,16 @@ class CapturesIndex():
             capture_dir = self._get_capture_dir(uuid)
             self.redis.delete(capture_dir)
 
+    def forget(self, uuid: str, capture_dir: str) -> None:
+        '''The capture directory was removed: drop the capture from the recent captures.'''
+        self.__cache.pop(uuid, None)
+        p = self.redis.pipeline()
+        p.hdel('lookup_dirs', uuid)
+        p.zrem('recent_captures', uuid)
+        p.zrem('recent_captures_public', uuid)
+        p.delete(capture_dir)
+        p.execute()
+
     def remove_pickle(self, uuid: str) -> None:
         if capture_dir := self._get_capture_dir(uuid):
             remove_pickle_tree(Path(capture_dir))
@@ -333,6 +343,10 @@ class CapturesIndex():
                 logger.error(f'Unable to get CaptureCache (unexpected exception): {e}')
 
         if c := self.__cache.get(uuid):
+            if not c.capture_dir.exists():
+                # Removed (or archived) since it was cached by this process
+                self.__cache.pop(uuid, None)
+                return None
             self.redis.expire(str(c.capture_dir), self.expire_cache_sec)
             return c
         self.redis.sadd('lazy_background_build', uuid)

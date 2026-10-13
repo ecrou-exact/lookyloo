@@ -267,10 +267,7 @@ Computed once on the tree data (`prepareAnalysis()` in `js/tree.js`):
   **Delete** buttons; click a host to centre its node. **Copy as Markdown** /
   **Download .md** export the capture (URL, title, link, time) and one section
   per noted node, with a link to it, for a report or a ticket.
-- Vitrine is installed in `static/vendor/vitrine/` by `tools/3rdparty.py`
-  (doc/ui/offline.md); `js/vitrine_setup.js` loads `<vt-markdown>`, points it at
-  its files and follows the Lookyloo light / dark theme; `.lk-vitrine` (css/tree.css)
-  maps the `--lk-*` tokens on vitrine's `--vt-*` tokens.
+- Vitrine: doc/ui/vitrine.md.
 - Notes are kept **in this browser only** (`localStorage`, key
   `lk-notes:<capture uuid>`): Lookyloo has no per-user storage. They are
   inserted as text (never as HTML).

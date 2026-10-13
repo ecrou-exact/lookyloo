@@ -1,0 +1,34 @@
+/*
+ * Vitrine web components (vendor/vitrine/, installed by tools/3rdparty.py),
+ * themed with the Lookyloo tokens: add the class lk-vitrine to a <vt-*> element.
+ * Used by the notes of the capture page and the API reference (/api).
+ * Doc: doc/ui/vitrine.md
+ */
+
+.lk-vitrine {
+  --vt-bg: var(--lk-color-bg);
+  --vt-surface: var(--lk-color-surface);
+  --vt-surface-sunken: var(--lk-color-surface-2);
+  --vt-surface-raised: var(--lk-color-surface);
+  --vt-border: var(--lk-color-rule);
+  --vt-border-strong: var(--lk-color-rule-strong);
+  --vt-fg: var(--lk-color-ink);
+  --vt-fg-muted: var(--lk-color-muted);
+  --vt-accent: var(--lk-color-accent);
+  --vt-accent-fg: var(--lk-color-link);
+  --vt-on-accent: var(--lk-color-on-accent);
+  --vt-accent-soft: var(--lk-color-accent-soft);
+  --vt-success: var(--lk-color-success);
+  --vt-warning: var(--lk-color-warning);
+  --vt-danger: var(--lk-color-danger);
+  --vt-info: var(--lk-color-info);
+  --vt-font-ui: var(--lk-font-sans);
+  --vt-font-body: var(--lk-font-sans);
+  --vt-font-mono: var(--lk-font-mono);
+  --vt-radius: var(--lk-radius-md);
+}
+
+/* API reference page (about/api.html) */
+.lk-api-links { display: flex; flex-wrap: wrap; gap: var(--lk-space-2) var(--lk-space-5); margin-bottom: var(--lk-space-4); }
+.lk-api-links a { display: inline-flex; align-items: center; gap: var(--lk-space-1); }
+.lk-api-reference { display: block; }

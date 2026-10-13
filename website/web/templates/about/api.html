@@ -1,0 +1,38 @@
+{% extends "layouts/page.html" %}
+{% from 'macros/page.html' import page_header %}
+{#
+  Reference of the Lookyloo API (route api_reference, /api): the flask-restx
+  description (/swagger.json) rendered by vitrine <vt-openapi> (js/api_reference.js).
+  The stock Swagger UI stays at /doc/. Doc: doc/ui/pages/api.md
+#}
+
+{% block title %}API · Lookyloo{% endblock %}
+
+{% block page_styles %}
+  <link rel="stylesheet"
+        {{get_sri('static', 'vendor/vitrine/vitrine.css')}}
+        href="{{ url_for('static', filename='vendor/vitrine/vitrine.css') }}">
+{% endblock %}
+
+{% block page_header %}
+{{ page_header('API', description='Everything the interface does is available to your scripts: submit captures, get their trees, screenshots, indexes and module results. Python client: PyLookyloo.', icon_name='bi:braces') }}
+{% endblock %}
+
+{% block main %}
+<p class="lk-api-links">
+  <a href="{{ url_for('specs') }}">{{ icon('bi:filetype-json') }} swagger.json</a>
+  <a href="{{ url_for('doc') }}">{{ icon('bi:box-arrow-up-right') }} Swagger UI</a>
+  <a href="https://github.com/Lookyloo/PyLookyloo" target="_blank" rel="noopener">{{ icon('bi:github') }} PyLookyloo</a>
+</p>
+<vt-openapi class="lk-vitrine lk-api-reference" variant="full" src="{{ url_for('specs') }}">
+  <p>Loading the API reference… If it does not appear, use the <a href="{{ url_for('doc') }}">Swagger UI</a>.</p>
+</vt-openapi>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('static', filename='js/api_reference.js') }}"
+        {{get_sri('static', 'js/api_reference.js')}}
+        nonce="{{ csp_nonce() }}"
+        crossorigin="anonymous" type="module"></script>
+{% endblock %}

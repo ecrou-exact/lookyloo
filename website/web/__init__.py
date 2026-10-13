@@ -2349,6 +2349,12 @@ def credits() -> str:
     return render_template('about/credits.html')
 
 
+
+@app.route('/api', methods=['GET'])
+def api_reference() -> str:
+    '''Reference of the API (/swagger.json) rendered by vitrine <vt-openapi>.'''
+    return render_template('about/api.html')
+
 @app.route('/index', methods=['GET'])
 def index() -> str:
     show_error, category = get_index_params(request)

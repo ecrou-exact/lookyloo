@@ -1,6 +1,7 @@
-// Vitrine web components (vendor/vitrine/, installed by tools/3rdparty.py) on the
-// capture page: <vt-markdown> for the notes of the analyst (js/tree.js).
-// Doc: doc/ui/pages/tree.md
+// Vitrine web components (vendor/vitrine/, installed by tools/3rdparty.py):
+// defines <vt-markdown>, points vitrine at its files and follows the Lookyloo
+// light / dark theme. Pages import it, then the other components they use
+// (js/api_reference.js). Doc: doc/ui/vitrine.md
 import { configure } from '../vendor/vitrine/esm/vt-markdown.js';
 
 const base = new URL('../vendor/vitrine/', import.meta.url).href;

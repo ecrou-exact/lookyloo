@@ -99,6 +99,9 @@
 
   /* Logo: the PNG is black, invert it on dark backgrounds */
   --lk-logo-filter: none;
+
+  /* Tutorial (css/components/tour.css): veil around the explained element */
+  --lk-tour-veil: rgba(10, 12, 20, 0.55);
 }
 
 [data-bs-theme="dark"] {
@@ -303,4 +306,22 @@
   --lk-xmas-wire: #3B5B45;
   --lk-xmas-snow: #FFFFFF;
   --lk-xmas-snow-shadow: rgba(200, 220, 255, 0.5);
+  --lk-xmas-star: #FFFFFF;
+  --lk-xmas-star-glow: rgba(255, 255, 255, 0.5);
+  --lk-xmas-streak: rgba(255, 255, 255, 0.95);
+  --lk-xmas-streak-start: rgba(255, 255, 255, 0);
+  --lk-xmas-streak-glow: rgba(255, 255, 255, 0.8);
+  /* Landscape above the footer */
+  --lk-xmas-hills-far: #151C2A;
+  --lk-xmas-hills-near: #121825;
+  --lk-xmas-tree-far: #141A27;
+  --lk-xmas-tree-near: #0E131D;
+  --lk-xmas-snowcap-far: rgba(220, 232, 250, 0.18);
+  --lk-xmas-snowcap-near: rgba(235, 242, 255, 0.28);
+  --lk-xmas-ground: #E9EEF7;
+  --lk-xmas-log: #3A2A1F;
+  --lk-xmas-flame: #FF7A1F;
+  --lk-xmas-flame-in: #FFD166;
+  --lk-xmas-fire-glow: #FF9A3C;
+  --lk-xmas-smoke: #AAB4C4;
 }

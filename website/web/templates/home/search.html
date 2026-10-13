@@ -1,4 +1,5 @@
 {% extends "layouts/page.html" %}
+{% from 'macros/tour.html' import tour %}
 {% from 'macros/page.html' import page_header %}
 {% block title %}Search{% endblock %}
 
@@ -89,3 +90,13 @@
   </div>
 </form>
 {% endblock %}
+
+{# Tutorial of the page (js/tour.js, doc/ui/tour.md) #}
+{% block tour %}{{ tour([
+  (None, "Search", "Find the captures where something was seen: a URL, an IP address, a resource, a cookie or a favicon."),
+  (".lk-search-grid", "One field per kind", "Fill the field of what you are looking for. Each one searches the indexes of all the captures of this instance."),
+  ("#url", "URL or hostname", "Captures that loaded this URL, or any URL of this host."),
+  ("#ip", "IP address", "Captures that contacted this IP address."),
+  ("#ressource", "Resource", "The hash of a file (script, image…) seen in a capture: where else it was loaded."),
+  ("#lk-tour-menu-btn", "The tutorial, any time", "This button starts the tour of the page you are on. Turn the tutorial mode on to get the tour of each page the first time you open it.")
+]) }}{% endblock %}

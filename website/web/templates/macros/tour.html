@@ -1,0 +1,21 @@
+{#
+  Steps of the tutorial of a page (js/tour.js, doc/ui/tour.md). In the page:
+
+    {% from 'macros/tour.html' import tour %}
+    {% block tour %}{{ tour([
+      ('#search', 'Search', 'What this field does…'),
+      (None, 'Welcome', 'A step without element: a centred card.'),
+    ]) }}{% endblock %}
+
+  Each step: (CSS selector or None, title, text). Steps whose element is not on
+  the page (or hidden) are skipped, so a page can list optional features.
+  Output: <script type="application/json" id="lk-tour"> (data, never executed;
+  tojson escapes <, > and &).
+#}
+{% macro tour(steps) -%}
+{%- set ns = namespace(items=[]) -%}
+{%- for selector, title, text in steps -%}
+  {%- set ns.items = ns.items + [{'selector': selector, 'title': title, 'text': text}] -%}
+{%- endfor -%}
+<script type="application/json" id="lk-tour">{{ ns.items|tojson }}</script>
+{%- endmacro %}

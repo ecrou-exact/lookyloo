@@ -221,6 +221,8 @@ try {
   node_container.selectAll('g.node').classed('has-note', d => Boolean(notes[d.data.uuid]));
   // Scroll once the nodes are in place
   await animateTreeEntry(root);
+  // Tutorial mode (js/tour.js): the tour of the capture page, once the tree is drawn
+  window.lkTour?.autoStart();
 
   if (document.getElementById('tree_js').dataset.urlnode != null){
     history.scrollRestoration = "manual";

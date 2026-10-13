@@ -1,4 +1,5 @@
 {% extends "layouts/page.html" %}
+{% from 'macros/tour.html' import tour %}
 {% from 'macros/page.html' import page_header %}
 
 {% from 'bootstrap5/utils.html' import render_messages %}
@@ -114,3 +115,11 @@
   </div>
 </div>
 {% endblock %}
+
+{# Tutorial of the page (js/tour.js, doc/ui/tour.md) #}
+{% block tour %}{{ tour([
+  (None, "Resources", "The files (scripts, images, styles…) seen in recent captures, most frequent first."),
+  (".lk-resources-legend", "How to read it", "The type of each resource, how many captures loaded it, and its context: known legitimate content, or unknown."),
+  ("#table", "The resources", "Click a resource to see every capture that loaded it: a script shared by many phishing pages stands out quickly."),
+  ("#lk-tour-menu-btn", "The tutorial, any time", "This button starts the tour of the page you are on. Turn the tutorial mode on to get the tour of each page the first time you open it.")
+]) }}{% endblock %}

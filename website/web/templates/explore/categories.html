@@ -1,4 +1,5 @@
 {% extends "layouts/page.html" %}
+{% from 'macros/tour.html' import tour %}
 {% from 'macros/page.html' import page_header %}
 
 {% from 'bootstrap5/utils.html' import render_messages %}
@@ -64,3 +65,10 @@
   </div>
   {% endif %}
 {% endblock %}
+
+{# Tutorial of the page (js/tour.js, doc/ui/tour.md) #}
+{% block tour %}{{ tour([
+  (None, "Categories", "Captures can be tagged by category (phishing, malware, legitimate service…), from the MISP taxonomies."),
+  ("#categoriesTable", "Categories in use", "Each category, the number of captures with it, and a link to list them."),
+  ("#lk-tour-menu-btn", "The tutorial, any time", "This button starts the tour of the page you are on. Turn the tutorial mode on to get the tour of each page the first time you open it.")
+]) }}{% endblock %}

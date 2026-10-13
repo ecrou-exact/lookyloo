@@ -32,7 +32,7 @@
                           'css/components/capture-list.css', 'css/components/back-to-top.css',
                           'css/components/page-header.css', 'css/components/pivot.css',
                           'css/components/tag.css', 'css/components/vitrine.css',
-                          'css/components/christmas.css'] %}
+                          'css/components/christmas.css', 'css/components/tour.css'] %}
     <link rel="stylesheet" href="{{ url_for('static', filename=stylesheet) }}"
           {{get_sri('static', stylesheet)}}
           crossorigin="anonymous">
@@ -66,6 +66,10 @@
     {% endblock %}
     {% include "custom_footer.html" ignore missing %}
 
+    {# Tutorial of the page (js/tour.js, doc/ui/tour.md): pages fill the tour block
+       with tour([...]) from macros/tour.html (a JSON data block, never executed) #}
+    {% block tour %}{% endblock %}
+
     {% block scripts %}
     {{ bootstrap.load_js(nonce=csp_nonce()) }}
     <script src='{{ url_for('static', filename='vendor/jquery.min.js') }}'
@@ -74,6 +78,10 @@
             crossorigin="anonymous"></script>
     <script src='{{ url_for('static', filename='vendor/datatables.min.js') }}'
             {{get_sri('static', 'vendor/datatables.min.js')}}
+            nonce="{{ csp_nonce() }}"
+            crossorigin="anonymous"></script>
+    <script src='{{ url_for('static', filename='js/tour.js') }}'
+            {{get_sri('static', 'js/tour.js')}}
             nonce="{{ csp_nonce() }}"
             crossorigin="anonymous"></script>
     <script src='{{ url_for('static', filename='js/christmas.js') }}'

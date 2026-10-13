@@ -1,6 +1,7 @@
 {% extends "layouts/base.html" %}
 {% from 'macros/loader.html' import loader %}
 {% from 'macros/modals.html' import remote_modal %}
+{% from 'macros/tour.html' import tour %}
 
 {% from 'bootstrap5/utils.html' import render_messages %}
 {% from "macros/macros.html" import monitoring_form %}
@@ -110,7 +111,7 @@
   {{ icon(icon_name) }}<span>{{ label }}</span></a></li>
 {%- endmacro %}
 
-{% block body_attrs %} class="lk-capture-page"{% endblock %}
+{% block body_attrs %} class="lk-capture-page" data-lk-tour="capture" data-lk-tour-auto="manual"{% endblock %}
 
 {% block body %}
 <script nonce="{{ csp_nonce() }}">
@@ -793,3 +794,27 @@
 {{ remote_modal('urlsInPageModal', 'URLs in the rendered page', 'Loading URLs in rendered page') }}
 {% endblock content %}
 {% endblock body %}
+
+{# Tutorial of the capture page (js/tour.js, doc/ui/tour.md): started by js/tree.js
+   once the tree is drawn (data-lk-tour-auto="manual") #}
+{% block tour %}{{ tour([
+  (None, "The capture of a page", "This page shows everything the browser loaded for the captured URL, as a tree: each box is a host (a domain), each line goes from the host that loaded it."),
+  (".lk-capture-identity", "What was captured", "The title and the URL of the page, when it was captured, how many redirects it went through, and its categories."),
+  (".lk-capture-thumb", "Screenshot", "Click the thumbnail to see the screenshot of the page as the browser rendered it."),
+  (".lk-tree-search", "Search in the tree", "Type a hostname or an IP: the matching hosts stay lit, the others fade. Enter goes to the next match; / from anywhere focuses this field."),
+  ("#capture-menu", "Capture", "Everything recorded: details of the capture, statistics, cookies and storage, console messages, downloads, video, screenshot, MISP export."),
+  ("#tools-menu", "Analysis", "Third-party reports (VirusTotal, URLscan…), history of the URL, and the lists of the resources, IPs, hostnames and URLs of this capture."),
+  ("#actions-menu", "Actions", "Capture again, capture the links of the page, change who can see this capture, download it or push it to MISP."),
+  ("#capture_fold", "Fold the bar", "Too much space taken? Fold this bar to one line, the tree gets the room."),
+  ("#tree-alerts", "Points of attention", "What an analyst checks first: data sent (POST), downloads, plain HTTP, third-party hosts… Click a chip to light up the hosts concerned."),
+  ("g.node .node-card", "A host", "Each card is a host. Click its name for its details (URLs, IPs, certificates); click the card itself to light up its neighbours; hover it for its network information."),
+  ("g.node .icons_list", "What it loaded", "The icons tell what this host sent: scripts, images, cookies, redirects… with how many. Click an icon to light up every host that has it."),
+  ("circle.node", "Fold a branch", "Click a circle to hide or show the hosts loaded by this one."),
+  ("path.link.is-main-path", "The path to the page", "In colour: the redirects from the URL you gave to the page the browser finally showed."),
+  (".lk-tree-controls", "Tree tools", "Draw the tree from left to right or from top to bottom, fold or unfold everything, compare with another capture, change the background, full screen."),
+  ("#tree-compare-toggle", "Compare", "Compare with another capture (an older one of the same URL, for instance): the new hosts are outlined in green, the hosts gone are listed."),
+  ("#tree-notes-toggle", "Your notes", "Admins can write notes on the hosts (pencil on a card), in Markdown, and export them for a report."),
+  ("#legend", "Legend & filter", "What every icon means, how many hosts have it, and a filter: click entries to light up the hosts that have them."),
+  ("#tree_viewport", "Move around", "Drag the tree with the mouse to move it, or use the scroll bars. Hover a card to see the path from the URL to it."),
+  ("#lk-tour-menu-btn", "The tutorial, any time", "This button starts the tour of the page you are on. Turn the tutorial mode on to get the tour of each page the first time you open it.")
+]) }}{% endblock %}

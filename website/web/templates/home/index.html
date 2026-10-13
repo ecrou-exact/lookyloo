@@ -1,4 +1,5 @@
 {% extends "layouts/page.html" %}
+{% from 'macros/tour.html' import tour %}
 {% from 'macros/page.html' import page_header %}
 {#
   Recent captures (route index, hidden captures: index_hidden). The capture
@@ -63,3 +64,12 @@
   </table>
 </section>
 {% endblock %}
+
+{# Tutorial of the page (js/tour.js, doc/ui/tour.md) #}
+{% block tour %}{{ tour([
+  (None, "Recent captures", "Every public capture of this instance, newest first. Each row opens the tree of the capture."),
+  (".lk-segmented", "What to show", "Choose the captures to list: all of them, or only some kinds."),
+  (".lk-recent-filters", "Filters", "Narrow the list, for instance to one category. A filter in use shows here, with a way to remove it."),
+  ("#IndexTable", "The list", "Search, sort and page through the captures. The page and the search stay in the address, so you can share the view."),
+  ("#lk-tour-menu-btn", "The tutorial, any time", "This button starts the tour of the page you are on. Turn the tutorial mode on to get the tour of each page the first time you open it.")
+]) }}{% endblock %}

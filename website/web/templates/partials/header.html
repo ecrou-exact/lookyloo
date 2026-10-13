@@ -57,6 +57,25 @@
       </ul>
 
       <ul class="navbar-nav lk-header-actions">
+        {# Tutorial of the page (js/tour.js): start it, or turn the tutorial mode on #}
+        <li class="nav-item dropdown">
+          <button class="btn nav-link lk-header-icon-btn" id="lk-tour-menu-btn" type="button"
+                  aria-expanded="false" data-bs-toggle="dropdown" aria-label="Tutorial" title="Tutorial">
+            {{ icon('bi:mortarboard') }}<span class="d-lg-none ms-2">Tutorial</span>
+          </button>
+          <div class="dropdown-menu dropdown-menu-end lk-tour-menu" aria-labelledby="lk-tour-menu-btn">
+            <h6 class="dropdown-header">Tutorial</h6>
+            <button type="button" class="dropdown-item d-flex align-items-center gap-2" id="lk-tour-start">
+              {{ icon('bi:play-circle') }} Start the tour of this page</button>
+            <div class="dropdown-divider"></div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" role="switch" id="lk-tour-mode">
+              <label class="form-check-label" for="lk-tour-mode">Tutorial mode</label>
+            </div>
+            <p class="form-text">Starts the tour of each page by itself, the first time you open it.</p>
+          </div>
+        </li>
+
         {# Colour theme selector, driven by js/theme_toggle.js (ids and classes are its API) #}
         <li class="nav-item dropdown">
           <button class="btn nav-link lk-header-icon-btn" id="bd-theme" type="button"

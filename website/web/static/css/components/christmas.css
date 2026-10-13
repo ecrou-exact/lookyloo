@@ -76,8 +76,8 @@
 .lk-xmas-star {
   position: absolute;
   border-radius: 50%;
-  background: #FFFFFF;
-  box-shadow: 0 0 3px 1px rgba(255, 255, 255, 0.5);
+  background: var(--lk-xmas-star);
+  box-shadow: 0 0 3px 1px var(--lk-xmas-star-glow);
   animation: lk-xmas-star 4s ease-in-out infinite;
 }
 @keyframes lk-xmas-star { 0%, 100% { opacity: 0.12; } 50% { opacity: 0.65; } }
@@ -86,8 +86,8 @@
   width: 110px;
   height: 2px;
   border-radius: 2px;
-  background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.95));
-  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.8));
+  background: linear-gradient(90deg, var(--lk-xmas-streak-start), var(--lk-xmas-streak));
+  filter: drop-shadow(0 0 4px var(--lk-xmas-streak-glow));
   transform-origin: right center;
   opacity: 0;
   animation: lk-xmas-shoot 1.3s ease-out 1 forwards;
@@ -101,19 +101,21 @@
 /* Landscape band above the footer: snowy hills, fir trees, a small campfire */
 .lk-xmas-land { position: relative; flex: none; height: 200px; margin-top: var(--lk-space-6); margin-bottom: -1px; pointer-events: none; opacity: 0.85; }
 .lk-xmas-land svg { display: block; width: 100%; height: 100%; }
-.lk-xmas-hills-far { fill: #151C2A; }
-.lk-xmas-hills-near { fill: #121825; }
-.lk-xmas-tree-far { fill: #141A27; }
-.lk-xmas-tree-near { fill: #0E131D; }
-.lk-xmas-snowcap-far { fill: rgba(220, 232, 250, 0.18); }
-.lk-xmas-snowcap-near { fill: rgba(235, 242, 255, 0.28); }
-.lk-xmas-ground { fill: #E9EEF7; opacity: 0.06; }
-.lk-xmas-sky-star { fill: #FFFFFF; opacity: 0.5; animation: lk-xmas-star 4.5s ease-in-out infinite; }
-.lk-xmas-log { fill: #3A2A1F; }
-.lk-xmas-flame { fill: #FF7A1F; transform-box: fill-box; transform-origin: 50% 100%; animation: lk-xmas-flicker 0.9s ease-in-out infinite alternate; }
-.lk-xmas-flame-in { fill: #FFD166; animation-duration: 0.6s; animation-delay: -0.3s; }
+.lk-xmas-hills-far { fill: var(--lk-xmas-hills-far); }
+.lk-xmas-hills-near { fill: var(--lk-xmas-hills-near); }
+.lk-xmas-tree-far { fill: var(--lk-xmas-tree-far); }
+.lk-xmas-tree-near { fill: var(--lk-xmas-tree-near); }
+.lk-xmas-snowcap-far { fill: var(--lk-xmas-snowcap-far); }
+.lk-xmas-snowcap-near { fill: var(--lk-xmas-snowcap-near); }
+.lk-xmas-ground { fill: var(--lk-xmas-ground); opacity: 0.06; }
+.lk-xmas-sky-star { fill: var(--lk-xmas-star); opacity: 0.5; animation: lk-xmas-star 4.5s ease-in-out infinite; }
+.lk-xmas-log { fill: var(--lk-xmas-log); }
+.lk-xmas-flame { fill: var(--lk-xmas-flame); transform-box: fill-box; transform-origin: 50% 100%; animation: lk-xmas-flicker 0.9s ease-in-out infinite alternate; }
+.lk-xmas-flame-in { fill: var(--lk-xmas-flame-in); animation-duration: 0.6s; animation-delay: -0.3s; }
 .lk-xmas-camp-glow { opacity: 0.5; animation: lk-xmas-glow 1.6s ease-in-out infinite alternate; }
 .lk-xmas-camp-smoke { transform-box: fill-box; transform-origin: center; opacity: 0; animation: lk-xmas-smoke 6.4s ease-out infinite; }
+.lk-xmas-glow-stop { stop-color: var(--lk-xmas-fire-glow); }
+.lk-xmas-smoke-stop { stop-color: var(--lk-xmas-smoke); }
 @keyframes lk-xmas-flicker {
   0% { transform: scale(1, 1) skewX(0deg); }
   50% { transform: scale(0.9, 1.12) skewX(4deg); }

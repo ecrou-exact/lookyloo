@@ -322,3 +322,8 @@ bigger export is only downloaded, with a message.
 Copy buttons (MISP export, notes) say **Copied** (green) or **Copy failed**
 (red) for 2 seconds: `copyWithFeedback(button, text)` in
 `js/capture_components.js`.
+
+## Tutorial
+
+The capture page has the most detailed tour of the tutorial mode
+(doc/ui/tour.md), started by `js/tree.js` once the tree is drawn.

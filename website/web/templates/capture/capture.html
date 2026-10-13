@@ -1,4 +1,5 @@
 {% extends "layouts/page.html" %}
+{% from 'macros/tour.html' import tour %}
 {% from 'macros/page.html' import page_header %}
 {% from 'bootstrap5/utils.html' import render_messages %}
 {% from "macros/macros.html" import monitoring_form %}
@@ -713,3 +714,14 @@ window.addEventListener('DOMContentLoaded', () => {
   </script>
 
 {% endblock %}
+
+{# Tutorial of the page (js/tour.js, doc/ui/tour.md) #}
+{% block tour %}{{ tour([
+  (None, "Capture a URL", "Every setting of a capture. Only the URL is required: the defaults suit most links."),
+  ("#singleCaptureField", "The URL", "The link to capture. Tick \"multiple\" to capture several URLs at once, one per line."),
+  (".lk-capture-toc", "Sections", "The settings are grouped in sections: click one to open it. Only the first one is open to begin with."),
+  ("#collapseConfigBrowser", "The browser", "Which browser and device the page sees: desktop or mobile, operating system, user agent."),
+  ("#collapseConfigCapture", "The capture", "Cookies, headers, referer, proxy, timeouts and other technical settings of the browser."),
+  ("#btn-looking", "Start", "Starts the capture. The page of the capture opens and fills in when the capture is done."),
+  ("#lk-tour-menu-btn", "The tutorial, any time", "This button starts the tour of the page you are on. Turn the tutorial mode on to get the tour of each page the first time you open it.")
+]) }}{% endblock %}

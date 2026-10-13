@@ -135,8 +135,9 @@
             return `${g}</g>`;
         };
         let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="xMidYMax slice">`;
-        svg += '<defs><radialGradient id="lk-xmas-camp-glow"><stop offset="0" stop-color="#ff9a3c" stop-opacity="1"/><stop offset="1" stop-color="#ff9a3c" stop-opacity="0"/></radialGradient>'
-             + '<radialGradient id="lk-xmas-camp-smoke"><stop offset="0" stop-color="#aab4c4" stop-opacity=".9"/><stop offset="1" stop-color="#aab4c4" stop-opacity="0"/></radialGradient></defs>';
+        // Colours of the gradients: css/components/christmas.css (--lk-xmas-* tokens)
+        svg += '<defs><radialGradient id="lk-xmas-camp-glow"><stop class="lk-xmas-glow-stop" offset="0" stop-opacity="1"/><stop class="lk-xmas-glow-stop" offset="1" stop-opacity="0"/></radialGradient>'
+             + '<radialGradient id="lk-xmas-camp-smoke"><stop class="lk-xmas-smoke-stop" offset="0" stop-opacity=".9"/><stop class="lk-xmas-smoke-stop" offset="1" stop-opacity="0"/></radialGradient></defs>';
         for (let i = 0; i < 18; i++) {
             svg += `<circle class="lk-xmas-sky-star" style="animation-delay:${(-rand() * 5).toFixed(2)}s" cx="${(rand() * W).toFixed(0)}" cy="${(8 + rand() * 95).toFixed(0)}" r="${rand() < 0.2 ? 1.4 : 0.8}"/>`;
         }

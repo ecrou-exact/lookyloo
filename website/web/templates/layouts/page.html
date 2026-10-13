@@ -13,7 +13,7 @@
 {% block body %}
 <a class="visually-hidden-focusable lk-skip-link" href="#main">Skip to content</a>
 {% include 'partials/header.html' %}
-<main id="main" class="lk-main">
+<main id="main" class="lk-main" tabindex="-1">
   {# Decorative background, see css/components/layout.css #}
   <div class="lk-backdrop" aria-hidden="true"></div>
   <div class="lk-container {% block main_class %}{% endblock %}">
@@ -29,4 +29,14 @@
   </div>
 </main>
 {% include 'partials/footer.html' %}
+<button type="button" class="lk-back-to-top" id="lk-back-to-top" tabindex="-1"
+        aria-label="Back to top" title="Back to top">{{ icon('bi:arrow-up') }}</button>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('static', filename='js/back_to_top.js') }}"
+        {{get_sri('static', 'js/back_to_top.js')}}
+        nonce="{{ csp_nonce() }}"
+        crossorigin="anonymous"></script>
 {% endblock %}

@@ -52,6 +52,11 @@ body {
   isolation: isolate; /* keeps the backdrop (z-index -1) above the page background */
 }
 
+/* <main> is focusable (tabindex -1) for the skip link and the back to top button */
+.lk-main:focus {
+  outline: none;
+}
+
 .lk-backdrop {
   position: fixed;
   inset: 0;

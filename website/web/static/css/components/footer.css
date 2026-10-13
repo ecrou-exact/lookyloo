@@ -31,6 +31,8 @@
 }
 
 .lk-footer-links {
+  /* room for the back to top button (components/back-to-top.css) */
+  margin-right: 56px;
   display: flex;
   flex-wrap: wrap;
   gap: var(--lk-space-2) var(--lk-space-5);

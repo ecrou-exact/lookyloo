@@ -93,6 +93,15 @@ strength comes from CSS variables: `--lk-backdrop-tree-opacity` and
 `--lk-backdrop-tree-opacity: 0; --lk-backdrop-glow: 0` through `body_attrs`
 (block on `<body>` in `base.html`: `{% block body_attrs %} class="..."{% endblock %}`).
 
+## Back to top button
+
+`layouts/page.html` ends with a round "Back to top" button
+(`#lk-back-to-top`, `css/components/back-to-top.css`, `js/back_to_top.js`),
+fixed bottom right. It appears once the page is scrolled by more than 400px,
+scrolls smoothly back to the top (instantly with `prefers-reduced-motion`) and
+moves the keyboard focus to `<main>` (`tabindex="-1"`). While hidden it is not
+reachable with the keyboard.
+
 ## Header (`partials/header.html`)
 
 From left to right:

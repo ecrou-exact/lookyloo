@@ -2,7 +2,7 @@
   "static": {
     "css/base.css": "DRmy7llAw+seMHgLKVaANNF35ZORc0HSGQ9sYu6Tgp3kFPtR9ddx+qWGM1bsmEdUi5R4Wit3BfMNdQlwetgglw==",
     "css/bootstrap-bridge.css": "7WlZnCBw89aUtpw515eTToYXvEviNJFBOkjn25kPOQF+qnn70Xl4ZO4kv4doaFJq+E3UBY7aWnFWHs+zNrR7Tg==",
-    "css/capture.css": "JjtAGhoKMY6MQy7u5D2u//hjnYoXkklMlvY/HpqPTI9RzcfysdqioGLfcYUQOts3ofkiIKnT8+0WiN4oblj83w==",
+    "css/capture.css": "GWVWiH4SiGKMw2qqX0T0+dzUXJ2k+h0DRawWlPjCJK7QurX+3QEap9JJG32JL0C4ZJpw0GRyy6aEAe4NxTfkJA==",
     "css/components/back-to-top.css": "T9oaXs5R/7BH9v0+Xe5WXGaCOP/HsdgYD5g/6V/Uyk6oYTHQ9gFYw0KOCwD3cI4oc79lRHTStBi76RzOK7mQig==",
     "css/components/capture-list.css": "ByRcX/bfGtphz9dyWD+ZLF/J2GERwvP/8Y0Xqrwr2rrpR1ujKa86gaTWUgZ5NU9O2vkkxNi57vyd1Xi8Hzr6vA==",
     "css/components/footer.css": "8M0TMB7ooYNgNiPL/5w5kur/ir8zddc4OD2tVNool29GpCuHt3TeNpgV2vxTlVX0Btdg9NB7gPVoOgEuSiP8LQ==",
@@ -47,7 +47,7 @@
     "images/icons/redirect.png": "PAjzlPV97rEFvH55mG1ZC9wRl98be3yMeX/nENuFkJcds6/AXgSR2ig/QyPULgobSnNgiYieLVWY/oqsgeywrQ==",
     "images/icons/secure.svg": "H8ni7t0d60nCJDVGuZpuxC+RBy/ipAjWT627D12HlZGg6LUmjSwPTQTUekm3UJupEP7TUkhXyq6WHc5gy7QBjg==",
     "images/icons/send-arrow-up.svg": "9PCEcHs82uLwxdSFjvWW2GIPMPStWMmZAWBI7Tl9U3zkUws4LMEKnxkGYdXGroHEdjAAbQm7MlbPlflItoUM9Q==",
-    "images/icons/sprite.svg": "OU0H42eYFvNRjfxBXSRuZ1ZTQ43smuY3l4I+fMIcC9Hlb82leWVTri4CV0pGKII134EZjD8xKiEyncnOf27PEw==",
+    "images/icons/sprite.svg": "8AvcBEOrtHiaV9kV/kQOxf7IoSuzEMcjBSEZudTQ21E5azvPJWeeq5SJVVUJc+Dcz1Ska1qy2RSrWlvrHMoW/g==",
     "images/icons/video.png": "gJtmkfr8I1Kw43pYEKjg6CAjgmhl1vIBKBQ3ZkxCu3wvxQm+6kf93iLrrFiY2WuiXzxEn2Leu52GJzmVN5id0g==",
     "images/icons/websocket.svg": "RlyPvy5lv81VrUnQYujUTSU7u75vbl9wMdkhOyDchH4qgrFPC/ehNvQHZWEP0Edq5Aj3bJVghH2BZgz+4WelMA==",
     "images/icons/wtf.png": "5iUj4m5G3tJN3wQvR1jD/hF4OKFrboVeuFejd+6ZUvdll3zjkLeewJQ+zptO9ckzktsMPC2+bKM3zM3CXXWoCw==",

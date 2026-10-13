@@ -25,114 +25,143 @@
 {{ page_header('Submit an existing capture', description='Upload a capture made elsewhere (Lookyloo export or HAR files) or pull one from another Lookyloo instance.', icon_name='bi:upload', crumbs=[('New capture', url_for('capture_web'))]) }}
 {% endblock %}
 
+{% block page_styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/capture.css') }}"
+      {{get_sri('static', 'css/capture.css')}}
+      crossorigin="anonymous">
+{% endblock %}
+
 {% block main %}
-<div class="container">
-  <form role="form" action="{{ url_for('submit_capture') }}" method=post enctype=multipart/form-data data-lk-loading="Uploading the capture">
-    <div class="row mb-3">
-      <div class="col-sm-10">
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" name="listing" {% if default_public %}checked="true"{% endif %}></input>
-          <label for="listing" class="form-check-label">Display results on public page</label>
-        </div>
-      </div>
-    </div>
+{#
+  Import a capture made elsewhere. capture_web's sibling submit_capture() uses the
+  first method filled in: pull > full export > HAR file. Field names are its API.
+  Doc: doc/ui/pages/submit-capture.md
+#}
+<form class="lk-capture-form" role="form" action="{{ url_for('submit_capture') }}" method=post enctype=multipart/form-data data-lk-loading="Uploading the capture">
+<div class="lk-capture-layout">
+<div class="lk-capture-sections">
 
-    <div class="row mb-3">
-      <label for="pull_capture" class="col-sm-2 col-form-label">Pull Capture:</label>
-      <div class="col-sm-10" id="pull_capture">
-        <div class="row align-items-center">
-          <div class="col">
-           <label class="visually-hidden" for="pull_capture_domain">Domain</label>
-            <div class="input-group">
-              <div class="input-group-text">Domain</div>
-              <input class="form-control" step="any" type="text" id="pull_capture_domain" name="pull_capture_domain" aria-describedby="pull_capture_domain" placeholder="https://lookyloo.circl.lu">
+  <details class="lk-form-section" open>
+    <summary class="lk-form-section-head">
+      <span class="lk-form-section-num" aria-hidden="true">1</span>
+      <span class="lk-form-section-icon">{{ icon('bi:box-arrow-in-down') }}</span>
+      <div>
+        <h2>Source</h2>
+        <p>Pick one way to bring the capture in.</p>
+      </div>
+    </summary>
+    <div class="lk-form-section-body">
+      <nav>
+        <div class="nav nav-tabs lk-capture-tabs" role="tablist">
+          <button class="nav-link active" id="import-pull-tab" data-bs-toggle="tab" data-bs-target="#import-pull" type="button" role="tab" aria-selected="true">{{ icon('bi:cloud-download') }} Pull from an instance</button>
+          <button class="nav-link" id="import-full-tab" data-bs-toggle="tab" data-bs-target="#import-full" type="button" role="tab" aria-selected="false">{{ icon('bi:file-earmark-zip') }} Lookyloo export</button>
+          <button class="nav-link" id="import-har-tab" data-bs-toggle="tab" data-bs-target="#import-har" type="button" role="tab" aria-selected="false">{{ icon('bi:file-earmark-code') }} HAR file</button>
+        </div>
+      </nav>
+      <div class="tab-content">
+        <div class="tab-pane fade show active" id="import-pull" role="tabpanel" aria-labelledby="import-pull-tab">
+          <div class="lk-field" id="pull_capture">
+            <span class="lk-field-label">Pull capture</span>
+            <div>
+              <div class="lk-field-pair">
+                <div class="input-group">
+                  <label class="input-group-text" for="pull_capture_domain">Domain</label>
+                  <input class="form-control" step="any" type="text" id="pull_capture_domain" name="pull_capture_domain" aria-describedby="pull_capture_domain" placeholder="https://lookyloo.circl.lu">
+                </div>
+                <div class="input-group">
+                  <label class="input-group-text" for="pull_capture_uuid">Capture UUID</label>
+                  <input class="form-control" step="any" type="text" id="pull_capture_uuid" name="pull_capture_uuid" aria-describedby="pull_capture_uuid" placeholder="bcca3b16-115b-4964-839e-1e7885bbb4b7">
+                </div>
+              </div>
+              <p class="lk-hint">The Lookyloo instance you're pulling from must be reachable from this one.</p>
             </div>
           </div>
-          <div class="col">
-           <label class="visually-hidden" for="pull_capture_uuid">Capture UUID</label>
-            <div class="input-group">
-              <div class="input-group-text">Capture UUID</div>
-              <input class="form-control" step="any" type="text" id="pull_capture_uuid" name="pull_capture_uuid" aria-describedby="pull_capture_uuid" placeholder="bcca3b16-115b-4964-839e-1e7885bbb4b7">
+        </div>
+        <div class="tab-pane fade" id="import-full" role="tabpanel" aria-labelledby="import-full-tab">
+          <div class="lk-field">
+            <label for="full_capture">Import full capture</label>
+            <div>
+              <input type="file" class="form-control" id="full_capture" name="full_capture">
+              <p class="lk-hint">The file must be the export of an existing capture made on another Lookyloo instance.</p>
             </div>
           </div>
         </div>
-        <div class="alert alert-info" role="alert">
-          The Lookyloo instance you're pulling from must be reachable from this one.
+        <div class="tab-pane fade" id="import-har" role="tabpanel" aria-labelledby="import-har-tab">
+          <div class="lk-stack">
+            <div class="lk-field">
+              <label for="har_file">HTTP Archive (HAR) file</label>
+              <div>
+                <input type="file" class="form-control" id="har_file" name="har_file">
+                <p class="lk-hint"><b>[Experimental]</b> It can be any file in <a href="https://en.wikipedia.org/wiki/HAR_(file_format)">HTTP Archive format</a>, from any source (browser or any other tool).</p>
+                <p class="lk-callout lk-callout-warning">{{ icon('bi:exclamation-triangle') }}
+                  <span>This feature is experimental and it may not work for some reason. If it is the case, please
+                  <a href="https://github.com/Lookyloo/lookyloo/issues">open an issue on github</a> and attach the HAR file so we can investigate.</span></p>
+              </div>
+            </div>
+            <div class="lk-field">
+              <label for="landing_page">Landing page</label>
+              <div>
+                <input type="text" class="form-control" id="landing_page" name="landing_page">
+                <p class="lk-hint">The URL in the browser at the end of the capture, it cannot always be guessed from the HAR file.</p>
+              </div>
+            </div>
+            <div class="lk-field">
+              <label for="screenshot_file">Screenshot file</label>
+              <div>
+                <input type="file" class="form-control" id="screenshot_file" name="screenshot_file">
+                <p class="lk-hint">A screenshot of the rendered page.</p>
+              </div>
+            </div>
+            <div class="lk-field">
+              <label for="html_file">Rendered HTML file</label>
+              <div>
+                <input type="file" class="form-control" id="html_file" name="html_file">
+                <p class="lk-hint">The page rendered by the browser at the end of the capture, it is not in the HAR file.</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
+      <p class="lk-callout lk-callout-info">{{ icon('bi:info-circle') }}
+        <span>Fill in only one method: if several are filled, the pull is used first, then the export, then the HAR file.</span></p>
     </div>
+  </details>
 
-    <hr>
-
-    <div class="row mb-3">
-      <label for="full_capture" class="col-sm-2 col-form-label">Import full capture:</label>
-      <div class="col-sm-10">
-        <input type="file" class="form-control" id="full_capture" name="full_capture">
-        <div class="alert alert-info" role="alert">
-            The file must be the export of an existing capture made on another Lookyloo instance.
-        </div>
+  <details class="lk-form-section" open>
+    <summary class="lk-form-section-head">
+      <span class="lk-form-section-num" aria-hidden="true">2</span>
+      <span class="lk-form-section-icon">{{ icon('bi:shield-lock') }}</span>
+      <div>
+        <h2>Visibility</h2>
+        <p>Show the imported capture on the public list or not.</p>
+      </div>
+    </summary>
+    <div class="lk-form-section-body">
+      <div class="form-check form-switch">
+        <input class="form-check-input" type="checkbox" role="switch" id="listing" name="listing" {% if default_public %}checked="true"{% endif %}>
+        <label for="listing" class="form-check-label">Display results on public page</label>
       </div>
     </div>
-
-    <hr>
-
-    <div class="row mb-3">
-      <label for="har_file" class="col-sm-2 col-form-label">HTTP Archive (HAR) file:</label>
-      <div class="col-sm-10">
-        <input type="file" class="form-control" id="har_file" name="har_file">
-        <div class="alert alert-info" role="alert">
-            <b>[Experimental]</b> It can be any file in <a href="https://en.wikipedia.org/wiki/HAR_(file_format)">HTTP Archive format</a>, from any source (browser or any other tool)
-        </div>
-        <div class="alert alert-warning" role="alert">
-            This feature is experimental and it may not work for some reason. If it is the case, please
-            <a href="https://github.com/Lookyloo/lookyloo/issues">open an issue on github</a> and attach the HAR file so we can investigate.
-        </div>
-      </div>
-    </div>
-    <div class="row mb-3">
-      <label for="landing_page" class="col-sm-2 col-form-label">Landing page:</label>
-      <div class="col-sm-10">
-        <input type="text" class="form-control" id="landing_page" name="landing_page">
-        <div class="alert alert-info" role="alert">
-            The URL in the bowser at the end of the capture, it cannot always be guessed from the HAR file.
-        </div>
-      </div>
-    </div>
-    <div class="row mb-3">
-      <label for="screenshot_file" class="col-sm-2 col-form-label">Screenshot file:</label>
-      <div class="col-sm-10">
-        <input type="file" class="form-control" id="screenshot_file" name="screenshot_file">
-        <div class="alert alert-info" role="alert">
-            A screenshot of the rendered page.
-        </div>
-      </div>
-    </div>
-    <div class="row mb-3">
-      <label for="html_file" class="col-sm-2 col-form-label">Rendered HTML file:</label>
-      <div class="col-sm-10">
-        <input type="file" class="form-control" id="html_file" name="html_file">
-        <div class="alert alert-info" role="alert">
-            The page rendered by the browser at the end of the capture, it is not in the HAR file.
-        </div>
-      </div>
-    </div>
-
-    <hr>
-
-    <center>
-      <b>
-      {% if default_public %}
-        By default, the capture is public. If you do not want that, untick the box at the top of the form.
-      {% else %}
-        By default, the capture is private (not visible on the index page). If you want it to be public tick the box at the top of the form.
-      {% endif %}
-      </b>
-      <br>
-      <br>
-      <button type="submit" class="new-capture-button btn btn-primary" id="btn-looking">Render capture!</button>
-    </center>
-  </form>
+  </details>
 </div>
+
+<aside class="lk-capture-aside" aria-label="Import summary">
+  <div class="lk-capture-aside-card">
+    <p class="lk-capture-default">
+      {{ icon('bi:info-circle') }}
+      <span>
+      {% if default_public %}
+        By default, the capture is public. If you do not want that, untick the box in the Visibility section.
+      {% else %}
+        By default, the capture is private (not visible on the index page). If you want it to be public tick the box in the Visibility section.
+      {% endif %}
+      </span>
+    </p>
+    <button type="submit" class="btn btn-primary btn-lg w-100 lk-capture-submit" id="btn-looking">{{ icon('bi:upload') }} Render capture!</button>
+  </div>
+</aside>
+</div>
+</form>
 {% endblock %}
 
 {% block scripts %}

@@ -124,14 +124,18 @@ tokens they redefine are at the end of `css/theme.css`:
 
 | Theme | Base | What changes |
 |---|---|---|
-| **Midnight** (`midnight`) | dark | deep navy blue backgrounds, blue accent and links, navy tree |
-| **Christmas** (`christmas`) | light | warm cream backgrounds, Christmas red accent, fir green; decorations |
+| **Ocean** (`ocean`) | light | ocean blue backgrounds and accent |
+| **Christmas** (`christmas`) | dark | a winter night: deep navy backgrounds, Christmas red accent, fir green; decorations |
 
 The Christmas decorations (`js/christmas.js`, `css/components/christmas.css`,
 `--lk-xmas-*` colours) are added only while the theme is active: a garland of
 softly twinkling bulbs under the site header (it follows the width of the
-window) and a light snowfall over the page (`pointer-events: none`). With
-`prefers-reduced-motion` the bulbs don't twinkle and there is no snow.
+window), a light snowfall over the page (`pointer-events: none`), stars in the
+sky with a shooting star every 10 to 25 s, and right above the footer a band of
+snowy hills with fir trees and a small campfire (flickering flames, glow,
+smoke), the same on every page. With `prefers-reduced-motion` nothing moves and
+there is no snow. A choice stored as `midnight` (the former name of the dark
+theme) becomes `christmas`.
 
 To add a theme: its tokens under `[data-lk-theme="name"][data-bs-theme="light|dark"]`
 in `css/theme.css`, its base in `NAMED_THEMES` (`js/theme_toggle.js`) and an

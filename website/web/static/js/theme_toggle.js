@@ -7,7 +7,16 @@
 (() => {
   'use strict'
 
-  const getStoredTheme = () => localStorage.getItem('theme')
+  // Named themes (css/theme.css): a light or dark base + data-lk-theme on <html>.
+  // Doc: doc/ui/theme.md
+  const NAMED_THEMES = { ocean: 'light', christmas: 'dark' }
+  // Themes that were renamed: the stored choice follows
+  const RENAMED_THEMES = { midnight: 'christmas' }
+
+  const getStoredTheme = () => {
+    const theme = localStorage.getItem('theme')
+    return (theme in RENAMED_THEMES) ? RENAMED_THEMES[theme] : theme
+  }
   const setStoredTheme = theme => localStorage.setItem('theme', theme)
 
   const getPreferredTheme = () => {
@@ -19,9 +28,6 @@
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
   }
 
-  // Named themes (css/theme.css): a light or dark base + data-lk-theme on <html>.
-  // Doc: doc/ui/theme.md
-  const NAMED_THEMES = { midnight: 'dark', christmas: 'light' }
 
   const setTheme = theme => {
     const root = document.documentElement

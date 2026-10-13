@@ -1,8 +1,9 @@
 /*
- * Decorations of the Christmas theme (js/christmas.js adds the elements only
- * while <html data-lk-theme="christmas">): a garland under the site header,
- * and a light snowfall over the page. Colours: --lk-xmas-* in css/theme.css.
- * Doc: doc/ui/theme.md
+ * Decorations of the Christmas theme, a winter night (js/christmas.js adds the
+ * elements only while <html data-lk-theme="christmas">): a garland under the
+ * site header, a light snowfall, stars and shooting stars in the sky, and a
+ * band of snowy hills with fir trees and a campfire above the footer.
+ * Colours: --lk-xmas-* in css/theme.css. Doc: doc/ui/theme.md
  */
 
 .lk-header.has-xmas-garland { position: relative; }
@@ -70,7 +71,62 @@
 @keyframes lk-xmas-fall { to { transform: translateY(105vh); } }
 @keyframes lk-xmas-sway { from { margin-left: -12px; } to { margin-left: 12px; } }
 
+/* Stars: fixed in the sky, behind the content */
+.lk-xmas-stars { position: fixed; left: 0; right: 0; top: 0; height: 60vh; pointer-events: none; z-index: -1; }
+.lk-xmas-star {
+  position: absolute;
+  border-radius: 50%;
+  background: #FFFFFF;
+  box-shadow: 0 0 3px 1px rgba(255, 255, 255, 0.5);
+  animation: lk-xmas-star 4s ease-in-out infinite;
+}
+@keyframes lk-xmas-star { 0%, 100% { opacity: 0.12; } 50% { opacity: 0.65; } }
+.lk-xmas-shooting-star {
+  position: absolute;
+  width: 110px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.95));
+  filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.8));
+  transform-origin: right center;
+  opacity: 0;
+  animation: lk-xmas-shoot 1.3s ease-out 1 forwards;
+}
+@keyframes lk-xmas-shoot {
+  0% { opacity: 0; transform: rotate(20deg) translateX(0) scaleX(0.3); }
+  15% { opacity: 1; }
+  100% { opacity: 0; transform: rotate(20deg) translateX(320px) scaleX(1); }
+}
+
+/* Landscape band above the footer: snowy hills, fir trees, a small campfire */
+.lk-xmas-land { position: relative; flex: none; height: 200px; margin-top: var(--lk-space-6); margin-bottom: -1px; pointer-events: none; opacity: 0.85; }
+.lk-xmas-land svg { display: block; width: 100%; height: 100%; }
+.lk-xmas-hills-far { fill: #151C2A; }
+.lk-xmas-hills-near { fill: #121825; }
+.lk-xmas-tree-far { fill: #141A27; }
+.lk-xmas-tree-near { fill: #0E131D; }
+.lk-xmas-snowcap-far { fill: rgba(220, 232, 250, 0.18); }
+.lk-xmas-snowcap-near { fill: rgba(235, 242, 255, 0.28); }
+.lk-xmas-ground { fill: #E9EEF7; opacity: 0.06; }
+.lk-xmas-sky-star { fill: #FFFFFF; opacity: 0.5; animation: lk-xmas-star 4.5s ease-in-out infinite; }
+.lk-xmas-log { fill: #3A2A1F; }
+.lk-xmas-flame { fill: #FF7A1F; transform-box: fill-box; transform-origin: 50% 100%; animation: lk-xmas-flicker 0.9s ease-in-out infinite alternate; }
+.lk-xmas-flame-in { fill: #FFD166; animation-duration: 0.6s; animation-delay: -0.3s; }
+.lk-xmas-camp-glow { opacity: 0.5; animation: lk-xmas-glow 1.6s ease-in-out infinite alternate; }
+.lk-xmas-camp-smoke { transform-box: fill-box; transform-origin: center; opacity: 0; animation: lk-xmas-smoke 6.4s ease-out infinite; }
+@keyframes lk-xmas-flicker {
+  0% { transform: scale(1, 1) skewX(0deg); }
+  50% { transform: scale(0.9, 1.12) skewX(4deg); }
+  100% { transform: scale(1.06, 0.92) skewX(-4deg); }
+}
+@keyframes lk-xmas-glow { from { opacity: 0.4; } to { opacity: 0.7; } }
+@keyframes lk-xmas-smoke {
+  0% { opacity: 0; transform: translate(0, 0) scale(0.6); }
+  15% { opacity: 0.5; }
+  100% { opacity: 0; transform: translate(14px, -70px) scale(3.2); }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .lk-xmas-bulb { animation: none; }
-  .lk-xmas-snow { display: none; }
+  .lk-xmas-bulb, .lk-xmas-star, .lk-xmas-sky-star, .lk-xmas-flame, .lk-xmas-camp-glow { animation: none; }
+  .lk-xmas-snow, .lk-xmas-shooting-star, .lk-xmas-camp-smoke { display: none; }
 }

@@ -63,7 +63,9 @@
   {# Admin preview of this page (preview_bulk_captures): the latest captures as examples #}
   <div class="alert alert-info" role="status">
     {{ icon('bi:eye') }} <strong>Preview.</strong> This page is normally shown after submitting several URLs
-    or importing captures. The rows below are the latest captures of this instance, as examples.
+    or importing captures. The rows below are the captures of this instance that are not finished yet
+    (queued, or being captured); a capture can be deleted once it is done.
+    {% if not bulk_captures %}<br>No capture is ongoing right now.{% endif %}
   </div>
   {% endif %}
   <div class="table-responsive">

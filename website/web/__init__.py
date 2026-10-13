@@ -3083,11 +3083,14 @@ def ip_details(ip: str) -> str:
 def preview_bulk_captures() -> str:
     '''Admin: the "Ongoing captures" page (capture/bulk_captures.html) is normally only
     shown after submitting several URLs or importing captures; this shows it with the
-    latest captures of the instance as examples, to check the template.'''
-    examples = [(cache.uuid, cache.url, None)
-                for cache in lookyloo.sorted_capture_cache(public=False, cached_captures_only=True)[:5]]
-    return render_template('capture/bulk_captures.html', bulk_captures=examples, preview=True)
-
+    captures of the instance not finished yet: queued, or being captured / processed.'''
+    ongoing: list[tuple[str, str, str | None]] = []
+    uuids = list(lookyloo.redis.zrange('to_capture', 0, -1)) + sorted(lookyloo.redis.smembers('ongoing'))
+    for capture_uuid in dict.fromkeys(uuids):
+        settings = lookyloo.get_settings_to_capture(capture_uuid)
+        url = (settings.url or settings.document_name) if settings else None
+        ongoing.append((capture_uuid, url or capture_uuid, None))
+    return render_template('capture/bulk_captures.html', bulk_captures=ongoing, preview=True)
 
 
 @app.route('/admin/preview/bulk_captures/remove', methods=['POST'])
@@ -3104,7 +3107,7 @@ def preview_bulk_captures_remove() -> WerkzeugResponse:
         lookyloo.remove_capture(capture_uuid)
         flash(f'{capture_uuid} successfully removed.', 'success')
     except (UUIDMissingInCache, MissingCaptureDirectory):
-        flash(f'{capture_uuid} was already removed.', 'warning')
+        flash(f'{capture_uuid} cannot be removed: it was already removed, or is not finished yet.', 'warning')
     return redirect(url_for('preview_bulk_captures'))
 
 @app.route('/stats', methods=['GET'])

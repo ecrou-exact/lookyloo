@@ -29,3 +29,8 @@ it from the recent captures in Valkey (`lookup_dirs`, `recent_captures`,
 `recent_captures_public`) and from the cache of the process. The other web
 workers drop their cached copy when they see that its directory is gone. Deleting
 it a second time (an old tab) only says it was already removed.
+
+The admin preview lists the captures of the instance that are not finished
+yet: the queue (`to_capture` in Valkey) and the captures being processed
+(`ongoing`), with the URL (or document name) from their settings. With none,
+it says that no capture is ongoing.

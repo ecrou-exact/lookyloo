@@ -311,8 +311,8 @@
   {% if urlnode.request_cookie %}
     {% set icon_info = get_icon("request_cookie") %}
     <a href="{{ url_for('urlnode_request_cookies', tree_uuid=tree_uuid, node_uuid=urlnode.uuid, seed=seed) }}">
-       <img src="{{ url_for('static', filename=icon_info['icon']) }}" alt="{{ icon_info['tooltip'] }}"
-         width="21" height="21"/
+       <img src="{{ url_for('static', filename='images/icons/' ~ icon_info['icon']) }}" alt="{{ icon_info['tooltip'] }}"
+         width="21" height="21"
          title="Download all the cookies in the request to the server">
     </a>
   {% endif %}
@@ -369,7 +369,7 @@
     {% set icon_info = get_icon("response_cookie") %}
     <a href="{{ url_for('urlnode_response_cookies', tree_uuid=tree_uuid, node_uuid=urlnode.uuid, seed=seed) }}"
        title="Download all the cookies in the response from the server">
-      <img src="{{ url_for('static', filename=icon_info['icon']) }}" alt="{{ icon_info['tooltip'] }}"
+      <img src="{{ url_for('static', filename='images/icons/' ~ icon_info['icon']) }}" alt="{{ icon_info['tooltip'] }}"
            width="21" height="21"/>
     </a>
   {% endif %}
@@ -384,12 +384,12 @@
     <div class="col w-75">{{ shorten_string(urlnode.redirect_url, with_copy_button=True) }}</div>
     <div class="col">
       <button type="button" class="btn btn-link locateInTree" data-hostnode="{{ child.hostnode_uuid }}" title="See the node the URL redirects to.">
-        <img src="{{ url_for('static', filename=icon_info['icon']) }}" alt="{{ icon_info['tooltip'] }}" width="21" height="21"/>
+        <img src="{{ url_for('static', filename='images/icons/' ~ icon_info['icon']) }}" alt="{{ icon_info['tooltip'] }}" width="21" height="21"/>
       </button>
     </div>
   {% else %}
   <div class="col">
-  <img src="{{ url_for('static', filename=icon_info['icon']) }}"
+  <img src="{{ url_for('static', filename='images/icons/' ~ icon_info['icon']) }}"
        alt="{{ icon_info['tooltip'] }}" title="{{ icon_info['tooltip'] }}"
        width="21" height="21"/>
   </div>

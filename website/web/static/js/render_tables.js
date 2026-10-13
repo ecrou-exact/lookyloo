@@ -45,7 +45,7 @@ function renderTables() {
             dataSrc:""
         },
         columns: [{ data: {_: 'category.display', filter: 'category.filter'}, width: '90%' },
-                  { data: 'total_captures', width: '10%', orderable: true }]
+                  { data: 'total_captures', width: '10%', orderable: true, className: 'text-end lk-categories-count' }]
       })
   }
   if (document.getElementById('HHHDetailsTable')) {

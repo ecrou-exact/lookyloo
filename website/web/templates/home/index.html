@@ -46,7 +46,7 @@
   {% if category %}
   <div class="lk-recent-filters">
     <span class="lk-filter-chip">
-      Category: <strong>{{ category }}</strong>
+      Category: {{ category_tag(category, link=False) }}
       <a href="{{ url_for('index_hidden' if show_hidden else 'index') }}" aria-label="Remove the category filter">{{ icon('bi:x-lg') }}</a>
     </span>
   </div>

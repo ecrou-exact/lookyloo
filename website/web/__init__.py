@@ -256,6 +256,39 @@ def get_sri(directory: str, filename: str) -> str:
     return Markup('integrity="sha512-{}"').format(sri_load()[directory][filename])
 
 
+# Category tags: family (predicate of the content-classification taxonomy) -> (tint, icon)
+CATEGORY_FAMILIES: dict[str, tuple[str, str]] = {
+    'general': ('blue', 'bi:newspaper'),
+    'technology': ('teal', 'bi:cpu'),
+    'technical-services': ('teal', 'bi:hdd-stack'),
+    'cybersecurity': ('green', 'bi:shield-check'),
+    'cybercrime': ('red', 'bi:bug'),
+    'illegal-markets': ('red', 'bi:cart-x'),
+    'markets': ('amber', 'bi:cart'),
+    'finance': ('amber', 'bi:bank'),
+    'communities': ('pink', 'bi:people'),
+    'digital-content': ('violet', 'bi:play-btn'),
+    'geopolitics-and-hacktivism': ('violet', 'bi:flag'),
+}
+CATEGORY_TAG = re.compile(r'^(?P<namespace>[^:]+):(?P<family>[^=]+)="?(?P<value>[^"]*)"?$')
+
+
+def category_tag(category: str, link: bool=True) -> Markup:
+    '''A category as a coloured tag (css/components/tag.css, doc/ui/tags.md):
+    content-classification:cybercrime="phishing" -> [bug icon] cybercrime · phishing'''
+    tint, icon_name, family, label = 'slate', 'bi:tag', '', category
+    if m := CATEGORY_TAG.match(category):
+        family, label = m['family'], m['value'].replace('-', ' ')
+        tint, icon_name = CATEGORY_FAMILIES.get(family, ('slate', 'bi:tag'))
+    content = Markup('{i}{f}<span>{label}</span>').format(
+        i=icon(icon_name), label=label,
+        f=Markup('<span class="lk-tag-family">{}</span>').format(family.replace('-', ' ')) if family else '')
+    if link:
+        return Markup('<a class="lk-tag lk-tag-{t}" href="{u}" title="{c}">{content}</a>').format(
+            t=tint, u=url_for('index', category=category), c=category, content=content)
+    return Markup('<span class="lk-tag lk-tag-{t}" title="{c}">{content}</span>').format(t=tint, c=category, content=content)
+
+
 ICON_SPRITE = 'images/icons/sprite.svg'
 ICON_NAME = re.compile(r'^(bi:[a-z0-9-]+|misp:[a-z0-9-]+/[a-z0-9_-]+)$')
 
@@ -464,6 +497,7 @@ app.jinja_env.globals.update(
      'shorten_string': shorten_string,
      'get_icon': get_icon,
      'icon': icon,
+     'category_tag': category_tag,
      'generic_type': mimetype_to_generic,
      'hash_icon': hash_icon_render,
      'tz_info': get_tz_info,
@@ -3402,7 +3436,7 @@ def post_table(table_name: str, value: str='') -> Response:
             nb_captures = get_indexing(flask_login.current_user).get_captures_category_count(category)
             to_append = {
                 'total_captures': nb_captures,
-                'category': {'display': Markup('<a href="{url}">{category}</a>').format(url=url_for("index", category=category), category=category),
+                'category': {'display': category_tag(category),
                              'filter': escape(category)}
             }
             prepared_captures.append(to_append)

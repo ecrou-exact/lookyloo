@@ -82,6 +82,16 @@
   /* Capture tree (tree.css) */
   --lk-color-tree-node: #4682B4;
 
+  /* Tag tints (category tags, css/components/tag.css): text + background */
+  --lk-tag-blue: #1D4ED8;    --lk-tag-blue-bg: #E6EDFD;
+  --lk-tag-teal: #0F766E;    --lk-tag-teal-bg: #DDF3F0;
+  --lk-tag-green: #15803D;   --lk-tag-green-bg: #E1F5E7;
+  --lk-tag-red: #B91C1C;     --lk-tag-red-bg: #FDE6E6;
+  --lk-tag-amber: #A16207;   --lk-tag-amber-bg: #FDF1D6;
+  --lk-tag-pink: #BE185D;    --lk-tag-pink-bg: #FCE4EF;
+  --lk-tag-violet: #6D28D9;  --lk-tag-violet-bg: #EEE7FD;
+  --lk-tag-slate: #475569;   --lk-tag-slate-bg: #EBEEF2;
+
   /* Logo: the PNG is black, invert it on dark backgrounds */
   --lk-logo-filter: none;
 }
@@ -144,6 +154,15 @@
   --lk-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
 
   --lk-color-tree-node: #6FA8DC;
+
+  --lk-tag-blue: #93B4FF;    --lk-tag-blue-bg: #1A2747;
+  --lk-tag-teal: #5ED3C4;    --lk-tag-teal-bg: #12302D;
+  --lk-tag-green: #6EDC93;   --lk-tag-green-bg: #14301F;
+  --lk-tag-red: #FF8A8A;     --lk-tag-red-bg: #3A1A1C;
+  --lk-tag-amber: #F5C35B;   --lk-tag-amber-bg: #33280F;
+  --lk-tag-pink: #F58CBF;    --lk-tag-pink-bg: #3A1729;
+  --lk-tag-violet: #B9A2FF;  --lk-tag-violet-bg: #2A1F4A;
+  --lk-tag-slate: #B4BECC;   --lk-tag-slate-bg: #262A31;
 
   --lk-logo-filter: invert(1);
 }

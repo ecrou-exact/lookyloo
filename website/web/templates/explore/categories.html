@@ -45,21 +45,21 @@
 {% block main %}
 
   {% if not_enabled %}
-  <center>
-    <p class="lead">Categorization not enabled.</p>
-  </center>
+  <p class="lk-callout lk-callout-info">{{ icon('bi:info-circle') }} <span>Categorization is not enabled on this instance.</span></p>
   {% else %}
 
 
+  <div class="lk-card">
   <div class="table-responsive">
-  <table id="categoriesTable" class="table table-striped" style="width:100%">
+  <table id="categoriesTable" class="table lk-categories-table" style="width:100%">
     <thead>
      <tr>
        <th>Category</th>
-       <th>Total captures</th>
+       <th>Captures</th>
      </tr>
     </thead>
   </table>
+  </div>
   </div>
   {% endif %}
 {% endblock %}

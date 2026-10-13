@@ -411,9 +411,12 @@ body.lk-capture-page > .lk-footer { flex: none; display: block; width: 100%; }
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
+  gap: var(--lk-space-1);
   height: 30px;
-  padding: 0;
+  padding: 0 var(--lk-space-2);
+  font-size: var(--lk-font-size-sm);
+  font-weight: var(--lk-font-weight-medium);
+  white-space: nowrap;
   border: 0;
   border-radius: var(--lk-radius-sm);
   background: none;
@@ -426,7 +429,7 @@ body.lk-capture-page > .lk-footer { flex: none; display: block; width: 100%; }
 #tree-fullscreen .lk-fullscreen-exit,
 #tree-fullscreen.is-fullscreen .lk-fullscreen-enter { display: none; }
 #tree-fullscreen.is-fullscreen .lk-fullscreen-exit { display: inline-flex; }
-#tree-fullscreen span { display: inline-flex; }
+#tree-fullscreen span { display: inline-flex; align-items: center; gap: var(--lk-space-1); }
 #tree-fullscreen[hidden] { display: none; }
 
 /* The tree area in full screen: the whole screen, the page background */
@@ -438,6 +441,15 @@ body.lk-capture-page > .lk-footer { flex: none; display: block; width: 100%; }
 #tree-orientation.is-vertical .lk-orientation-horizontal { display: none; }
 #tree-orientation.is-vertical .lk-orientation-vertical { display: inline-flex; }
 #tree-orientation span { display: inline-flex; }
+/* Labels next to the icons, like "Legend & filter"; icons only on small screens */
+.lk-tree-controls .lk-tree-control-label { display: inline; }
+@media (max-width: 991.98px) {
+  .lk-tree-controls .lk-tree-control-label,
+  #tree-orientation .lk-tree-control-label,
+  #tree-fullscreen .lk-tree-control-label { display: none; }
+  .lk-tree-controls > button,
+  .lk-tree-controls > .dropdown > button { width: 30px; padding: 0; }
+}
 .lk-tree-controls-status {
   position: absolute;
   top: calc(100% + var(--lk-space-2));

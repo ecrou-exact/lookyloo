@@ -346,19 +346,20 @@
     <button type="button" id="tree-orientation" title="Draw the tree from top to bottom" aria-label="Draw the tree from top to bottom">
       <span class="lk-orientation-horizontal">{{ icon('bi:arrow-left-right') }}</span>
       <span class="lk-orientation-vertical">{{ icon('bi:arrow-down-up') }}</span>
+      <span class="lk-tree-control-label">Orientation</span>
     </button>
-    <button type="button" id="tree-collapse-all" title="Collapse every node" aria-label="Collapse every node">{{ icon('bi:arrows-collapse') }}</button>
-    <button type="button" id="tree-expand-all" title="Expand every node" aria-label="Expand every node">{{ icon('bi:arrows-expand') }}</button>
+    <button type="button" id="tree-collapse-all" title="Collapse every node" aria-label="Collapse every node">{{ icon('bi:arrows-collapse') }}<span class="lk-tree-control-label">Collapse all</span></button>
+    <button type="button" id="tree-expand-all" title="Expand every node" aria-label="Expand every node">{{ icon('bi:arrows-expand') }}<span class="lk-tree-control-label">Expand all</span></button>
     <button type="button" id="tree-compare-toggle" title="Compare with another capture" aria-label="Compare with another capture"
-            aria-expanded="false" aria-controls="tree-compare">{{ icon('bi:intersect') }}</button>
+            aria-expanded="false" aria-controls="tree-compare">{{ icon('bi:intersect') }}<span class="lk-tree-control-label">Compare</span></button>
     {% if current_user.is_authenticated %}
     <button type="button" id="tree-notes-toggle" title="Your notes on this capture" aria-label="Your notes on this capture"
-            aria-expanded="false" aria-controls="tree-notes">{{ icon('bi:journal-text') }}<span class="lk-notes-count" id="tree-notes-count" hidden></span></button>
+            aria-expanded="false" aria-controls="tree-notes">{{ icon('bi:journal-text') }}<span class="lk-tree-control-label">Notes</span><span class="lk-notes-count" id="tree-notes-count" hidden></span></button>
     {% endif %}
     {# Background of the tree (js/tree.js, setupBackground): plain, dots, grid or depth columns #}
     <div class="dropdown">
       <button type="button" id="tree-background-btn" data-bs-toggle="dropdown" aria-expanded="false"
-              title="Background of the tree" aria-label="Background of the tree">{{ icon('bi:palette') }}</button>
+              title="Background of the tree" aria-label="Background of the tree">{{ icon('bi:palette') }}<span class="lk-tree-control-label">Background</span></button>
       <ul class="dropdown-menu dropdown-menu-end lk-tree-bg-menu" aria-labelledby="tree-background-btn">
         <li><h6 class="dropdown-header">Background</h6></li>
         {% for value, label in [('plain', 'Plain'), ('dots', 'Dots'), ('grid', 'Grid'), ('columns', 'Depth columns')] %}
@@ -369,8 +370,8 @@
     </div>
     {# Full screen: only the tree area (js/tree.js, setupFullscreen); the icon follows the state #}
     <button type="button" id="tree-fullscreen" title="Show only the tree, full screen" aria-label="Show only the tree, full screen" aria-pressed="false">
-      <span class="lk-fullscreen-enter">{{ icon('bi:arrows-fullscreen') }}</span>
-      <span class="lk-fullscreen-exit">{{ icon('bi:fullscreen-exit') }}</span>
+      <span class="lk-fullscreen-enter">{{ icon('bi:arrows-fullscreen') }}<span class="lk-tree-control-label">Full screen</span></span>
+      <span class="lk-fullscreen-exit">{{ icon('bi:fullscreen-exit') }}<span class="lk-tree-control-label">Exit full screen</span></span>
     </button>
     <span class="lk-tree-controls-status" id="tree-controls-status" role="status" hidden></span>
   </div>

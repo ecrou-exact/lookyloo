@@ -197,6 +197,11 @@ page, root after a layout change) uses `centerInViewport(element)` in
 
 ## Tree controls
 
+Each button shows its icon and a label (`.lk-tree-control-label`: Orientation,
+Collapse all, Expand all, Compare, Notes, Background, Full screen), like the
+**Legend & filter** button, so the tools are always visible. Under 992px wide
+the labels are hidden and the bar shows the icons only.
+
 The buttons at the top right of the tree (`setupTreeControls()` in `js/tree.js`):
 
 - **Orientation**: left to right (default) or top to bottom, remembered in

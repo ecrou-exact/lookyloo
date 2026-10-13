@@ -234,6 +234,10 @@ body.lk-capture-page .lk-header { position: static; }
 }
 .lk-capture-flashes .alert .btn-close { padding-block: var(--lk-space-3); }
 
+/* ---------- Footer: always under the tree area, full width ---------- */
+
+body.lk-capture-page > .lk-footer { flex: none; display: block; width: 100%; }
+
 /* ---------- Tree area: viewport + legend ---------- */
 
 .lk-tree-area {
@@ -251,6 +255,7 @@ body.lk-capture-page .lk-header { position: static; }
   overflow: auto;
   position: relative;
   outline: none;
+  background: var(--lk-color-tree-canvas);
 }
 /* Drag to scroll (js/capture_page.js) */
 .lk-tree-viewport { cursor: grab; }
@@ -372,7 +377,7 @@ body.lk-capture-page .lk-header { position: static; }
 #tree-fullscreen[hidden] { display: none; }
 
 /* The tree area in full screen: the whole screen, the page background */
-.lk-tree-area:fullscreen { height: 100vh; width: 100vw; background: var(--lk-color-bg); }
+.lk-tree-area:fullscreen { height: 100vh; width: 100vw; background: var(--lk-color-tree-canvas); }
 .lk-tree-area:fullscreen #tooltip { position: fixed !important; }
 
 /* Orientation button: the icon of the current orientation */
@@ -725,7 +730,10 @@ g.node.is-search-current .node-card { fill: var(--lk-color-accent-soft); stroke-
  * --lk-color-tree-* tokens (css/theme.css), so it follows light / dark.
  */
 
-.tree-stripe { fill: var(--lk-color-tree-stripe); }
+/* Background of the tree: one plain colour on the whole tree area (the viewport),
+   not on the SVG only. The SVG background rect stays, transparent, for the
+   "click on the background" action. */
+.tree-background { fill: transparent; }
 
 path.link {
   fill: none;

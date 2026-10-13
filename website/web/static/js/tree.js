@@ -1372,12 +1372,12 @@ function update(root, computed_node_width=0) {
       pattern.select('rect').attr('width', pageWidth).attr('height', VERTICAL_ROW);
     }
 
-    // Background (stripes), one rect reused by every update
+    // Transparent background rect (css/tree.css), reused by every update: it only
+    // catches the clicks on the background (the tree area has a plain colour)
     let background = main_svg.select('rect.tree-background');
     if (background.empty()) {
       background = main_svg.insert('rect', ':first-child')
-        .attr('class', 'tree-background')
-        .style('fill', "url(#backstripes)");
+        .attr('class', 'tree-background');
     }
     background.attr('y', 0).attr('width', pageWidth).attr('height', pageHeight);
     // Vertical rows start under the top margin, aligned on the cards

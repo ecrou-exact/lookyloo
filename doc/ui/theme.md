@@ -54,7 +54,7 @@ Bootstrap, base.css, utilities.css, page CSS, components
 | `--lk-color-success` | `#1E7F4F` | `#4CC38A` | Safe / OK |
 | `--lk-color-info` | `#2B4BEE` | `#8EA3FF` | Informational, help bubbles |
 | `--lk-color-tree-node` | `#2B4BEE` | `#7C93FF` | Node circles (expand / collapse) of the D3 tree |
-| `--lk-color-tree-stripe` | `#F1F3F6` | `#18181C` | Every other depth column behind the tree |
+| `--lk-color-tree-canvas` | `#F5F6F8` | `#141417` | Background of the whole tree area (plain, no stripes) |
 | `--lk-color-tree-link` | `#C3CAD5` | `#3E4350` | Links between the nodes of the tree |
 | `--lk-color-tree-icon-bg` | `transparent` | `#E9EAEE` | Chip behind the PNG icons of a node (keeps them legible in dark mode) |
 

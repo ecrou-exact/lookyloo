@@ -75,7 +75,8 @@ const downloadSvg = () => {
             canvas.width = parseFloat(svg.getAttribute('width'));
             canvas.height = parseFloat(svg.getAttribute('height'));
             let ctx = canvas.getContext('2d');
-            ctx.fillStyle = getComputedStyle(document.body).backgroundColor;
+            // Background of the tree area (css/tree.css), behind the exported tree
+            ctx.fillStyle = getComputedStyle(document.getElementById('tree_viewport')).backgroundColor;
             ctx.fillRect(0,0,canvas.width,canvas.height)
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 

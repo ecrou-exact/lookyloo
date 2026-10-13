@@ -81,7 +81,7 @@
 
   /* Capture tree (tree.css, js/tree.js) */
   --lk-color-tree-node: #2B4BEE;
-  --lk-color-tree-stripe: #F1F3F6;
+  --lk-color-tree-canvas: #F5F6F8;
   --lk-color-tree-link: #C3CAD5;
   --lk-color-tree-icon-bg: transparent;
 
@@ -157,7 +157,7 @@
   --lk-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
 
   --lk-color-tree-node: #7C93FF;
-  --lk-color-tree-stripe: #18181C;
+  --lk-color-tree-canvas: #141417;
   --lk-color-tree-link: #3E4350;
   /* The node icons are PNGs drawn for light backgrounds: light chips in dark mode */
   --lk-color-tree-icon-bg: #E9EAEE;

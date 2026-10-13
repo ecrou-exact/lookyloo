@@ -75,7 +75,7 @@ so the tree follows the light and dark themes.
 
 | Class | What |
 |---|---|
-| `.tree-stripe` | every other depth column in the background |
+| `.tree-background` | transparent background of the SVG (a click on it clears the focus); the colour of the whole tree area is `--lk-color-tree-canvas`, on `#tree_viewport` |
 | `path.link` | links between nodes |
 | `.node-card` | the card of a node (hover: accent border) |
 | `.node-host`, `.node-host-idna`, `.node-count` | hostname (opens the hostname pop-up), IDNA form, number of URLs |
@@ -199,8 +199,7 @@ The buttons at the top right of the tree (`setupTreeControls()` in `js/tree.js`)
   Links go from the right of the parent to the left of the child, or from its
   bottom to the top of the child; the expand / collapse circle follows (right
   side of the card, or middle of its bottom edge), and the favicon / thumbnail
-  of the rendered node move aside (`placeNodeParts()`); the background stripes
-  follow (columns / rows). The button shows the current orientation (⇄ / ⇅).
+  of the rendered node move aside (`placeNodeParts()`). The button shows the current orientation (⇄ / ⇅).
 - **Collapse all**: every node but the root is collapsed (the first level stays
   visible).
 - **Full screen** (next to Notes): only the tree area, full screen

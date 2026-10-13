@@ -19,7 +19,9 @@ and only the three points are in a (translucent) box. It has three parts:
   dark mode) and "Web forensics tool".
 - **Form**: headline "See where a link really goes.", one-sentence explanation,
   the **capture bar** (`.lk-capture-bar`: globe icon + URL field + Capture
-  button in one box, with the focus ring on the whole bar), then the **options**
+  button in one box, with the focus ring on the whole bar; its placeholder
+  "types" example URLs letter by letter, `js/home.js`, only the placeholder
+  changes, stops on focus/input, off with `prefers-reduced-motion`), then the **options**
   as pill selects (`.lk-pill-select`: icon + native `<select>` without its
   arrow, caret drawn in CSS) and links to all capture options / upload.
 - **Three points** (`.lk-hero-features`): real browser, every hop and resource,

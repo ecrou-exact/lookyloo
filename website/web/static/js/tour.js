@@ -30,6 +30,8 @@
         if (!step.selector) return null;
         const element = document.querySelector(step.selector);
         if (!element) return null;
+        // An entry of a menu opened by the step is hidden until the menu opens
+        if (step.open) return document.querySelector(step.open) ? element : null;
         const box = element.getBoundingClientRect();
         if (!box.width && !box.height) return null;
         return element;
@@ -38,6 +40,28 @@
     // Steps of this page that can be shown now (an element, or a general step without selector)
     function available() {
         return steps.filter(step => !step.selector || target(step));
+    }
+
+    // Menus (Bootstrap dropdowns) opened by the steps: open the one of the step, close the others
+    let opened = null;
+    function openMenu(selector) {
+        if (opened && opened !== selector) {
+            const previous = document.querySelector(opened);
+            if (previous && window.bootstrap) bootstrap.Dropdown.getOrCreateInstance(previous).hide();
+            opened = null;
+        }
+        // The sticky block holding the menu (its own stacking context) goes above the veil
+        document.querySelectorAll('.lk-tour-raised').forEach(element => element.classList.remove('lk-tour-raised'));
+        if (selector) document.querySelector(selector)?.closest('.lk-capture-top, .lk-header')?.classList.add('lk-tour-raised');
+        if (!selector || !window.bootstrap) return;
+        const toggle = document.querySelector(selector);
+        if (!toggle) return;
+        // After the click that triggered the step: Bootstrap closes menus on any click
+        setTimeout(() => {
+            bootstrap.Dropdown.getOrCreateInstance(toggle).show();
+            requestAnimationFrame(place);
+        }, 0);
+        opened = selector;
     }
 
     function build() {
@@ -105,6 +129,21 @@
         }
         const box = element.getBoundingClientRect();
         spotlight.hidden = false;
+        // Entry of an opened menu: the card goes beside the menu, at the height of the entry
+        const menu = step.open ? element.closest('.dropdown-menu') : null;
+        if (menu) {
+            const menu_box = menu.getBoundingClientRect();
+            spotlight.style.left = `${box.left - 6}px`;
+            spotlight.style.top = `${box.top - 6}px`;
+            spotlight.style.width = `${box.width + 12}px`;
+            spotlight.style.height = `${box.height + 12}px`;
+            let left = menu_box.right + margin;
+            if (left + card.offsetWidth > window.innerWidth - 16) left = menu_box.left - card.offsetWidth - margin;
+            const top = Math.min(Math.max(16, box.top - 16), window.innerHeight - card.offsetHeight - 16);
+            card.style.left = `${Math.max(16, left)}px`;
+            card.style.top = `${top}px`;
+            return;
+        }
         spotlight.style.left = `${box.left - 6}px`;
         spotlight.style.top = `${box.top - 6}px`;
         spotlight.style.width = `${box.width + 12}px`;
@@ -133,11 +172,23 @@
         card.querySelector('.lk-tour-text').textContent = step.text;
         card.querySelector('[data-role="previous"]').disabled = index === 0;
         card.querySelector('[data-role="next"]').textContent = index === list.length - 1 ? 'Finish' : 'Next';
+        openMenu(step.open);
         const element = target(step);
-        if (element) {
-            element.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+        // Entry of an opened menu: the whole menu stays readable above the veil,
+        // the entry gets its own outline (the spotlight goes under the menu)
+        document.querySelectorAll('.lk-tour-target').forEach(node => node.classList.remove('lk-tour-target'));
+        spotlight.classList.toggle('is-under', Boolean(step.open));
+        if (step.open && element) element.classList.add('lk-tour-target');
+        if (element && !step.open) {
+            if (element.closest('#tree_viewport') && window.centerInViewport) {
+                // In the tree: scroll the tree only (js/tree.js), never the page
+                window.centerInViewport(element, false);
+            } else {
+                element.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+            }
         }
         place();
+        setTimeout(place, 320);   // after a smooth scroll / a menu opening
         card.querySelector('[data-role="next"]').focus({ preventScroll: true });
     }
 
@@ -146,6 +197,7 @@
         if (!available().length) return;
         stop();
         build();
+        document.body.classList.add('lk-tour-running');
         go(0);
         const seen = JSON.parse(storage.get(SEEN_KEY) || '{}');
         seen[document.body.dataset.lkTour || location.pathname] = true;
@@ -153,6 +205,9 @@
     }
 
     function stop() {
+        openMenu(null);
+        document.querySelectorAll('.lk-tour-target').forEach(node => node.classList.remove('lk-tour-target'));
+        document.body.classList.remove('lk-tour-running');
         [overlay, spotlight, card].forEach(element => element?.remove());
         overlay = spotlight = card = null;
         document.removeEventListener('keydown', keys, true);

@@ -28,11 +28,19 @@ In the template (any page extending `layouts/base.html`):
 ]) }}{% endblock %}
 ```
 
-Each step: (CSS selector or `None`, title, text). The macro writes a
+Each step: (CSS selector or `None`, title, text[, open]). `open` is the
+selector of a dropdown toggle: the menu is opened for the step (and closed
+after), the step's selector is then an entry of that menu. The whole menu stays
+readable above the veil, the entry is outlined (`.lk-tour-target`) and the card
+goes beside the menu: the capture page explains every entry of its Capture,
+Analysis, Actions, Extras and Admin menus this way. The macro writes a
 `<script type="application/json" id="lk-tour">` data block (never executed,
 compatible with the CSP); `js/tour.js` reads it. **Steps whose element is not
 on the page, or hidden, are skipped**: a page can list optional features (admin
 only, enabled modules…). Texts are inserted with `textContent`.
+
+Elements inside the capture tree are brought into view by scrolling the tree
+only (`window.centerInViewport`, js/tree.js), never the page.
 
 Pages whose content is built after loading set `data-lk-tour-auto="manual"`
 on `<body>` and call `window.lkTour.autoStart()` once it is there: the capture
@@ -42,9 +50,9 @@ page does it when the tree is drawn (`js/tree.js`).
 
 Home, recent captures, new capture, search, import a capture, categories,
 resources, cookies, favicons, HTTP headers hashes, API, and the capture page
-(the most detailed: capture bar, search, menus, points of attention, a host
-card, its icons, branches, the path to the page, tree tools, compare, notes,
-legend, moving around).
+(the most detailed: capture bar, search, every entry of the menus, points of
+attention, a host card, its icons, branches, the path to the page, tree tools,
+compare, notes, legend, moving around).
 
 Files: `js/tour.js`, `css/components/tour.css` (veil colour: `--lk-tour-veil`
 in `css/theme.css`), `macros/tour.html`, the `tour` block of `layouts/base.html`,

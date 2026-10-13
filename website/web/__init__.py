@@ -3436,6 +3436,8 @@ def post_table(table_name: str, value: str='') -> Response:
             nb_captures = get_indexing(flask_login.current_user).get_captures_category_count(category)
             to_append = {
                 'total_captures': nb_captures,
+                'machinetag': {'display': Markup('<code class="lk-machinetag">{}</code>').format(category),
+                               'filter': escape(category)},
                 'category': {'display': category_tag(category),
                              'filter': escape(category)}
             }

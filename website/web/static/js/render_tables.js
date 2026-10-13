@@ -37,14 +37,15 @@ function renderTables() {
         retrieve: true,
         searching: true,
         drawCallback: function (settings) { newTabClickListener(); add_event_js_copy(); },
-        order: [[ 1, "desc" ]],
+        order: [[ 2, "desc" ]],
         pageLength: 25,
         ajax: {
             url: `/tables/categoriesTable/${window.location.search}`,
             type: 'POST',
             dataSrc:""
         },
-        columns: [{ data: {_: 'category.display', filter: 'category.filter'}, width: '90%' },
+        columns: [{ data: {_: 'category.display', filter: 'category.filter'}, width: '35%' },
+                  { data: {_: 'machinetag.display', filter: 'machinetag.filter'}, width: '55%' },
                   { data: 'total_captures', width: '10%', orderable: true, className: 'text-end lk-categories-count' }]
       })
   }

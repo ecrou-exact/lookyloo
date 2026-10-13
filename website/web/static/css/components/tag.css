@@ -50,3 +50,10 @@ a.lk-tag:hover {
   font-family: var(--lk-font-mono);
   font-weight: var(--lk-font-weight-semibold);
 }
+
+.lk-machinetag {
+  font-family: var(--lk-font-mono);
+  font-size: var(--lk-font-size-sm);
+  color: var(--lk-color-muted);
+  overflow-wrap: anywhere;
+}

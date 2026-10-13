@@ -19,7 +19,8 @@ content-classification:cybercrime="phishing"   ->   [bug] cybercrime · phishing
 CSS: `css/components/tag.css` (`.lk-tag` + `.lk-tag-<tint>`); the tints are the
 `--lk-tag-*` / `--lk-tag-*-bg` tokens of `theme.css` (light and dark).
 
-Used on the Categories page (`categoriesTable`, rows built by `post_table()`)
+Used on the Categories page (`categoriesTable`, rows built by `post_table()`,
+columns: tag, full machine tag (`machinetag`), number of captures)
 and in the category filter chip of the Recent captures page.
 
 To add a family: add it to `CATEGORY_FAMILIES` (an existing tint or a new

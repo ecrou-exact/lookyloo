@@ -133,7 +133,8 @@ softly twinkling bulbs under the site header (it follows the width of the
 window), a light snowfall over the page (`pointer-events: none`), stars in the
 sky with a shooting star every 10 to 25 s, and right above the footer a band of
 snowy hills with fir trees and a small campfire (flickering flames, glow,
-smoke), the same on every page. Every colour of the decorations is a
+smoke), the same on every page, and a Santa hat on the "L" of the logo (the
+big logo of the home page and the one of the site header). Every colour of the decorations is a
 `--lk-xmas-*` token of the Christmas theme in `css/theme.css` (the SVG
 gradients too, through `stop-color` classes). With `prefers-reduced-motion` nothing moves and
 there is no snow. A choice stored as `midnight` (the former name of the dark

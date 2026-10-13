@@ -1,8 +1,9 @@
 "use strict";
 // Decorations of the Christmas theme (css/components/christmas.css), a winter
 // night: a garland of softly twinkling bulbs under the site header, a light
-// snowfall, stars and now and then a shooting star in the sky, and a band of
-// snowy hills with fir trees and a small campfire right above the footer.
+// snowfall, stars and now and then a shooting star in the sky, a band of snowy
+// hills with fir trees and a small campfire right above the footer, and a Santa
+// hat on the logo (home page and header).
 // Added only while <html data-lk-theme="christmas"> (js/theme_toggle.js),
 // removed when the theme changes. Animations are off with prefers-reduced-motion.
 // Doc: doc/ui/theme.md
@@ -156,6 +157,22 @@
         return element;
     }
 
+    // Santa hat on the "L" of the logo: the big one of the home page and the one of the header
+    function hat() {
+        const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 100">'
+            + '<path class="lk-xmas-hat-red" d="M14,78 C28,34 58,8 92,14 C104,16 109,26 104,35 C96,25 81,27 73,40 C65,53 66,66 70,78 Z"/>'
+            + '<path class="lk-xmas-hat-shade" d="M73,40 C81,27 96,25 104,35 C98,33 88,34 80,44 C74,52 72,64 74,78 L70,78 C66,66 65,53 73,40 Z"/>'
+            + '<circle class="lk-xmas-hat-fur" cx="104" cy="37" r="10"/>'
+            + '<rect class="lk-xmas-hat-fur" x="5" y="70" width="74" height="18" rx="9"/>'
+            + '</svg>';
+        const element = document.createElement('span');
+        element.className = 'lk-xmas-hat';
+        element.setAttribute('aria-hidden', 'true');
+        const parsed = new DOMParser().parseFromString(svg, 'image/svg+xml').documentElement;
+        element.appendChild(document.importNode(parsed, true));
+        return element;
+    }
+
     function mount() {
         unmount();
         const header = document.querySelector('.lk-header');
@@ -163,6 +180,7 @@
             header.classList.add('has-xmas-garland');
             header.appendChild(garland(header.clientWidth));
         }
+        document.querySelectorAll('.lk-hero-logo, .lk-header-brand').forEach(logo => logo.appendChild(hat()));
         document.body.appendChild(snow());
         document.body.prepend(stars());
         const footer = document.querySelector('.lk-footer');
@@ -173,7 +191,7 @@
 
     function unmount() {
         clearTimeout(shooting_timer);
-        document.querySelectorAll('.lk-xmas-garland, .lk-xmas-snow, .lk-xmas-stars, .lk-xmas-land')
+        document.querySelectorAll('.lk-xmas-garland, .lk-xmas-snow, .lk-xmas-stars, .lk-xmas-land, .lk-xmas-hat')
             .forEach(element => element.remove());
         document.querySelector('.lk-header')?.classList.remove('has-xmas-garland');
         mounted = false;

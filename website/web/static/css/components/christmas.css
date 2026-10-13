@@ -128,6 +128,16 @@
   100% { opacity: 0; transform: translate(14px, -70px) scale(3.2); }
 }
 
+/* Santa hat on the "L" of the logo (home page hero, site header) */
+.lk-hero-logo, .lk-header-brand { position: relative; }
+.lk-xmas-hat { position: absolute; pointer-events: none; z-index: 1; transform-origin: 30% 80%; }
+.lk-xmas-hat svg { display: block; width: 100%; height: auto; }
+.lk-hero-logo .lk-xmas-hat { left: -4%; top: 4%; width: 19%; transform: rotate(-24deg); }
+.lk-header-brand .lk-xmas-hat { left: -7px; top: -9px; width: 24px; transform: rotate(-24deg); }
+.lk-xmas-hat-red { fill: var(--lk-xmas-hat-red); }
+.lk-xmas-hat-shade { fill: var(--lk-xmas-hat-shade); }
+.lk-xmas-hat-fur { fill: var(--lk-xmas-hat-fur); }
+
 @media (prefers-reduced-motion: reduce) {
   .lk-xmas-bulb, .lk-xmas-star, .lk-xmas-sky-star, .lk-xmas-flame, .lk-xmas-camp-glow { animation: none; }
   .lk-xmas-snow, .lk-xmas-shooting-star, .lk-xmas-camp-smoke { display: none; }

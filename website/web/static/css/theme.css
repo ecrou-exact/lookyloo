@@ -324,4 +324,8 @@
   --lk-xmas-flame-in: #FFD166;
   --lk-xmas-fire-glow: #FF9A3C;
   --lk-xmas-smoke: #AAB4C4;
+  /* Santa hat on the logo */
+  --lk-xmas-hat-red: #D7263D;
+  --lk-xmas-hat-shade: #A61B2E;
+  --lk-xmas-hat-fur: #F7F9FC;
 }

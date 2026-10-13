@@ -31,8 +31,8 @@ def test_capture_page(page: Page) -> None:
     capture_url = f'https://{domain}'
     page.goto("http://127.0.0.1:5100/")
     page.get_by_role("link", name="All capture options").click()
-    page.get_by_role("button", name="Lacus Selection").click()
-    expect(page.get_by_role("button", name="Browser Configuration")).to_be_visible()
+    expect(page.get_by_role("heading", name="Capture engine (Lacus)")).to_be_visible()
+    expect(page.get_by_role("heading", name="Browser")).to_be_visible()
     page.get_by_role("textbox", name="URL to capture").click()
     page.get_by_role("textbox", name="URL to capture").fill(capture_url)
     page.get_by_role("button", name="Start looking!").click()

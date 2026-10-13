@@ -8,6 +8,7 @@ same commit as the code.
 |------|---------|
 | [layout.md](layout.md) | Layouts (`base.html`, `page.html`), header, footer, how to create a page |
 | [pages/home.md](pages/home.md) | Home page: logo, quick capture form, key points, latest captures |
+| [pages/capture.md](pages/capture.md) | Full capture form: sections, summary panel, field contract |
 | [pages/search.md](pages/search.md) | Search page: one card, a tile per criterion |
 | [pages/index.md](pages/index.md) | Recent captures page: the list and the data it uses |
 | [page-header.md](page-header.md) | Page header component: breadcrumb + card with icon, title, description |

@@ -348,3 +348,10 @@ The view is a fresh d3 hierarchy of the node's data (`view_root`);
 expand all), and the other filters (search, icons, neighbours, compare) apply
 to the nodes of the view. The points of attention and the legend counts stay
 those of the whole capture.
+
+## Size of the cards
+
+A card is `node_height + 5` high (`node_height` = 64 in `js/tree.js`, which also
+spaces the rows of the layout) and as wide as its content plus room for its
+tools on the first line, at the right (camera, view from here, pencil,
+bookmark): they never cover the hostname or the badges.

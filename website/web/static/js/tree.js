@@ -24,7 +24,10 @@ let min_height = Math.max(tree_viewport.clientHeight - margin.top - margin.botto
 let min_width = Math.max(tree_viewport.clientWidth - margin.left - margin.right, 600);
 
 let node_width = 10;
-let node_height = 55;
+// Height of a node card (the card is node_height + 5 high, drawn from y = -30)
+let node_height = 64;
+// Bottom of a card, relative to its node (links of the vertical layout start there)
+const CARD_BOTTOM = node_height + 5 - 30;
 let center_node = null;
 
 // Keys selected in the legend filter (tree/legend.html): the nodes having at
@@ -1550,7 +1553,7 @@ function update(root, computed_node_width=0) {
               .append(d => text_entry(10, 5, d));  // Popup
             // Set list of icons
             node_data
-              .append(d => icon_list(12, 35, d));
+              .append(d => icon_list(12, 40, d));
 
             node_group.select('.node_data').each(function(d){
                 // set position of icons based of their length
@@ -1563,7 +1566,11 @@ function update(root, computed_node_width=0) {
                 // Rectangle around the domain name & icons
                 d3.select(this).select('rect')
                   .attr('height', node_height + 5)
-                  .attr('width', d3.select(this).node().getBBox().width + 60);
+                  // Content + padding + room for the tools on the first line, at the right:
+                  // camera, view from here (not on the root), pencil (notes), bookmark flag
+                  .attr('width', d3.select(this).node().getBBox().width + 60
+                                 + 26 * (1 + (d.parent ? 1 : 0) + (notes_enabled ? 1 : 0))
+                                 + (enable_bookmark ? 22 : 0));
 
                 // Set the width for all the nodes
                 // Required, as the node width need to include the rectangle
@@ -1941,7 +1948,7 @@ function update(root, computed_node_width=0) {
           .target(d => [d.parent.y + d.parent.node_width, d.parent.x])
       : d3.linkVertical()
           .source(d => [d.x + (d.node_width || 0) / 2, d.y - 30])
-          .target(d => [d.parent.x + (d.parent.node_width || 0) / 2, d.parent.y + 35 + 9]);
+          .target(d => [d.parent.x + (d.parent.node_width || 0) / 2, d.parent.y + CARD_BOTTOM + 9]);
 
   link.join(
     enter => enter

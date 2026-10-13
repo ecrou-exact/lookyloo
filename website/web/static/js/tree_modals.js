@@ -93,78 +93,28 @@ const downloadSvg = () => {
     });
 };
 
+// Show a node of the tree (the node of the URL in ?node=, or "Locate in tree" from
+// the hostname pop-up): it is centred in the tree and its card glows for a few
+// seconds (css/tree.css, g.node.is-located); a click anywhere stops it.
 function LocateNode(hostnode_uuid) {
-    let element = document.getElementById(`node_${hostnode_uuid}`);
+    const element = document.getElementById(`node_${hostnode_uuid}`);
+    if (!element) {
+        return;   // in a collapsed branch: nothing to show
+    }
     // Scrolls only the tree viewport (js/tree.js)
-    window.centerInViewport ? window.centerInViewport(element) : element.scrollIntoView({block: "center", inline: "center"});
+    const card = element.querySelector('.node-card') || element;
+    window.centerInViewport ? window.centerInViewport(card) : element.scrollIntoView({block: "center", inline: "center"});
 
-    let line_arrow = d3.select(`#node_${hostnode_uuid}`)
-                       .append('g')
-                        .attr('cursor', 'pointer')
-                        .on('click', (event, d) => { event.currentTarget.remove(); });
-
-    let line = d3.line()
-                    // Other options: http://bl.ocks.org/d3indepth/raw/b6d4845973089bc1012dec1674d3aff8/
-                    //.curve(d3.curveCardinal)
-                    .curve(d3.curveBundle)
-                    .x(point => point.lx)
-                    .y(point => point.ly);
-
-    let line_tip = d3.symbol()
-                    .type(d3.symbolTriangle)
-                    .size(200);
-
-
-    // Theme colours (css/theme.css): the arrow glows from ink to danger
-    const theme = getComputedStyle(document.documentElement);
-    const ink = theme.getPropertyValue('--lk-color-ink').trim();
-    const danger = theme.getPropertyValue('--lk-color-danger').trim();
-    const surface = theme.getPropertyValue('--lk-color-surface').trim();
-
-    let path = line_arrow
-        .append("path")
-        .attr("stroke-width", "3")
-        .attr("stroke", ink)
-        .attr("fill", "none")
-        .data([{
-            source: {x: 100, y: -100},
-            target: {x: 50, y: -50}
-        }])
-        .attr("class", "line")
-        .attr("d", d => line(
-            [{lx: d.source.x, ly: d.source.y},
-             {lx: d.target.x, ly: d.source.y},
-             {lx: d.target.x, ly: d.target.y}
-            ])
-        );
-
-    let arrow = line_arrow
-        .append("path")
-        .attr("d", line_tip)
-        .attr("stroke", ink)
-        .style('stroke-width', '3')
-        .attr("fill", surface)
-        .attr("transform", `translate(50, -50) rotate(60)`);
-
-    let glow = () => {
-        line_arrow.selectAll('path')
-            .transition().duration(1000)  //Set transition
-            .style('stroke-width', '7')
-            .style('stroke', danger)
-            .transition().duration(1000)  //Set transition
-            .style('stroke-width', '3')
-            .style('stroke', ink)
-            .on("end", () => {
-                if (++i > 15) {
-                    line_arrow.remove();
-                } else {
-                    glow();
-                }
-            });
+    document.querySelectorAll('g.node.is-located').forEach(node => node.classList.remove('is-located'));
+    element.classList.add('is-located');
+    clearTimeout(LocateNode.timer);
+    const stop = () => {
+        element.classList.remove('is-located');
+        document.removeEventListener('pointerdown', stop, true);
     };
-
-    let i = 0;
-    glow();
+    LocateNode.timer = setTimeout(stop, 8000);
+    // After this click (the one of "Locate in tree" may still be going on)
+    setTimeout(() => document.addEventListener('pointerdown', stop, true), 0);
 };
 
 // Modals

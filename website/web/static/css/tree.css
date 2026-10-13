@@ -775,6 +775,21 @@ path.link.is-filter-dimmed { opacity: 0.18; }
 /* Node focused by a click on its card (its neighbours are .is-filter-match) */
 .node-card { cursor: pointer; }
 g.node.is-focused .node-card { fill: var(--lk-color-accent-soft); stroke: var(--lk-color-accent); stroke-width: 3px; }
+/* Located node (LocateNode in js/tree_modals.js): accent outline and a soft glow */
+g.node.is-located .node-card {
+  stroke: var(--lk-color-accent);
+  stroke-width: 3px;
+  fill: var(--lk-color-accent-soft);
+  animation: lk-node-located 1.6s ease-in-out infinite;
+}
+@keyframes lk-node-located {
+  0%, 100% { filter: drop-shadow(0 0 0 var(--lk-color-accent)); }
+  50% { filter: drop-shadow(0 0 10px var(--lk-color-accent)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  g.node.is-located .node-card { animation: none; filter: drop-shadow(0 0 6px var(--lk-color-accent)); }
+}
+
 /* Match centred by the search (previous / next) */
 g.node.is-search-current .node-card { fill: var(--lk-color-accent-soft); stroke-width: 3px; }
 

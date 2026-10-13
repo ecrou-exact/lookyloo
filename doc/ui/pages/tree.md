@@ -300,3 +300,7 @@ bigger export is only downloaded, with a message.
 
 `js/capture_components.js` is the vitrine module of the page: it imports
 `js/vitrine_setup.js` (and so `<vt-markdown>` for the notes) and `<vt-json>`.
+
+Copy buttons (MISP export, notes) say **Copied** (green) or **Copy failed**
+(red) for 2 seconds: `copyWithFeedback(button, text)` in
+`js/capture_components.js`.

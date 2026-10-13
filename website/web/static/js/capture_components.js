@@ -7,6 +7,28 @@ import '../vendor/vitrine/esm/vt-json.js';
 const MAX_JSON = 52428800;
 configure({ maxSize: MAX_JSON });
 
+// Copy to the clipboard, and say it on the button for 2 seconds ("Copied" / "Copy failed")
+function copyWithFeedback(button, text) {
+    const label = button.lastChild;
+    const before = label.textContent;
+    const show = (message, ok) => {
+        label.textContent = ` ${message}`;
+        button.classList.toggle('is-copied', ok);
+        button.classList.toggle('is-copy-failed', !ok);
+        clearTimeout(button.copyTimer);
+        button.copyTimer = setTimeout(() => {
+            label.textContent = before;
+            button.classList.remove('is-copied', 'is-copy-failed');
+        }, 2000);
+    };
+    if (!navigator.clipboard) {
+        show('Copy failed', false);
+        return;
+    }
+    navigator.clipboard.writeText(text).then(() => show('Copied', true), () => show('Copy failed', false));
+}
+window.copyWithFeedback = copyWithFeedback;   // also used by js/tree.js (notes)
+
 // MISP export: the menu entry opens #mispExportModal, which loads the export
 // (data-export of the link), downloads it and shows it in <vt-json>.
 const modal = document.getElementById('mispExportModal');
@@ -51,13 +73,9 @@ if (modal) {
         }
     });
     document.getElementById('misp-export-download').addEventListener('click', download);
-    document.getElementById('misp-export-copy').addEventListener('click', (event) => {
+    const copy_button = document.getElementById('misp-export-copy');
+    copy_button.addEventListener('click', () => {
         if (!current) return;
-        navigator.clipboard?.writeText(current.text).then(() => {
-            const label = event.currentTarget.lastChild;
-            const before = label.textContent;
-            label.textContent = ' Copied';
-            setTimeout(() => { label.textContent = before; }, 1500);
-        });
+        copyWithFeedback(copy_button, current.text);
     });
 }

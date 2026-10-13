@@ -474,13 +474,11 @@ function setupNotes() {
     };
     toggle.addEventListener('click', () => show(panel.hidden));
     document.getElementById('tree-notes-close').addEventListener('click', () => show(false));
-    document.getElementById('tree-notes-copy').addEventListener('click', (event) => {
-        navigator.clipboard?.writeText(notesMarkdown()).then(() => {
-            const button = event.currentTarget;
-            const label = button.lastChild.textContent;
-            button.lastChild.textContent = ' Copied';
-            setTimeout(() => { button.lastChild.textContent = label; }, 1500);
-        });
+    const copy_button = document.getElementById('tree-notes-copy');
+    copy_button.addEventListener('click', () => {
+        // js/capture_components.js: says "Copied" / "Copy failed" on the button
+        if (window.copyWithFeedback) window.copyWithFeedback(copy_button, notesMarkdown());
+        else navigator.clipboard?.writeText(notesMarkdown());
     });
     document.getElementById('tree-notes-download').addEventListener('click', () => {
         const link = document.createElement('a');

@@ -196,8 +196,10 @@ The buttons at the top right of the tree (`setupTreeControls()` in `js/tree.js`)
   horizontal uses `[y, x]`, one column per depth; vertical uses `[x, y]`, one
   row per depth (`VERTICAL_ROW`) and one column (the widest card) per leaf.
   Links go from the right of the parent to the left of the child, or from its
-  bottom to the top of the child; the background stripes follow (columns /
-  rows).
+  bottom to the top of the child; the expand / collapse circle follows (right
+  side of the card, or middle of its bottom edge), and the favicon / thumbnail
+  of the rendered node move aside (`placeNodeParts()`); the background stripes
+  follow (columns / rows). The button shows the current orientation (⇄ / ⇅).
 - **Collapse all**: every node but the root is collapsed (the first level stays
   visible).
 - **Expand all**: expands level after level while the tree stays under
@@ -205,6 +207,10 @@ The buttons at the top right of the tree (`setupTreeControls()` in `js/tree.js`)
   left collapsed, a message says how many nodes are shown out of the total.
 
 After a change the root is centred once the nodes have moved.
+
+The tree has an 80 px top margin (`margin.top`): the controls and the pill
+float over the top of the tree area, and the first rows (the root, the first
+search match) must never be hidden under them.
 
 ## New capture from a node
 

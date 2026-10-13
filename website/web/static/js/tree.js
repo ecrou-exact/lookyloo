@@ -4,8 +4,11 @@
 // Set the dimensions and margins of the diagram.
 // The tree is drawn in a scrolling viewport under the capture bar (tree/tree.html),
 // so it only needs room for the parent-capture box above the root.
+// top: room for the parent-capture box above the root, and for the controls
+// floating over the top of the tree (layout buttons, "Neighbours of" pill), so
+// the nodes of the first rows are never hidden under them.
 let margin = {
-    top: 40,
+    top: 80,
     right: 200,
     bottom: 40,
     left: 90
@@ -58,6 +61,27 @@ function nodePos(d, previous=false) {
     const y = previous ? d.y0 : d.y;
     return orientation === 'horizontal' ? [y, x] : [x, y];
 }
+// Parts of a node that move with the orientation: the expand / collapse circle
+// (right side of the card, or middle of its bottom edge where the links to the
+// children start) and the favicon / thumbnail of the rendered node (kept clear
+// of the circle).
+function placeNodeParts(selection) {
+    const vertical = orientation === 'vertical';
+    selection.each(function(d) {
+        const node = d3.select(this);
+        const width = d.node_width || 0;
+        node.select('circle.node')
+            .attr('cx', vertical ? width / 2 : width)
+            .attr('cy', vertical ? node_height + 5 : node_height / 2);
+        const thumb_x = vertical ? width / 2 + 16 : width / 2;
+        node.select('#screenshot_thumbnail').attr('x', thumb_x);
+        node.select('.node-thumb-frame').attr('x', thumb_x);
+        const favicon_x = vertical ? width / 2 - 16 - 35 : width / 6;
+        node.select('#favicon').attr('x', favicon_x);
+        node.select('.node-favicon-chip').attr('x', favicon_x - 3);
+    });
+}
+
 function nodeTransform(d, previous=false) {
     const [px, py] = nodePos(d, previous);
     return `translate(${px}, ${py})`;
@@ -832,7 +856,7 @@ function update(root, computed_node_width=0) {
     background.attr('y', 0).attr('width', pageWidth).attr('height', pageHeight);
     // Vertical rows start under the top margin, aligned on the cards
     pattern.attr('x', orientation === 'horizontal' ? margin.left : 0)
-           .attr('y', orientation === 'horizontal' ? 0 : margin.top - 40);
+           .attr('y', orientation === 'horizontal' ? 0 : margin.top - 40 - VERTICAL_ROW / 4);
 
     main_svg.attr("width", pageWidth).attr("height", pageHeight);
     document.getElementById('tree_svg').style.width = `${Math.max(pageWidth, min_width)}px`;
@@ -982,7 +1006,7 @@ function update(root, computed_node_width=0) {
                   if (favicon) {
                     // Chip behind the favicon: a dark favicon stays visible in dark mode
                     d3.select(this).append('rect')
-                      .attr('class', 'node-icon-chip')
+                      .attr('class', 'node-icon-chip node-favicon-chip')
                       .attr('x', selected_node_bbox.width/6 - 3)
                       .attr('y', node_height - 4)
                       .attr('rx', 6)
@@ -1198,6 +1222,7 @@ function update(root, computed_node_width=0) {
       // After the entry animation, expanding / collapsing moves the nodes smoothly
       (tree_entry_done && !reduce_motion ? node.transition().duration(300).ease(d3.easeCubicOut) : node)
         .attr("transform", node => nodeTransform(node));
+      placeNodeParts(node);
       node
         // Update the node attributes and style
         .select('circle.node')
@@ -1231,7 +1256,7 @@ function update(root, computed_node_width=0) {
           .target(d => [d.parent.y + d.parent.node_width, d.parent.x])
       : d3.linkVertical()
           .source(d => [d.x + (d.node_width || 0) / 2, d.y - 30])
-          .target(d => [d.parent.x + (d.parent.node_width || 0) / 2, d.parent.y + 35]);
+          .target(d => [d.parent.x + (d.parent.node_width || 0) / 2, d.parent.y + 35 + 9]);
 
   link.join(
     enter => enter

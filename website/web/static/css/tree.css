@@ -355,7 +355,11 @@ body.lk-capture-page .lk-header { position: static; }
   color: var(--lk-color-ink);
 }
 .lk-tree-controls button:hover { background: var(--lk-color-surface-2); }
-.lk-tree-controls button.is-vertical { background: var(--lk-color-accent-soft); color: var(--lk-color-accent); }
+/* Orientation button: the icon of the current orientation */
+#tree-orientation .lk-orientation-vertical,
+#tree-orientation.is-vertical .lk-orientation-horizontal { display: none; }
+#tree-orientation.is-vertical .lk-orientation-vertical { display: inline-flex; }
+#tree-orientation span { display: inline-flex; }
 .lk-tree-controls-status {
   position: absolute;
   top: calc(100% + var(--lk-space-2));

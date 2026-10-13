@@ -326,7 +326,11 @@
 
   {# Layout of the tree (js/tree.js, setupTreeControls) #}
   <div class="lk-tree-controls" role="toolbar" aria-label="Tree layout">
-    <button type="button" id="tree-orientation" title="Draw the tree from top to bottom" aria-label="Draw the tree from top to bottom">{{ icon('bi:arrow-down-up') }}</button>
+    {# The icon shows the current orientation (js/tree.js, showOrientation) #}
+    <button type="button" id="tree-orientation" title="Draw the tree from top to bottom" aria-label="Draw the tree from top to bottom">
+      <span class="lk-orientation-horizontal">{{ icon('bi:arrow-left-right') }}</span>
+      <span class="lk-orientation-vertical">{{ icon('bi:arrow-down-up') }}</span>
+    </button>
     <button type="button" id="tree-collapse-all" title="Collapse every node" aria-label="Collapse every node">{{ icon('bi:arrows-collapse') }}</button>
     <button type="button" id="tree-expand-all" title="Expand every node" aria-label="Expand every node">{{ icon('bi:arrows-expand') }}</button>
     <span class="lk-tree-controls-status" id="tree-controls-status" role="status" hidden></span>

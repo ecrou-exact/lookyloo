@@ -7,7 +7,7 @@
     "css/components/footer.css": "8M0TMB7ooYNgNiPL/5w5kur/ir8zddc4OD2tVNool29GpCuHt3TeNpgV2vxTlVX0Btdg9NB7gPVoOgEuSiP8LQ==",
     "css/components/header.css": "ToDiQOkyWTPUpxcaMZMh45eH9wRjLpV83DvtsVCrUR1fhCcUuyfMqXesOZs18TW88glN18GFUEI3n/meM2g0Hg==",
     "css/components/icon.css": "KdcuCxbntKl3rj01JBvpFBl2PZk33IBHCyB72pFwwVk1uUibsGrcKyzrMV52vDAsZBYhI6Z42rNV3pYGMhW1uA==",
-    "css/components/layout.css": "BdFBxlDBXEjevGlIEL7XnEc+hy/szDwu4oOh/4VUwhKFnqreacS9iSz5G6ec1hapsFy9p5HOIhf7Td3dmn70Ng==",
+    "css/components/layout.css": "OU8nUJvyCdSvpW8Iwc+3i4rLx7BezgqyvgfxoaUxiL5vbG1wm8jdTDTIZi4WWbhNnUIrUXpRE14J4v7XkZXrTw==",
     "css/components/loader.css": "yGpBDQd8fTEYJBUqg1gq1yUy9ENPUhkJHl248z9ZmJfPVFfwOjVn1gZgc7WcaF1uYX3OIbPInwTZlLqzh2MYBQ==",
     "css/components/page-header.css": "d2zKGur2GKiel+KJZLucVo5WkNqunA/4xrwyEugk7ZPOzhQtlCM1/Y77tr1F4vufUnocHdlpaFr6RaP+4e/Alg==",
     "css/fonts.css": "8VDNfmqZtRf4vaHfBlS1Nrx/B4up9f41oyV6PFwUrrU7ZHXMMS1ToAX9FBji6YllZh/Ay4j1F0Hfn/+9Qdx9zA==",

@@ -21,6 +21,11 @@ body {
   max-width: 960px;
 }
 
+/* Small forms (log in): header and form share this width */
+.lk-container-form {
+  max-width: 560px;
+}
+
 @media (max-width: 576px) {
   .lk-container {
     padding-inline: var(--lk-space-4);
@@ -100,7 +105,7 @@ body {
 
 /* Login box */
 .lk-login {
-  max-width: 480px;
+  padding: var(--lk-space-6);
 }
 
 /* Generic surface: bordered box on the page background */

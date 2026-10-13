@@ -75,7 +75,7 @@ twice.
 | Name | Where | Use |
 |------|-------|-----|
 | `page_header(title, description, icon_name, crumbs)` + `{% call %}` for actions | `macros/page.html` | Breadcrumb + title card ([page-header.md](page-header.md)) |
-| `.lk-container`, `.lk-container-narrow` | `css/components/layout.css` | Content width (1440px wide layout, 960px narrow) |
+| `.lk-container`, `.lk-container-narrow`, `.lk-container-form` | `css/components/layout.css` | Content width (1440px wide layout, 960px narrow, 560px for small forms like log in) |
 | `.lk-card` | `css/components/layout.css` | Bordered surface box |
 | `.lk-section-title` | `css/components/layout.css` | Title of a section inside a page |
 | `icon()` | Jinja global | Icons, see [icons.md](icons.md) |

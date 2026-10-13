@@ -47,14 +47,26 @@ JSON row shape (the contract between `post_table()` and `render_tables.js`):
 ```
 
 - `page.display` is rendered by `index_capture_template` (Jinja, autoescaped):
-  title linking to the capture, initial URL with copy button, facts (capture
-  error, number of redirects, final hostname when it differs), and a collapsible
-  redirect chain with a download link.
+  - a **screenshot thumbnail**, always blurred (captured pages can be anything,
+    porn included); a click toggles the blur (`.lk-thumb`, handler in
+    `js/generic.js`). Loaded lazily from `/tree/<uuid>/thumbnail/256`, which
+    sends `Cache-Control: private, max-age=86400` (a screenshot never changes).
+    The blur is visual comfort, not protection: the image is downloaded anyway;
+  - the title linking to the capture and the initial URL with a copy button;
+  - facts: capture error, **hostname trail** (`google.com › www.google.com`,
+    consecutive identical hosts merged, middle hosts collapsed into "+n" after
+    4), "Unencrypted hop" when a step uses plain HTTP, or "No redirect";
+  - the **redirect chain** (collapsible): one step per URL on a vertical route
+    (hollow dots, filled dot for the final page), labelled Start / Redirect n /
+    Final page, with "new host" and "HTTP" badges, host in bold, rest of the URL
+    muted, a copy button per step, and a link to download the redirects.
+  The hops are prepared by `redirect_hops()` in `website/web/__init__.py`.
 - `capture_time` is displayed by `DataTable.render.relative_time()`
   (`js/generic.js`): "5 days ago" + the exact date (tooltip and second line).
 
 **Only data from the capture cache is used** (`CaptureCache`: uuid, title, url,
-redirects, timestamp, error). The tree pickle is never loaded for the list:
+redirects, timestamp, error), plus the thumbnail, fetched separately by the
+browser. The tree pickle is never loaded for the list:
 the page is public and must stay cheap for bots. Other cheap data (counts of
 hostnames, domains, IPs from the per-capture index) is possible but not used
 yet; request counts, screenshots and verdicts are not cheap. See the data

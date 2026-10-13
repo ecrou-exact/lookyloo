@@ -1619,7 +1619,13 @@ def video(tree_uuid: str) -> Response:
 @file_response  # type: ignore[untyped-decorator]
 def thumbnail(tree_uuid: str, width: int) -> Response:
     to_return = lookyloo.get_screenshot_thumbnail(tree_uuid, for_datauri=False, width=width)
-    return send_file(to_return, mimetype='image/png')
+    response = send_file(to_return, mimetype='image/png')
+    # The screenshot of a capture never changes: let the browser keep the thumbnail
+    # (private: may belong to a capture only reachable with a seed)
+    response.cache_control.no_cache = None
+    response.cache_control.private = True
+    response.cache_control.max_age = 86400
+    return response
 
 
 @app.route('/tree/<uuid:tree_uuid>/html', methods=['GET'])
@@ -3176,30 +3182,60 @@ def _safe_capture_title(capture_uuid: str, title: str, nodes: Sequence[tuple[str
 # (doc/ui/pages/index.md): never load the tree here.
 index_capture_template = app.jinja_env.from_string(source='''
 <div class="lk-capture">
+  {# Screenshots can be anything (porn, gore...): always blurred on the index, click to reveal #}
+  <button type="button" class="lk-thumb is-blurred" aria-pressed="false"
+          aria-label="Show the screenshot" title="Show the screenshot">
+    <img src="{{ url_for('thumbnail', tree_uuid=capture_uuid, width=256) }}" alt=""
+         loading="lazy" decoding="async" width="128" height="80">
+  </button>
+  <div class="lk-capture-body">
   <a class="lk-capture-title" href="{{ url_for('tree', tree_uuid=capture_uuid) }}">{{ title if title else 'No title' }}</a>
   <div class="lk-capture-url">{{ shorten_string(url, with_copy_button=True) }}</div>
   <ul class="lk-capture-facts">
     {% if error %}
     <li class="lk-capture-error">{{ icon('bi:exclamation-triangle') }} Capture error</li>
     {% endif %}
-    {% if redirects|length > 1 %}
-    <li>{{ icon('bi:signpost-split') }} {{ redirects|length - 1 }} redirect{{ 's' if redirects|length > 2 }}</li>
-    {% if final_host and final_host != initial_host %}
-    <li title="Final hostname">{{ icon('bi:arrow-return-right') }} <span class="lk-mono">{{ final_host }}</span></li>
+    {% if hops|length > 1 %}
+    <li class="lk-hop-trail" title="{{ hops|length - 1 }} redirect{{ 's' if hops|length > 2 }}">
+      {{ icon('bi:signpost-split') }}
+      {# Hosts only, consecutive duplicates merged (http -> https on the same host) #}
+      {% set shown = trail if trail|length <= 4 else [trail[0], None, trail[-2], trail[-1]] %}
+      {% for host in shown %}
+        {% if not loop.first %}<span class="lk-hop-sep" aria-hidden="true">›</span>{% endif %}
+        {% if host %}<span class="lk-hop{% if loop.last %} is-final{% endif %}">{{ host }}</span>
+        {% else %}<span class="lk-hop-more">+{{ trail|length - 3 }}</span>{% endif %}
+      {% endfor %}
+    </li>
+    {% if hops|selectattr('insecure')|list %}
+    <li class="lk-capture-warning">{{ icon('bi:unlock') }} Unencrypted hop</li>
     {% endif %}
     {% elif not error %}
-    <li>No redirect</li>
+    <li>{{ icon('bi:check2') }} No redirect</li>
     {% endif %}
   </ul>
-  {% if redirects|length > 1 %}
-  <details class="lk-capture-chain">
-    <summary>Redirect chain</summary>
-    <ol>
-      {% for r in redirects %}<li>{{ shorten_string(r, with_copy_button=True) }}</li>{% endfor %}
+  {% if hops|length > 1 %}
+  <details class="lk-route-details">
+    <summary>Show the redirect chain <span class="lk-route-count">{{ hops|length }} steps</span></summary>
+    <ol class="lk-route">
+      {% for hop in hops %}
+      <li class="lk-route-step{% if loop.first %} is-first{% endif %}{% if loop.last %} is-last{% endif %}">
+        <div class="lk-route-head">
+          <span class="lk-route-label">{% if loop.first %}Start{% elif loop.last %}Final page{% else %}Redirect {{ loop.index0 }}{% endif %}</span>
+          {% if hop.new_host %}<span class="lk-route-badge">new host</span>{% endif %}
+          {% if hop.insecure %}<span class="lk-route-badge is-warning">{{ icon('bi:unlock') }} HTTP</span>{% endif %}
+        </div>
+        <div class="lk-route-url">
+          <span class="lk-route-text" title="{{ hop.url }}"><span class="lk-route-host">{{ hop.scheme_prefix }}{{ hop.host }}</span><span class="lk-route-path">{{ hop.rest }}</span></span>
+          <button type="button" class="lk-copy js-copy" data-bs-toggle="tooltip" data-copy="{{ hop.url }}"
+                  title="Copy the URL" data-bs-original-title="Copy the URL" aria-label="Copy the URL">{{ icon('bi:copy') }}</button>
+        </div>
+      </li>
+      {% endfor %}
     </ol>
-    <a href="{{ url_for('redirects', tree_uuid=capture_uuid) }}">{{ icon('bi:download') }} Download the redirects</a>
+    <a class="lk-route-download" href="{{ url_for('redirects', tree_uuid=capture_uuid) }}">{{ icon('bi:download') }} Download the redirects</a>
   </details>
   {% endif %}
+  </div>
 </div>
 ''')
 
@@ -3207,6 +3243,23 @@ favicon_download_button_template = app.jinja_env.from_string(source='''
 <button type="button" class="btn btn-light downloadFaviconButton" data-mimetype="{{mimetype}}" data-b64favicon="{{b64_favicon}}" data-filename="favicon.ico">
   {{icon('bi:cloud-download', title="Download the favicon")}}
 </button>''')
+
+
+def redirect_hops(redirects: list[str]) -> list[dict[str, Any]]:
+    '''Split each URL of a redirect chain for display: scheme, host, rest of the URL,
+    and flags (plain HTTP, host different from the previous hop).'''
+    hops: list[dict[str, Any]] = []
+    previous_host: str | None = None
+    for url in redirects:
+        parsed = urlparse(url)
+        host = parsed.hostname or url
+        prefix = f'{parsed.scheme}://' if parsed.scheme else ''
+        rest = url[len(prefix) + len(parsed.netloc):] if parsed.netloc else ''
+        hops.append({'url': url, 'host': host, 'scheme_prefix': prefix, 'rest': rest,
+                     'insecure': parsed.scheme == 'http',
+                     'new_host': previous_host is not None and host != previous_host})
+        previous_host = host
+    return hops
 
 
 def get_index(offset: int, limit: int, public: bool=True, show_error: bool=False, category: str | None=None,
@@ -3272,14 +3325,15 @@ def post_table(table_name: str, value: str='') -> Response:
         for cache in index_captures:
             title = cache.title if hasattr(cache, 'title') else ''
             initial_url = cache.redirects[0] if cache.redirects else cache.url
+            hops = redirect_hops(cache.redirects)
             to_append = {
                 'page': {'display': render_template(index_capture_template,
                                                     capture_uuid=cache.uuid,
                                                     title=title,
                                                     url=initial_url,
-                                                    redirects=cache.redirects,
-                                                    initial_host=urlparse(initial_url).hostname,
-                                                    final_host=urlparse(cache.redirects[-1]).hostname if cache.redirects else None,
+                                                    hops=hops,
+                                                    trail=[hop['host'] for i, hop in enumerate(hops)
+                                                           if i == 0 or hop['host'] != hops[i - 1]['host']],
                                                     error=cache.error),
                          'filter': escape(f'{title} {" ".join(cache.redirects) if cache.redirects else cache.url}')},
                 'capture_time': cache.timestamp.isoformat(),

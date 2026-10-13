@@ -215,3 +215,17 @@ document.addEventListener("DOMContentLoaded", () => {
   renderTables();
 
 });
+
+// Blurred screenshot thumbnails (.lk-thumb, landing page): click to reveal / blur again.
+// Delegated on document because the rows are (re)drawn by DataTables.
+document.addEventListener('click', event => {
+    const thumb = event.target.closest('.lk-thumb');
+    if (!thumb) {
+        return;
+    }
+    const blurred = thumb.classList.toggle('is-blurred');
+    thumb.setAttribute('aria-pressed', blurred ? 'false' : 'true');
+    const label = blurred ? 'Show the screenshot' : 'Blur the screenshot';
+    thumb.setAttribute('aria-label', label);
+    thumb.title = label;
+});

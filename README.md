@@ -1,25 +1,72 @@
-[![Lookyloo icon](website/web/static/images/brand/lookyloo.jpeg)](https://www.lookyloo.eu/docs/main/index.html)
+<div align="center">
 
-*[Lookyloo](https://lookyloo.circl.lu/)* is a web interface that captures a webpage and then displays a tree of the domains, that call each other.
+<a href="https://www.lookyloo.eu/docs/main/index.html"><img src="website/web/static/images/brand/lookyloo.jpeg" alt="Lookyloo" width="320"></a>
 
+### See where a link really goes.
 
+*[Lookyloo](https://lookyloo.circl.lu/)* captures a web page in a real browser and shows
+the tree of the domains and URLs that call each other.
+
+[![Demo](https://img.shields.io/badge/demo-lookyloo.circl.lu-4f6bed)](https://lookyloo.circl.lu/)
+[![Docs](https://img.shields.io/badge/docs-lookyloo.eu-4f6bed)](https://www.lookyloo.eu/docs/main/index.html)
+[![PyPI client](https://img.shields.io/pypi/v/pylookyloo?label=pylookyloo)](https://pypi.org/project/pylookyloo/)
+[![License](https://img.shields.io/github/license/Lookyloo/lookyloo)](LICENSE)
 [![Gitter](https://badges.gitter.im/Lookyloo/community.svg)](https://gitter.im/Lookyloo/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
+[What is Lookyloo?](#no-really-what-is-lookyloo) ·
+[Interface](#the-interface) ·
+[REST API](#rest-api) ·
+[Install](#installation) ·
+[Python client](#python-client) ·
+[Contributing](#contributing-to-lookyloo) ·
+[Support](#support)
 
-* [What is Lookyloo?](#whats-in-a-name)
-* [REST API](#rest-api)
-* [Install Lookyloo](#installation)
-* [Lookyloo Client](#python-client)
-* [Contributing to Lookyloo](#contributing-to-lookyloo)
-  * [Code of Conduct](#code-of-conduct)
-* [Support](#support)
-  * [Security](#security)
-  * [Credits](#credits)
-  * [License](#license)
+</div>
 
+<p align="center">
+  <img src="doc/screenshots/tree.png" alt="The capture of github.com/Lookyloo/lookyloo: tree of the domains it loaded" width="90%">
+</p>
 
+## No, really, what is Lookyloo?
 
-## What's in a name?!
+You give Lookyloo a URL (or a document). It opens it in a real headless browser
+([Lacus](https://github.com/ail-project/lacus) + Playwright), records **everything**
+(HAR, screenshot, HTML, cookies, downloads, storage, console messages) and builds the
+**tree of every redirect, request and resource** the page loaded. Third-party modules
+(VirusTotal, MISP, Phishtank, urlscan, Pandora, …) enrich the capture, and every
+hostname, IP, cookie, hash or favicon can be pivoted on to find the other captures
+that share it.
+
+- 🌳 **The tree** — follow the journey of a page: redirects, third parties, data sent (POST), mixed content.
+- 🔎 **Analyse** — search and filter the tree by icon or text, view it from any node, highlight a node's neighbours, compare with another capture.
+- 🔗 **Pivot** — hostnames, IPs, cookies, body hashes, favicons, HTTP headers hashes shared between captures.
+- 📤 **Share** — MISP export, permalinks, private captures with a seed, report a suspicious capture.
+- 🤖 **Automate** — everything the interface does is in the REST API and [PyLookyloo](https://github.com/Lookyloo/PyLookyloo).
+
+Find all you need to know on the [documentation website](https://www.lookyloo.eu/docs/main/index.html).
+
+## The interface
+
+<table>
+  <tr>
+    <td width="50%"><img src="doc/screenshots/home.png" alt="Home page"><br><b>Home</b> — paste a URL, see the latest captures.</td>
+    <td width="50%"><img src="doc/screenshots/capture.png" alt="New capture form, dark mode"><br><b>New capture</b> — browser, device, privacy, proxy, cookies, headers…</td>
+  </tr>
+  <tr>
+    <td><img src="doc/screenshots/index.png" alt="Recent captures"><br><b>Recent captures</b> — searchable list, blurred screenshots.</td>
+    <td><img src="doc/screenshots/tree-legend.png" alt="Tree filtered by the legend, dark mode"><br><b>Legend &amp; filter</b> — highlight the nodes with a given icon.</td>
+  </tr>
+  <tr>
+    <td><img src="doc/screenshots/tree-dark.png" alt="Capture tree, dark mode"><br><b>Dark mode</b> — and named themes, for every page.</td>
+    <td><img src="doc/screenshots/api.png" alt="API reference page"><br><b>API</b> — the REST API, documented in the interface.</td>
+  </tr>
+</table>
+
+Each page has an optional **tutorial** (graduation cap in the header) that walks
+through its controls. Front-end notes for contributors: [`doc/ui/`](doc/ui/README.md).
+
+<details>
+<summary><b>What's in a name?!</b></summary>
 
 ```
 Lookyloo ...
@@ -34,30 +81,27 @@ In L.A., usually the lookyloos cause more accidents by not paying full attention
 ```
 Source: [Urban Dictionary](https://www.urbandictionary.com/define.php?term=lookyloo)
 
-
-## No, really, what is Lookyloo?
-
-Lookyloo is a web interface that allows you to capture and map the journey of a website page.
-
-Find all you need to know about Lookyloo on our [documentation website](https://www.lookyloo.eu/docs/main/index.html).
-
-Here's an example of a Lookyloo capture of the site **github.com**
-![Screenshot of Lookyloo capturing Github](https://www.lookyloo.eu/docs/main/_images/sample_github.png)
+</details>
 
 # REST API
 
-The API is self documented with swagger. You can play with it [on the demo instance](https://lookyloo.circl.lu/doc/).
+The API is self documented with swagger: browse it in the interface (**Help → API documentation**)
+or play with it [on the demo instance](https://lookyloo.circl.lu/doc/).
 
 # Installation
 
 Please refer to the [install guide](https://www.lookyloo.eu/docs/main/install-lookyloo.html).
 
+```bash
+poetry install
+poetry run update --init   # browsers, config validation, third-party JS/CSS/fonts/icons
+poetry run start           # website on http://127.0.0.1:5100
+```
 
 # Python client
 
 `pylookyloo` is the recommended client to interact with a Lookyloo instance.
-
-It is avaliable on PyPi, so you can install it using the following command:
+It is available on PyPI:
 
 ```bash
 pip install pylookyloo

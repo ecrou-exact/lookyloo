@@ -459,6 +459,49 @@ body.lk-capture-page .lk-header { position: static; }
 /* Swatch in the legend for the keys without an icon (third-party host) */
 .lk-legend-swatch { flex: none; width: 20px; height: 20px; border-radius: 3px; background: var(--lk-color-surface-2); border-left: 4px solid var(--lk-tag-violet); }
 
+/* ---------- Network info of the hovered node (js/tree.js, showNodeInfo) ---------- */
+
+.lk-node-info {
+  position: absolute;
+  z-index: 1025;
+  width: max-content;
+  max-width: 24rem;
+  padding: var(--lk-space-2) var(--lk-space-3);
+  border: 1px solid var(--lk-color-rule);
+  border-radius: var(--lk-radius-md);
+  background: var(--lk-color-surface);
+  box-shadow: var(--lk-shadow-md);
+  font-size: var(--lk-font-size-xs);
+  pointer-events: none;
+}
+.lk-node-info[hidden] { display: none; }
+.lk-node-info-title {
+  display: flex;
+  align-items: center;
+  gap: var(--lk-space-2);
+  margin: 0 0 var(--lk-space-1);
+  font-weight: var(--lk-font-weight-semibold);
+  font-size: var(--lk-font-size-sm);
+  color: var(--lk-color-ink);
+  overflow-wrap: anywhere;
+}
+.lk-node-info-flag {
+  padding: 0 var(--lk-space-2);
+  border-radius: var(--lk-radius-pill);
+  background: var(--lk-tag-violet-bg);
+  color: var(--lk-tag-violet);
+  font-weight: var(--lk-font-weight-medium);
+  font-size: var(--lk-font-size-xs);
+}
+.lk-node-info dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px var(--lk-space-3);
+  margin: 0;
+}
+.lk-node-info dt { color: var(--lk-color-muted); font-weight: var(--lk-font-weight-normal); }
+.lk-node-info dd { margin: 0; font-family: var(--lk-font-mono); color: var(--lk-color-ink); overflow-wrap: anywhere; }
+
 /* ---------- Legend & icon filter (tree/legend.html, js/tree.js) ---------- */
 
 .lk-tree-legend {

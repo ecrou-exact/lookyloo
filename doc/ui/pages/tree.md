@@ -246,3 +246,9 @@ Computed once on the tree data (`prepareAnalysis()` in `js/tree.js`):
   cookies, third-party hosts (`ATTENTION`, coloured by level). A chip toggles
   the same filter as the legend (each kind is a legend key). No chip when the
   capture has none of them.
+- **Network info**: after half a second over a card, a panel next to it
+  (`#tree-node-info`, `showNodeInfo()`) shows the host (and *third party*),
+  its IPs when the capture resolved them, its DNS zone, SOA (zone and primary
+  name server: often the hosting provider or the CDN), NS and MX — from
+  `resolved_ips`, `ns`, `mx`, `soa` of the tree dump (`networkLines()`). It
+  hides when the pointer leaves the card or a drag starts.

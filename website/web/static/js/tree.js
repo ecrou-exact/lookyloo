@@ -308,6 +308,76 @@ function prepareAnalysis(root) {
     main_path = new Set(rendered.ancestors().map(d => d.data.uuid));
 }
 
+// ****************** Network info of a node (panel on hover) ******************
+
+// [label, value] lines from the DNS data of a node (tree dump: resolved_ips
+// {v4, v6}, ns / mx [zone, records], soa [zone, "mname rname serial …"])
+function networkLines(d) {
+    const lines = [];
+    const list = value => (value instanceof Array ? value : value ? [value] : []).filter(Boolean).map(String);
+    const ips = d.data.resolved_ips || {};
+    const v4 = list(ips.v4 instanceof Array ? ips.v4 : ips.v4 && typeof ips.v4 === 'object' ? Object.keys(ips.v4) : ips.v4);
+    const v6 = list(ips.v6 instanceof Array ? ips.v6 : ips.v6 && typeof ips.v6 === 'object' ? Object.keys(ips.v6) : ips.v6);
+    if (v4.length) lines.push(['IPv4', v4.join(', ')]);
+    if (v6.length) lines.push(['IPv6', v6.join(', ')]);
+    const [ns_zone, ns_records] = d.data.ns || [];
+    const [, mx_records] = d.data.mx || [];
+    const [soa_zone, soa_record] = d.data.soa || [];
+    if (ns_zone) lines.push(['DNS zone', ns_zone]);
+    if (soa_zone || soa_record) {
+        const primary = soa_record ? String(soa_record).split(' ')[0].replace(/\.$/, '') : '';
+        lines.push(['SOA', [soa_zone, primary && primary !== soa_zone ? `primary ${primary}` : ''].filter(Boolean).join(' · ')]);
+    }
+    if (list(ns_records).length) lines.push(['NS', list(ns_records).join(', ')]);
+    if (list(mx_records).length) lines.push(['MX', list(mx_records).join(', ')]);
+    return lines;
+}
+
+let info_timer = null;
+function showNodeInfo(event, d) {
+    clearTimeout(info_timer);
+    const panel = document.getElementById('tree-node-info');
+    if (!panel) return;
+    const card = event.currentTarget.querySelector('.node-card');
+    info_timer = setTimeout(() => {
+        panel.textContent = '';
+        const title = document.createElement('p');
+        title.className = 'lk-node-info-title';
+        title.textContent = d.data.idna || d.data.name;
+        if (d.data.third_party) {
+            const flag = document.createElement('span');
+            flag.className = 'lk-node-info-flag';
+            flag.textContent = 'third party';
+            title.appendChild(flag);
+        }
+        panel.appendChild(title);
+        const lines = networkLines(d);
+        const table = document.createElement('dl');
+        (lines.length ? lines : [['DNS', 'No DNS data in this capture']]).forEach(([label, value]) => {
+            const dt = document.createElement('dt');
+            dt.textContent = label;
+            const dd = document.createElement('dd');
+            dd.textContent = value;
+            table.append(dt, dd);
+        });
+        panel.appendChild(table);
+        // Next to the card, inside the tree area
+        const area = panel.parentElement.getBoundingClientRect();
+        const box = (card || event.currentTarget).getBoundingClientRect();
+        panel.hidden = false;
+        let left = box.right - area.left + 12;
+        if (left + panel.offsetWidth > area.width - 8) left = Math.max(8, box.left - area.left - panel.offsetWidth - 12);
+        const top = Math.min(Math.max(8, box.top - area.top), area.height - panel.offsetHeight - 8);
+        panel.style.left = `${left}px`;
+        panel.style.top = `${top}px`;
+    }, 500);
+}
+function hideNodeInfo() {
+    clearTimeout(info_timer);
+    const panel = document.getElementById('tree-node-info');
+    if (panel) panel.hidden = true;
+}
+
 // Links and nodes of the main path, and of the path to the hovered node
 function markPaths() {
     node_container.selectAll('g.node').classed('is-main-path', d => main_path.has(d.data.uuid));
@@ -984,8 +1054,9 @@ function update(root, computed_node_width=0) {
         enter => {
             let node_group = enter.append('g')
                 .attr('class', d => d.data.third_party ? 'node is-third-party' : 'node')
-                .on('mouseenter', (event, d) => showHoverPath(d))
-                .on('mouseleave', () => showHoverPath(null))
+                .on('mouseenter', (event, d) => { showHoverPath(d); showNodeInfo(event, d); })
+                .on('mouseleave', () => { showHoverPath(null); hideNodeInfo(); })
+                .on('mousedown', hideNodeInfo)
                 .attr("id", d => `node_${d.data.uuid}`)
                 .attr("transform", nodeTransform(root, true));
 

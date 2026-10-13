@@ -1,18 +1,8 @@
 "use strict";
 
-// Same markup as the loader() Jinja macro (templates/macros/loader.html): keep both in sync.
-// Static string only, never inject data in it.
-const LK_LOADER_MARKUP = `<span class="lk-loader lk-loader-md" role="status">
-  <svg class="lk-loader-eyes" viewBox="0 0 64 30" aria-hidden="true" focusable="false">
-    <g class="lk-eye"><circle class="lk-eye-ring" cx="15" cy="15" r="11.5" pathLength="100"></circle><circle class="lk-eye-pupil" cx="17.5" cy="17.5" r="4.6"></circle></g>
-    <g class="lk-eye"><circle class="lk-eye-ring" cx="49" cy="15" r="11.5" pathLength="100"></circle><circle class="lk-eye-pupil" cx="51.5" cy="17.5" r="4.6"></circle></g>
-  </svg>
-  <span class="visually-hidden">Loading</span>
-</span>`;
-
 // Every DataTable shows the Lookyloo eyes instead of the default "Processing..." dots
-// (the dots are hidden in css/components/loader.css).
-DataTable.defaults.language.processing = LK_LOADER_MARKUP;
+// (lkLoader() from js/loader.js; the dots are hidden in css/components/loader.css).
+DataTable.defaults.language.processing = lkLoader('Loading');
 
 function renderTables() {
   if (document.getElementById('IndexTable')) {

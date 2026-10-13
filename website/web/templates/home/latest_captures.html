@@ -1,0 +1,25 @@
+{#
+  Latest captures on the home page, an HTML fragment loaded by js/home.js from
+  the home_latest_captures route. Rows: index_row() in website/web/__init__.py.
+#}
+{% if latest_captures %}
+<table class="table lk-capture-table">
+  <thead>
+    <tr>
+      <th>Capture</th>
+      <th class="text-end">Captured</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in latest_captures %}
+    <tr>
+      <td>{{ row.page.display }}</td>
+      {# Replaced by the relative time ("5 days ago") in js/generic.js #}
+      <td class="text-end"><span data-lk-time="{{ row.capture_time }}">{{ row.capture_time }}</span></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="lk-latest-empty">No public capture yet. Be the first: paste a URL above.</p>
+{% endif %}

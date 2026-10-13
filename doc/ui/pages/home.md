@@ -39,10 +39,13 @@ capture" to `submit_capture`.
 
 ## Latest captures
 
-The `HOME_LATEST_CAPTURES` (10) most recent public captures, rendered server
-side (no DataTable, no search, no pagination) with the same rows as the index
+The `HOME_LATEST_CAPTURES` (10) most recent public captures, loaded **after**
+the page by `js/home.js` from the route `home_latest_captures` (`/home/latest`,
+HTML fragment `home/latest_captures.html`), with the Lookyloo eyes shown
+meanwhile ([loader.md](../loader.md); `?loader_demo=3` to see them). The page
+itself never waits for the capture cache. Rows are the same as on the index
 page: `index_row()` + `index_capture_template`, styles in
 `css/components/capture-list.css`. Same cost as the first page of the index
-(capture cache only). Times are turned into relative times by `js/generic.js`
-(`<span data-lk-time="ISO date">`). "See all captures" links to the index page;
+(capture cache only). Times are turned into relative times by
+`lkRelativeTimes()` in `js/generic.js` (`<span data-lk-time="ISO date">`). "See all captures" links to the index page;
 an empty state invites to make the first capture.

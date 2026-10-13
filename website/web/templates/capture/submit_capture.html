@@ -22,7 +22,7 @@
 
 {% block main %}
 <div class="container">
-  <form role="form" action="{{ url_for('submit_capture') }}" method=post enctype=multipart/form-data>
+  <form role="form" action="{{ url_for('submit_capture') }}" method=post enctype=multipart/form-data data-lk-loading="Uploading the capture">
     <div class="row mb-3">
       <div class="col-sm-10">
         <div class="form-check">

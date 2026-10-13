@@ -1,4 +1,5 @@
 {% extends "layouts/base.html" %}
+{% from 'macros/loader.html' import loader %}
 
 
 {% from "macros/macros.html" import known_content_details %}
@@ -464,7 +465,7 @@
               <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-              ... loading JSON ...
+              {{ loader('Loading JSON', show_label=True) }}
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

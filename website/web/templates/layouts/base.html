@@ -73,6 +73,10 @@
             {{get_sri('static', 'vendor/datatables.min.js')}}
             nonce="{{ csp_nonce() }}"
             crossorigin="anonymous"></script>
+    <script src='{{ url_for('static', filename='js/loader.js') }}'
+            {{get_sri('static', 'js/loader.js')}}
+            nonce="{{ csp_nonce() }}"
+            crossorigin="anonymous"></script>
     <script src='{{ url_for('static', filename='js/render_tables.js') }}'
             {{get_sri('static', 'js/render_tables.js')}}
             nonce="{{ csp_nonce() }}"

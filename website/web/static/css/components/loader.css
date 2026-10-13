@@ -121,3 +121,32 @@ div.dt-processing {
 div.dt-processing > div:last-child {
   display: none;
 }
+
+/* Loader alone in a modal body (tree modals, popups): centred */
+.modal-body > .lk-loader:only-child {
+  display: flex;
+  margin: var(--lk-space-6) auto;
+}
+
+/* Submit button while its form is being sent (data-lk-loading, js/loader.js) */
+.lk-btn-loading,
+.lk-btn-loading:disabled {
+  pointer-events: none;
+  opacity: 1;
+}
+
+.lk-btn-loading .lk-loader {
+  flex-direction: row;
+  gap: var(--lk-space-2);
+  color: inherit;
+}
+
+.lk-btn-loading .lk-loader-label {
+  color: inherit;
+  font-size: inherit;
+}
+
+.lk-btn-loading .lk-loader-sm .lk-loader-eyes,
+.lk-btn-loading .lk-loader-eyes {
+  width: 34px;
+}

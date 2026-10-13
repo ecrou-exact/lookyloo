@@ -48,7 +48,7 @@
   <script nonce="{{ csp_nonce() }}">
     const buttonModulesRefresh = document.getElementById("modulesForceRefresh");
     buttonModulesRefresh.addEventListener("click", (event) => {
-        document.getElementById("modulesBody").textContent = "Reloading modules, please wait...";
+        document.getElementById("modulesBody").innerHTML = lkLoader("Reloading the modules, please wait", "md", true);
         fetch("{{ url_for('trigger_modules', tree_uuid=tree_uuid, force=True, seed=seed) }}", {
             method: "GET"
         })
@@ -634,7 +634,7 @@
               <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-              ... loading statistics ...
+              {{ loader('Loading statistics', show_label=True) }}
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -651,7 +651,7 @@
               <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-              ... loading storage state ...
+              {{ loader('Loading storage state', show_label=True) }}
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -668,7 +668,7 @@
               <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-              ... loading console messages ...
+              {{ loader('Loading console messages', show_label=True) }}
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -685,7 +685,7 @@
               <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-              ... loading downloads ...
+              {{ loader('Loading downloads', show_label=True) }}
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -702,7 +702,7 @@
               <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-              ... loading video ...
+              {{ loader('Loading video', show_label=True) }}
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -719,7 +719,7 @@
               <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-              ... loading identifiers ...
+              {{ loader('Loading identifiers', show_label=True) }}
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -736,7 +736,7 @@
               <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-              ... loading identifier details ...
+              {{ loader('Loading identifier details', show_label=True) }}
           </div>
           <div class="modal-footer">
               <a class="btn btn-primary" href="#identifiersModal"
@@ -756,7 +756,7 @@
               <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-              ... loading favicons ...
+              {{ loader('Loading favicons', show_label=True) }}
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -773,7 +773,7 @@
               <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-              ... loading favicon details ...
+              {{ loader('Loading favicon details', show_label=True) }}
           </div>
           <div class="modal-footer">
               <a class="btn btn-primary" href="#faviconsModal"
@@ -793,7 +793,7 @@
               <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-              ... loading hash types ...
+              {{ loader('Loading hash types', show_label=True) }}
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -810,7 +810,7 @@
               <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-              ... loading hash details ...
+              {{ loader('Loading hash details', show_label=True) }}
           </div>
           <div class="modal-footer">
               <a class="btn btn-primary" href="#captureHashesTypesModal"
@@ -830,7 +830,7 @@
               <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-              ... loading favicon details from probabilistic hash ...
+              {{ loader('Loading favicon details from probabilistic hash', show_label=True) }}
           </div>
           <div class="modal-footer">
               <a class="btn btn-primary" href="#faviconsModal"
@@ -850,7 +850,7 @@
               <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-              ... loading resources ...
+              {{ loader('Loading resources', show_label=True) }}
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -867,7 +867,7 @@
               <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-              ... loading resource details ...
+              {{ loader('Loading resource details', show_label=True) }}
           </div>
           <div class="modal-footer">
               <a class="btn btn-primary" href="#bodyHashesModal"
@@ -887,7 +887,7 @@
               <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-              ... loading IPs ...
+              {{ loader('Loading IPs', show_label=True) }}
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -904,7 +904,7 @@
               <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-              ... loading IP details ...
+              {{ loader('Loading IP details', show_label=True) }}
           </div>
           <div class="modal-footer">
               <a class="btn btn-primary" href="#HostnamesModal"
@@ -928,7 +928,7 @@
               <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-              ... loading hostnames ...
+              {{ loader('Loading hostnames', show_label=True) }}
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -945,7 +945,7 @@
               <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-              ... loading hostname details ...
+              {{ loader('Loading hostname details', show_label=True) }}
           </div>
           <div class="modal-footer">
               <a class="btn btn-primary" href="#ipsModal"
@@ -968,7 +968,7 @@
               <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-              ... loading urls ...
+              {{ loader('Loading urls', show_label=True) }}
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -985,7 +985,7 @@
               <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-              ... loading url details ...
+              {{ loader('Loading url details', show_label=True) }}
           </div>
           <div class="modal-footer">
               <a class="btn btn-primary" href="#HostnamesModal"
@@ -1005,7 +1005,7 @@
               <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-              ... loading MISP Push view ...
+              {{ loader('Loading MISP Push view', show_label=True) }}
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -1022,7 +1022,7 @@
               <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-              ... loading MISP Lookup view ...
+              {{ loader('Loading MISP Lookup view', show_label=True) }}
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -1077,7 +1077,7 @@
                   link below, it probably means the capture is still ongoing.
                   Try reloading the page after a few seconds.</h5></center>
           <div class="modal-body" id="modulesBody">
-              ... loading results from 3rd party modules ...
+              {{ loader('Loading results from 3rd party modules', show_label=True) }}
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-success" id="modulesForceRefresh">Re-run all modules</button>
@@ -1099,7 +1099,7 @@
           </div>
           <br>
           <div class="modal-body">
-              ... loading results historical context ...
+              {{ loader('Loading results historical context', show_label=True) }}
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -1116,7 +1116,7 @@
               <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-              ... loading statistics ...
+              {{ loader('Loading statistics', show_label=True) }}
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -1137,7 +1137,7 @@
           </div>
           <br>
           <div class="modal-body">
-            ... loading elements ...
+            {{ loader('Loading elements', show_label=True) }}
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -1249,7 +1249,7 @@
           </div>
           <br>
           <div class="modal-body">
-              ... loading report from ollama ...
+              {{ loader('Loading report from ollama', show_label=True) }}
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -1270,7 +1270,7 @@
           </div>
           <br>
           <div class="modal-body">
-              ... loading results from hashlookup ...
+              {{ loader('Loading results from hashlookup', show_label=True) }}
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -1288,7 +1288,7 @@
               <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-              ... loading the categorization options ...
+              {{ loader('Loading the categorization options', show_label=True) }}
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -1352,7 +1352,7 @@
               <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-              ... loading URLs in rendered page ...
+              {{ loader('Loading URLs in rendered page', show_label=True) }}
           </div>
           <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

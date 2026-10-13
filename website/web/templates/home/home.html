@@ -5,6 +5,8 @@
   Doc: doc/ui/pages/home.md
 #}
 
+{% from 'macros/loader.html' import loader %}
+
 {% block title %}Lookyloo{% endblock %}
 
 {% block card %}
@@ -37,6 +39,14 @@
       crossorigin="anonymous">
 {% endblock %}
 
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('static', filename='js/home.js') }}"
+        {{get_sri('static', 'js/home.js')}}
+        nonce="{{ csp_nonce() }}"
+        crossorigin="anonymous"></script>
+{% endblock %}
+
 {% block main %}
 <section class="lk-hero" aria-labelledby="quick-capture-title">
   <div class="lk-hero-main">
@@ -48,7 +58,7 @@
       <p>Web forensics tool</p>
     </div>
 
-    <form class="lk-hero-form" method="post" action="{{ url_for('capture_web') }}">
+    <form class="lk-hero-form" method="post" action="{{ url_for('capture_web') }}" data-lk-loading="Starting the capture">
       <h1 id="quick-capture-title">See where a link really goes.</h1>
       <p class="lk-hero-lead">Paste a URL: Lookyloo opens it in a real browser and records every redirect, request and resource it loads.</p>
 
@@ -114,26 +124,9 @@
     <h2 class="lk-section-title" id="latest-captures-title">Latest captures</h2>
     <a href="{{ url_for('index') }}">See all captures {{ icon('bi:arrow-right') }}</a>
   </div>
-  {% if latest_captures %}
-  <table class="table lk-capture-table">
-    <thead>
-      <tr>
-        <th>Capture</th>
-        <th class="text-end">Captured</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for row in latest_captures %}
-      <tr>
-        <td>{{ row.page.display }}</td>
-        {# Replaced by the relative time ("5 days ago") in js/generic.js #}
-        <td class="text-end"><span data-lk-time="{{ row.capture_time }}">{{ row.capture_time }}</span></td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  {% else %}
-  <p class="lk-latest-empty">No public capture yet. Be the first: paste a URL above.</p>
-  {% endif %}
+  {# Filled by js/home.js with the fragment of /home/latest (home/latest_captures.html) #}
+  <div id="lk-latest-captures" data-remote="{{ url_for('home_latest_captures') }}">
+    <div class="lk-latest-loading">{{ loader('Loading the latest captures', show_label=True) }}</div>
+  </div>
 </section>
 {% endblock %}

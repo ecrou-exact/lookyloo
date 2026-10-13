@@ -289,6 +289,15 @@
   font-weight: var(--lk-font-weight-medium);
 }
 
+.lk-latest-loading {
+  display: flex;
+  justify-content: center;
+  padding: var(--lk-space-7) 0;
+  border: 1px solid var(--lk-color-rule);
+  border-radius: var(--lk-radius-lg);
+  background: var(--lk-color-surface);
+}
+
 .lk-latest-empty {
   color: var(--lk-color-muted);
   padding: var(--lk-space-5);

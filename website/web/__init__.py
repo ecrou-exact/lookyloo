@@ -2228,10 +2228,9 @@ HOME_LATEST_CAPTURES = 10
 
 
 def home_page() -> str:
-    '''Home page: logo + quick capture form + the latest public captures
-    (template home/home.html). The full list is on the index page.'''
-    show_error, _ = get_index_params(request)
-    _, _, latest = get_index(offset=0, limit=HOME_LATEST_CAPTURES, show_error=show_error)
+    '''Home page: logo + quick capture form (template home/home.html). The latest
+    captures are loaded afterwards by js/home.js (home_latest_captures), so the
+    page itself never waits for the capture cache. The full list is on the index page.'''
     mastodon_domain = None
     mastodon_botname = None
     if get_config('mastobot', 'enable'):
@@ -2244,7 +2243,15 @@ def home_page() -> str:
                            default_device=user_agents.default['default_device_name'],
                            default_mobile_device=user_agents.default.get('default_mobile_device_name'),
                            default_public=lookyloo.default_public,
-                           default_private=lookyloo.default_private,
+                           default_private=lookyloo.default_private)
+
+
+@app.route('/home/latest', methods=['GET'])
+def home_latest_captures() -> str:
+    '''HTML fragment with the latest public captures, loaded on the home page.'''
+    show_error, _ = get_index_params(request)
+    _, _, latest = get_index(offset=0, limit=HOME_LATEST_CAPTURES, show_error=show_error)
+    return render_template('home/latest_captures.html',
                            latest_captures=[index_row(cache) for cache in latest])
 
 

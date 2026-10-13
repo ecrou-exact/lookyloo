@@ -157,9 +157,14 @@ document.addEventListener("DOMContentLoaded", () => {
      "#urlsInPageModal", "#storageStateModal", "#downloadsModal",
      "#ipsModal", "#ipDetailsModal", "#ollamaModal",
      "#mispPushModal", "#mispLookupModal"].forEach(modal => {
-        document.querySelector(modal).addEventListener('show.bs.modal', function(e) {
+        // Some modals only exist when their feature is enabled (e.g. #categoriesModal):
+        // skip the missing ones instead of stopping the loop for all the others.
+        document.querySelector(modal)?.addEventListener('show.bs.modal', function(e) {
           var curTarget = e.currentTarget;
-          fetch(e.relatedTarget.dataset.remote)
+          // Eyes while loading, also when the modal is opened again with other content
+          curTarget.querySelector('.modal-body').innerHTML = lkLoader('Loading', 'md', true);
+          lkLoaderDemoDelay()
+            .then(() => fetch(e.relatedTarget.dataset.remote))
             .then(response => response.text())
             .then(data => {
                 curTarget.querySelector('.modal-body').innerHTML = data;

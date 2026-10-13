@@ -4,7 +4,10 @@ document.addEventListener("DOMContentLoaded", () => {
     ["#JsonRenderModal"].forEach(modal => {
         document.querySelector(modal).addEventListener('show.bs.modal', function(e) {
           var curTarget = e.currentTarget;
-          fetch(e.relatedTarget.dataset.remote)
+          // Eyes while loading, also when the modal is opened again with other content
+          curTarget.querySelector('.modal-body').innerHTML = lkLoader('Loading', 'md', true);
+          lkLoaderDemoDelay()
+            .then(() => fetch(e.relatedTarget.dataset.remote))
             .then(response => response.text())
             .then(data => {
                 curTarget.querySelector('.modal-body').innerHTML = data;

@@ -148,5 +148,5 @@ Injected by the `inject_layout_context()` context processor in
 `admin/login.html` (route `login`, GET). The form posts `username` and
 `password` to the same route.
 
-The footer is also on the capture page (`tree/tree.html`), compact: one line,
-without the tagline (`.lk-footer-tagline`, hidden by `css/tree.css`).
+The footer is also on the capture page (`tree/tree.html`), the same as on
+every page, under the tree.

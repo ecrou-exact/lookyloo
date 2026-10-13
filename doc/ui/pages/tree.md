@@ -14,7 +14,7 @@ messages     (.lk-capture-flashes)   flash messages, dismissible
 tree area    (.lk-tree-area)
   tree       (#tree_viewport)        scrolls in both directions, holds #tree_svg
   legend     (tree/legend.html)      legend & icon filter, over the bottom right corner, closed
-footer       (partials/footer.html)  compact: one line (version + links)
+footer       (partials/footer.html)  the site footer, as on every page
 modals       (block content)
 ```
 

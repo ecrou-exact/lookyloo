@@ -211,27 +211,9 @@ body.lk-capture-page .lk-header { position: static; flex: none; }
   outline: none;
 }
 
-/* ---------- Footer, compact: one line under the tree ---------- */
+/* ---------- Footer: the site footer (partials/footer.html), as on every page ---------- */
 
-body.lk-capture-page .lk-footer { flex: none; font-size: var(--lk-font-size-xs); }
-body.lk-capture-page .lk-footer-inner {
-  max-width: none;
-  padding: var(--lk-space-2) var(--lk-space-5);
-}
-body.lk-capture-page .lk-footer-about br,
-body.lk-capture-page .lk-footer-tagline { display: none; }
-body.lk-capture-page .lk-footer-links { margin-right: 0; gap: var(--lk-space-1) var(--lk-space-4); }
-
-#tree_svg { position: relative; }
-
-#tree-loading {
-  position: absolute;
-  top: 40vh;
-  left: 50vw;
-  transform: translate(-50%, -50%);
-}
-
-#screenshot_thumbnail { scroll-margin: 50px; }
+body.lk-capture-page .lk-footer { flex: none; }
 
 /* ---------- Legend & icon filter (tree/legend.html, js/tree.js) ---------- */
 

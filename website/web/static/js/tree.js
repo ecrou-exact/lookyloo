@@ -23,6 +23,9 @@ let center_node = null;
 // Keys selected in the legend filter (tree/legend.html): the nodes having at
 // least one of them are highlighted, the others dimmed. Before the first await.
 const active_filters = new Set();
+// Text of the search field over the tree (lower case, '' = no text filter)
+let search_text = '';
+let search_index = -1;   // match centred by the previous / next buttons
 
 // First display: the tree grows from the root, one depth column after the other
 // (animateTreeEntry). Off with prefers-reduced-motion.
@@ -88,6 +91,7 @@ try {
   document.getElementById("tree-loading").style.display = "none";
   update(root);
   setupLegendFilter(root);
+  setupTreeSearch();
   // Scroll once the nodes are in place
   await animateTreeEntry(root);
 
@@ -228,23 +232,107 @@ function nodeHas(d, key) {
     return Boolean(value);
 }
 
-function applyLegendFilter() {
-    const filtering = active_filters.size > 0;
+// Text searched in a node: hostname, IDNA form, resolved IPs
+function nodeText(d) {
+    const parts = [d.data.name, d.data.idna];
+    const ips = d.data.resolved_ips;
+    if (ips && typeof ips === 'object') {
+        // v4 / v6: a list of IPs, or an object keyed by IP, or null
+        Object.values(ips).forEach(list => {
+            if (list instanceof Array) parts.push(...list.map(String));
+            else if (list && typeof list === 'object') parts.push(...Object.keys(list));
+        });
+    }
+    return parts.filter(Boolean).join(' ').toLowerCase();
+}
+
+// The filters of the tree: icons (legend) AND text (search field). A node
+// matches when it passes every active filter; the others are dimmed.
+function nodeMatches(d) {
+    const icon_ok = active_filters.size === 0 || [...active_filters].some(key => nodeHas(d, key));
+    const text_ok = !search_text || nodeText(d).includes(search_text);
+    return icon_ok && text_ok;
+}
+
+function matchingNodes() {
+    return node_container.selectAll('g.node').filter(d => nodeMatches(d)).nodes();
+}
+
+function applyTreeFilter() {
+    const filtering = active_filters.size > 0 || search_text !== '';
     let matches = 0;
     node_container.selectAll('g.node').each(function(d) {
-        const match = filtering && [...active_filters].some(key => nodeHas(d, key));
+        const match = filtering && nodeMatches(d);
         if (match) matches++;
         d3.select(this)
           .classed('is-filter-match', match)
           .classed('is-filter-dimmed', filtering && !match);
     });
+    const label = `${matches} node${matches === 1 ? '' : 's'}`;
     const active = document.getElementById('legend-active');
     if (active) {
-        active.hidden = !filtering;
-        active.textContent = filtering ? `${matches} node${matches === 1 ? '' : 's'}` : '';
+        active.hidden = active_filters.size === 0;
+        active.textContent = active_filters.size ? label : '';
     }
     const clear = document.getElementById('legend-clear');
-    if (clear) clear.hidden = !filtering;
+    if (clear) clear.hidden = active_filters.size === 0;
+    const count = document.getElementById('tree-search-count');
+    if (count) {
+        count.textContent = search_text ? (matches ? label : 'No match') : '';
+        document.getElementById('tree-search-prev').hidden = !search_text || matches < 2;
+        document.getElementById('tree-search-next').hidden = !search_text || matches < 2;
+    }
+    return matches;
+}
+
+// Centre the next / previous matching node in the viewport
+function focusMatch(step) {
+    const nodes = matchingNodes();
+    if (!nodes.length) return;
+    search_index = (search_index + step + nodes.length) % nodes.length;
+    const node = nodes[search_index];
+    node.scrollIntoView({behavior: reduce_motion ? 'auto' : 'smooth', block: 'center', inline: 'center'});
+    node_container.selectAll('g.node').classed('is-search-current', false);
+    d3.select(node).classed('is-search-current', true);
+    const count = document.getElementById('tree-search-count');
+    if (count && nodes.length > 1) count.textContent = `${search_index + 1} / ${nodes.length}`;
+}
+
+function setupTreeSearch() {
+    const input = document.getElementById('tree-search');
+    if (!input) return;
+    let timer = null;
+    input.addEventListener('input', () => {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            search_text = input.value.trim().toLowerCase();
+            search_index = -1;
+            node_container.selectAll('g.node').classed('is-search-current', false);
+            if (applyTreeFilter() && search_text) focusMatch(1);
+        }, 150);
+    });
+    input.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            event.preventDefault();
+            focusMatch(event.shiftKey ? -1 : 1);
+        } else if (event.key === 'Escape') {
+            input.value = '';
+            input.dispatchEvent(new Event('input'));
+            input.blur();
+        }
+    });
+    document.getElementById('tree-search-next').addEventListener('click', () => focusMatch(1));
+    document.getElementById('tree-search-prev').addEventListener('click', () => focusMatch(-1));
+    // "/" anywhere on the page (outside a field) focuses the search
+    document.addEventListener('keydown', (event) => {
+        if (event.key !== '/' || event.ctrlKey || event.metaKey) return;
+        const tag = document.activeElement?.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || document.activeElement?.isContentEditable) return;
+        if (document.querySelector('.modal.show')) return;
+        event.preventDefault();
+        input.focus();
+        input.select();
+    });
 }
 
 // Select / unselect an icon in the filter: from the legend, or from an icon of a node
@@ -256,7 +344,7 @@ function toggleLegendFilter(key) {
     button.setAttribute('aria-pressed', active_filters.has(key) ? 'true' : 'false');
     // Show the legend, so the filter can be seen and cleared
     document.getElementById('legend').open = true;
-    applyLegendFilter();
+    applyTreeFilter();
 }
 
 function setupLegendFilter(root) {
@@ -288,7 +376,7 @@ function setupLegendFilter(root) {
     document.getElementById('legend-clear').addEventListener('click', () => {
         active_filters.clear();
         present.querySelectorAll('.lk-legend-item').forEach(b => b.setAttribute('aria-pressed', 'false'));
-        applyLegendFilter();
+        applyTreeFilter();
     });
 }
 
@@ -926,6 +1014,6 @@ function update(root, computed_node_width=0) {
   if (computed_node_width === 0) {
     update(root, node_width)
   }
-  // Nodes shown again after an expand keep the legend filter
-  if (active_filters.size > 0) applyLegendFilter();
+  // Nodes shown again after an expand keep the filters
+  if (active_filters.size > 0 || search_text) applyTreeFilter();
 }

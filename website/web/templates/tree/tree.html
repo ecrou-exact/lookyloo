@@ -303,10 +303,22 @@
 {# The tree area: the scrolling viewport, and the legend over its bottom right corner #}
 <div class="lk-tree-area">
   <main class="lk-tree-viewport" id="tree_viewport" tabindex="-1" aria-label="Capture tree">
-    <div id="tree_svg">
-      <div id="tree-loading">{{ loader('Tree loading, please wait', size='lg') }}</div>
-    </div>
+    <div id="tree_svg"></div>
   </main>
+  {# Centred in the tree area while js/tree.js loads the tree (hidden by tree.js) #}
+  <div id="tree-loading">{{ loader('Tree loading, please wait', size='lg') }}</div>
+
+  {# Text search over the nodes (js/tree.js, applyTreeFilter): hostname, IDNA, IPs #}
+  <div class="lk-tree-search" role="search">
+    <label for="tree-search" class="visually-hidden">Search the tree</label>
+    {{ icon('bi:search', classes='lk-tree-search-icon') }}
+    <input type="search" id="tree-search" placeholder="Search a hostname or an IP…" autocomplete="off" spellcheck="false"
+           aria-describedby="tree-search-count">
+    <kbd class="lk-tree-search-key" title="Press / to search">/</kbd>
+    <span class="lk-tree-search-count" id="tree-search-count" aria-live="polite"></span>
+    <button type="button" class="lk-tree-search-nav" id="tree-search-prev" title="Previous match" aria-label="Previous match" hidden>{{ icon('bi:chevron-up') }}</button>
+    <button type="button" class="lk-tree-search-nav" id="tree-search-next" title="Next match" aria-label="Next match" hidden>{{ icon('bi:chevron-down') }}</button>
+  </div>
 
   {% include 'tree/legend.html' %}
 </div>

@@ -243,6 +243,88 @@ body.lk-capture-page .lk-header { position: static; }
   outline: none;
 }
 
+#tree_svg { position: relative; }
+
+/* Loader, centred in the tree area while js/tree.js loads the tree (hidden by tree.js) */
+#tree-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 1010;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+#screenshot_thumbnail { scroll-margin: 50px; }
+
+/* ---------- Search over the tree (top left of the tree area) ---------- */
+
+.lk-tree-search {
+  position: absolute;
+  top: var(--lk-space-3);
+  left: var(--lk-space-4);
+  z-index: 1020;
+  display: flex;
+  align-items: center;
+  gap: var(--lk-space-1);
+  width: min(26rem, calc(100% - 2 * var(--lk-space-4)));
+  padding: var(--lk-space-1) var(--lk-space-2) var(--lk-space-1) var(--lk-space-3);
+  background: var(--lk-color-surface);
+  border: 1px solid var(--lk-color-rule);
+  border-radius: var(--lk-radius-pill);
+  box-shadow: var(--lk-shadow-md);
+}
+.lk-tree-search:focus-within { border-color: var(--lk-color-accent); box-shadow: 0 0 0 3px var(--lk-focus-ring), var(--lk-shadow-md); }
+.lk-tree-search-icon { flex: none; color: var(--lk-color-muted); }
+.lk-tree-search input {
+  flex: 1;
+  min-width: 0;
+  padding: var(--lk-space-1) 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--lk-color-ink);
+  font-size: var(--lk-font-size-sm);
+}
+.lk-tree-search input::placeholder { color: var(--lk-color-muted); }
+.lk-tree-search-key {
+  padding: 0 0.4em;
+  border: 1px solid var(--lk-color-rule);
+  border-radius: var(--lk-radius-sm);
+  background: var(--lk-color-surface-2);
+  color: var(--lk-color-muted);
+  font-family: var(--lk-font-mono);
+  font-size: var(--lk-font-size-xs);
+  box-shadow: none;
+}
+.lk-tree-search:focus-within .lk-tree-search-key { display: none; }
+.lk-tree-search-count {
+  flex: none;
+  color: var(--lk-color-muted);
+  font-family: var(--lk-font-mono);
+  font-size: var(--lk-font-size-xs);
+  white-space: nowrap;
+}
+.lk-tree-search-nav {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--lk-color-muted);
+}
+.lk-tree-search-nav:hover { background: var(--lk-color-surface-2); color: var(--lk-color-ink); }
+.lk-tree-search-nav[hidden] { display: none; }
+
+/* The tree starts under the search field */
+#tree_svg { padding-top: var(--lk-space-7); }
+
 /* ---------- Legend & icon filter (tree/legend.html, js/tree.js) ---------- */
 
 .lk-tree-legend {
@@ -335,6 +417,8 @@ body.lk-capture-page .lk-header { position: static; }
 g.node { transition: opacity var(--lk-transition-fast); }
 g.node.is-filter-dimmed { opacity: 0.22; }
 g.node.is-filter-match .node-card { stroke: var(--lk-color-accent); stroke-width: 2px; }
+/* Match centred by the search (previous / next) */
+g.node.is-search-current .node-card { fill: var(--lk-color-accent-soft); stroke-width: 3px; }
 
 /* ---------- D3 tree (drawn by js/tree.js) ----------
  * js/tree.js only sets classes: every colour of the tree is here, from the

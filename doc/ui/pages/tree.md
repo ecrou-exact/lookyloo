@@ -12,6 +12,8 @@ top block    (#capture_top, sticky)  stays visible while the page scrolls:
   messages    (.lk-capture-flashes)  flash messages, dismissible
 tree area    (.lk-tree-area)         exactly the rest of the screen:
   tree       (#tree_viewport)        scrolls in both directions, holds #tree_svg
+  search     (.lk-tree-search)       text search over the nodes, top left corner
+  loader     (#tree-loading)         centred in the tree area while the tree loads
   legend     (tree/legend.html)      legend & icon filter, bottom right corner
 footer       (partials/footer.html)  the site footer, at the bottom of the page
 modals       (block content)
@@ -141,3 +143,15 @@ still written in `tree.html`.
   scroll to the rendered page (or to the located node) waits for the end.
 - **Expand / collapse**: nodes and links move to their new place in 300 ms.
 - Both are off with `prefers-reduced-motion`.
+
+## Search
+
+The field at the top left of the tree (`#tree-search`, `setupTreeSearch()` in
+`js/tree.js`) searches the hostname, its IDNA form and the resolved IPs of
+each node (`nodeText()`). It is a filter like the icons of the legend: a node
+is highlighted when it matches the text **and** at least one of the selected
+icons (`nodeMatches()`, `applyTreeFilter()`); the others are dimmed.
+
+- the number of matching nodes shows in the field; **Enter** / **Shift+Enter**
+  or the arrows centre the next / previous match (`.is-search-current`);
+- **/** anywhere on the page focuses the field, **Esc** clears it.

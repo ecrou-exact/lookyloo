@@ -1,15 +1,14 @@
 "use strict";
 // Home page (home/home.html): loads the latest captures fragment with the
-// Lookyloo eyes shown meanwhile. Doc: doc/ui/pages/home.md
-// Add ?loader_demo=<seconds> to the URL to slow it down and see the loader.
+// Lookyloo eyes shown meanwhile (only if it takes a while, see loader.css).
+// Doc: doc/ui/pages/home.md
 
 document.addEventListener('DOMContentLoaded', () => {
     const container = document.getElementById('lk-latest-captures');
     if (!container) {
         return;
     }
-    lkLoaderDemoDelay()
-        .then(() => fetch(container.dataset.remote))
+    fetch(container.dataset.remote)
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}`);

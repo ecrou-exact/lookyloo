@@ -19,14 +19,6 @@ function lkLoader(label = 'Loading', size = 'md', showLabel = false) {
     return wrapper.outerHTML;
 }
 
-// Optional demo delay to see the loaders: add ?loader_demo=<seconds> (max 10) to the URL.
-// Only affects the current visitor's browser, never the server.
-function lkLoaderDemoDelay() {
-    const seconds = parseFloat(new URLSearchParams(window.location.search).get('loader_demo'));
-    const delay = isNaN(seconds) ? 0 : Math.min(Math.max(seconds, 0), 10) * 1000;
-    return new Promise(resolve => setTimeout(resolve, delay));
-}
-
 // Forms with data-lk-loading="Label": on submit, the submit button shows the eyes and is disabled.
 document.addEventListener('submit', event => {
     const form = event.target;

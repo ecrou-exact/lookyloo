@@ -43,10 +43,11 @@ shows the eyes with the label and is disabled (restored if the page comes back
 from the browser cache with the Back button). Used by the capture forms (home,
 full form, takedown) and the upload form.
 
-**Demo delay**: add `?loader_demo=<seconds>` (max 10) to a URL to delay the
-asynchronous loads of that page (home latest captures, tree modals) and see the
-loaders. It only runs in the visitor's browser (`lkLoaderDemoDelay()`), the
-server is never slowed down. Example: `http://127.0.0.1:5100/?loader_demo=3`.
+**Show delay**: the loader is invisible for the first 400ms (`--lk-loader-delay`
+in `loader.css`), then fades in. A fast load (modal, list, home captures) never
+flashes the eyes; a slow one shows them. Inside a submit button the delay is 0
+so the click gets immediate feedback. To change it for one place:
+`style="--lk-loader-delay: 0s"` on a parent, or a CSS rule.
 
 ## Where it is used
 

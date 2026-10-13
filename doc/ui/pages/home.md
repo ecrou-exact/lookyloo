@@ -42,7 +42,7 @@ capture" to `submit_capture`.
 The `HOME_LATEST_CAPTURES` (10) most recent public captures, loaded **after**
 the page by `js/home.js` from the route `home_latest_captures` (`/home/latest`,
 HTML fragment `home/latest_captures.html`), with the Lookyloo eyes shown
-meanwhile ([loader.md](../loader.md); `?loader_demo=3` to see them). The page
+meanwhile if it takes more than 400ms ([loader.md](../loader.md)). The page
 itself never waits for the capture cache. Rows are the same as on the index
 page: `index_row()` + `index_capture_template`, styles in
 `css/components/capture-list.css`. Same cost as the first page of the index

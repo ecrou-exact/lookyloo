@@ -6,8 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
           var curTarget = e.currentTarget;
           // Eyes while loading, also when the modal is opened again with other content
           curTarget.querySelector('.modal-body').innerHTML = lkLoader('Loading', 'md', true);
-          lkLoaderDemoDelay()
-            .then(() => fetch(e.relatedTarget.dataset.remote))
+          fetch(e.relatedTarget.dataset.remote)
             .then(response => response.text())
             .then(data => {
                 curTarget.querySelector('.modal-body').innerHTML = data;

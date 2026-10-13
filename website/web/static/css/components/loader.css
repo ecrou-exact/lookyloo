@@ -13,6 +13,13 @@
   align-items: center;
   gap: var(--lk-space-3);
   color: var(--lk-color-ink);
+  /* Only shown when loading takes a while: fast loads never flash the eyes */
+  opacity: 0;
+  animation: lk-loader-appear 200ms ease-out var(--lk-loader-delay, 400ms) forwards;
+}
+
+@keyframes lk-loader-appear {
+  to { opacity: 1; }
 }
 
 .lk-loader-eyes {
@@ -80,6 +87,10 @@
   .lk-eye {
     animation: none;
   }
+
+  .lk-loader {
+    animation-duration: 0s;
+  }
 }
 
 /* Waiting page for an ongoing capture (tree/tree_wait.html) */
@@ -136,6 +147,8 @@ div.dt-processing > div:last-child {
 }
 
 .lk-btn-loading .lk-loader {
+  /* A clicked button reacts at once */
+  --lk-loader-delay: 0s;
   flex-direction: row;
   gap: var(--lk-space-2);
   color: inherit;

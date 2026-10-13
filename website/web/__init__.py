@@ -3523,7 +3523,8 @@ def get_index(offset: int, limit: int, public: bool=True, show_error: bool=False
             # get all the *recent* captures in that category, then filter
             cached_captures = [capture for capture in lookyloo.sorted_capture_cache(
                 [uuid for uuid in get_indexing(flask_login.current_user).get_captures_category(category)],
-                public=public, cached_captures_only=False) if capture.search(search)]
+                public=public, cached_captures_only=False)
+                if capture.search(search) and (public or capture.no_index or capture.private)]
             total_filtered = len(cached_captures)
             cached_captures = cached_captures[offset: offset + limit]
         else:
@@ -3534,10 +3535,16 @@ def get_index(offset: int, limit: int, public: bool=True, show_error: bool=False
                     offset=offset,
                     limit=limit),
                 public=public, cached_captures_only=False)
+            if not public:
+                # NOTE: the page may be shorter than the limit, the category index has no visibility
+                cached_captures = [c for c in cached_captures if c.no_index or c.private]
     else:
         # We want to filter the captures on the index
         cut_time = (datetime.now() - lookyloo.time_delta_on_index)
         cached_captures = lookyloo.sorted_capture_cache(public=public, cached_captures_only=True, index_cut_time=cut_time)
+        if not public:
+            # The hidden list: only the captures not on the public index
+            cached_captures = [cached for cached in cached_captures if cached.no_index or cached.private]
         if not show_error:
             cached_captures = [cached for cached in cached_captures if not cached.error]
         total = len(cached_captures)

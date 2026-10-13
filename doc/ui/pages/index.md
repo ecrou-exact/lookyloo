@@ -66,3 +66,10 @@ The header shows the number of captures of the list (`#capture-total`,
 `total_captures` from `index_generic()`): the recent captures, not archived,
 counted in Valkey without loading them (`ZCARD recent_captures_public` for
 the public list, `recent_captures` minus the public ones for the hidden list).
+
+## Hidden captures
+
+`/hidden` (admins) lists only the captures that are not on the public index:
+unlisted (`no_index`) or private. `get_index(public=False)` gets every capture,
+then keeps those (`cached.no_index or cached.private`), so a capture is never
+in both lists.

@@ -61,6 +61,10 @@ body.lk-tour-running .dropdown-menu.show { z-index: 1093; }
 .lk-tour-spotlight.is-under { z-index: 1092; }
 .lk-tour-target { outline: 3px solid var(--lk-color-accent); outline-offset: -3px; background: var(--lk-color-accent-soft) !important; }
 
+/* The tools of the host cards (camera, pencil, view from here) only show on
+   hover: visible while a tour runs, so the steps can point at them */
+body.lk-tour-running g.node .node-capture { opacity: 1; }
+
 /* Header: Tutorial menu */
 #lk-tour-menu-btn.is-on { color: var(--lk-color-accent); }
 .lk-tour-menu { min-width: 17rem; }

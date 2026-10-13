@@ -50,9 +50,12 @@ page does it when the tree is drawn (`js/tree.js`).
 
 Home, recent captures, new capture, search, import a capture, categories,
 resources, cookies, favicons, HTTP headers hashes, API, and the capture page
-(the most detailed: capture bar, search, every entry of the menus, points of
-attention, a host card, its icons, branches, the path to the page, tree tools,
-compare, notes, legend, moving around).
+(the most detailed: capture bar, search, every entry of the menus, report,
+points of attention, a host card and its tools — new capture, note, view from
+here —, its icons, branches, the path to the page, every tree tool —
+orientation, collapse / expand all, compare, notes, each background, full
+screen —, legend, moving around). The tools of the cards only show on hover:
+they are visible while a tour runs.
 
 Files: `js/tour.js`, `css/components/tour.css` (veil colour: `--lk-tour-veil`
 in `css/theme.css`), `macros/tour.html`, the `tour` block of `layouts/base.html`,

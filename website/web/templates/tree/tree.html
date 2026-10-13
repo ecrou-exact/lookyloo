@@ -80,8 +80,7 @@
 {% endblock %}
 
 
-{% block styles %}
-  {{ super() }}
+{% block page_styles %}
   <link rel="stylesheet"
         {{get_sri('static', 'css/tree.css')}}
         href="{{ url_for('static', filename='css/tree.css') }}">

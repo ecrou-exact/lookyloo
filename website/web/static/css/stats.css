@@ -1,14 +1,12 @@
+/*
+ * Admin statistics page (admin/stats.html): D3 line charts.
+ * Doc: doc/ui/css.md
+ */
+
 .axis path,
 .axis line {
   fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
-}
-
-.grid path,
-.grid line {
-  fill: none;
-  stroke: rgba(0, 0, 0, 0.25);
+  stroke: var(--lk-color-ink);
   shape-rendering: crispEdges;
 }
 

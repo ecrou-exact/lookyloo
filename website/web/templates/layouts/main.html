@@ -7,17 +7,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     {% block styles %}
-    <!-- Bootstrap CSS -->
+    {# CSS load order (doc/ui/css.md): vendor -> theme tokens -> bootstrap bridge
+       -> base -> utilities -> page CSS -> instance overrides #}
     {{ bootstrap.load_css() }}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/generic.css') }}"
-          {{get_sri('static', 'css/generic.css')}}
-          crossorigin="anonymous">
     <link rel="stylesheet" href="{{ url_for('static', filename='vendor/datatables.min.css') }}"
           {{get_sri('static', 'vendor/datatables.min.css')}}
           crossorigin="anonymous">
     <link rel="stylesheet" href="{{ url_for('static', filename='vendor/jquery.json-viewer.css') }}"
           {{get_sri('static', 'vendor/jquery.json-viewer.css')}}
           crossorigin="anonymous">
+    {% for stylesheet in ['css/theme.css', 'css/bootstrap-bridge.css', 'css/base.css', 'css/utilities.css'] %}
+    <link rel="stylesheet" href="{{ url_for('static', filename=stylesheet) }}"
+          {{get_sri('static', stylesheet)}}
+          crossorigin="anonymous">
+    {% endfor %}
+
+    {% block page_styles %}{% endblock %}
 
     {% set overrides_css = load_custom_css('overrides.css') %}
     {% if overrides_css %}

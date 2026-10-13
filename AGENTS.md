@@ -55,7 +55,7 @@ website/web/
   default_csp.py        Content-Security-Policy (overridable with custom_csp.py)
   proxied.py            Reverse proxy middleware
   sri.txt               Generated SRI hashes for every file in static/, keyed by
-                        path relative to static/ (e.g. "css/generic.css")
+                        path relative to static/ (e.g. "css/theme.css")
   templates/
     layouts/            Page skeletons (main.html: every page extends it)
     partials/           Pieces included in layouts/pages (top_navbar.html)
@@ -146,10 +146,12 @@ cd website && DEBUG=1 poetry run flask --app web run --port 5100 --debug
 ### Template map
 
 All pages extend `templates/layouts/main.html` (loads Bootstrap CSS/JS, jQuery,
-DataTables, json-viewer, `css/generic.css`, `js/generic.js`, `js/render_tables.js`,
+DataTables, json-viewer, the shared CSS (`css/theme.css`, `css/bootstrap-bridge.css`,
+`css/base.css`, `css/utilities.css`), `js/generic.js`, `js/render_tables.js`,
 `js/theme_toggle.js`, and optional `custom_header.html` / `custom_footer.html` /
 `css/overrides.css` / `js/overrides.js`). Top-level pages include
-`partials/top_navbar.html`.
+`partials/top_navbar.html`. Page-specific CSS goes in the `page_styles` block
+(loaded before `overrides.css`), never in `styles`.
 
 Where to put new files (decided once, so files don't move again):
 new page → the feature folder in `templates/`; new reusable piece → `partials/`;
@@ -202,6 +204,12 @@ Filters: `markdown`, `b64encode`. Some HTML is also built in Python
   selectors/texts; update them along with the UI.
 - **Dark mode**: `theme_toggle.js` sets `data-bs-theme` on `<html>`; any new
   styling must work for both `light` and `dark`.
+- **CSS**: raw colours live ONLY in `static/css/theme.css` (`--lk-*` tokens,
+  light + dark); everything else uses `var(--lk-*)`. Bootstrap is themed through
+  `bootstrap-bridge.css`. Load order and file roles: `doc/ui/css.md`; token
+  list: `doc/ui/theme.md`. Some class names come from libraries (e.g.
+  `flashed-messages` from bootstrap-flask `render_messages()`): a class not
+  found in the repo is not necessarily dead.
 - **Instance customisation hooks** must keep working: `custom_header.html`,
   `custom_footer.html` (templates root), `static/css/overrides.css`,
   `static/js/overrides.js` (loaded via `load_custom_css/js`),

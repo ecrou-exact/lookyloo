@@ -1,3 +1,10 @@
+/*
+ * Capture page (tree/tree.html): D3 tree, sticky menus, legend.
+ * Loaded through the page_styles block of layouts/main.html.
+ * IDs here are bound by js/tree.js: keep them in sync.
+ * Doc: doc/ui/css.md
+ */
+
 #tree_svg {
   position: relative;
 }
@@ -9,8 +16,8 @@
 }
 
 .node circle {
-  fill: light-dark(white, black);
-  stroke: steelblue;
+  fill: var(--lk-color-surface);
+  stroke: var(--lk-color-tree-node);
   stroke-width: 3px;
 }
 
@@ -18,16 +25,13 @@
   font: 12px sans-serif;
 }
 
+/* Class set by bootstrap-flask's render_messages() */
 .flashed-messages {
   position: fixed;
   bottom: 5px;
   text-align: center;
   width: 50%;
   transform: translate(50%);
-}
-
-.blur {
-  filter: blur(10px);
 }
 
 #screenshot_thumbnail {
@@ -37,20 +41,20 @@
 #help {
   text-align: center;
   border-style: solid;
-  border-color: #0d6efd;
-  border-radius: 25px;
+  border-color: var(--lk-color-accent);
+  border-radius: var(--lk-radius-pill);
   text-decoration: none;
   height: 50px;
   width: 50px;
   padding: 5px;
   align-content: center;
-  background-color: #0d6efd;
-  color: white;
+  background-color: var(--lk-color-accent);
+  color: var(--lk-color-on-accent);
 }
 
 #help:hover {
-  background-color: light-dark(black, white);
-  color: light-dark(white, black);
+  background-color: var(--lk-color-accent-hover);
+  color: var(--lk-color-on-accent);
 }
 
 /* Generic parts of menus */
@@ -60,7 +64,7 @@ hr {
   margin-bottom: 0.5em;
   margin-left: auto;
   margin-right: auto;
-  border-color: black;
+  border-color: var(--lk-color-rule-strong);
   border-style: inset;
   border-width: 1px;
 }
@@ -82,7 +86,7 @@ hr {
   top: 5px;
   left: 5px;
   width: fit-content;
-  background-color: light-dark(white, #212529);;
+  background-color: var(--lk-color-surface);
 }
 
 #menu_vertical {
@@ -105,7 +109,7 @@ hr {
     padding: 5px;
     font-size: 1.1em;
     display: block;
-    text-align: center;;
+    text-align: center;
 }
 
 /* menu horizontal */
@@ -121,7 +125,7 @@ hr {
   position: sticky;
   top: 5px;
   border: 2px solid;
-  background-color: light-dark(white, #212529);;
+  background-color: var(--lk-color-surface);
   width: fit-content;
 }
 
@@ -175,8 +179,8 @@ hr {
   position: fixed;
   top: 60%;
   right: 5px;
-  background-color: light-dark(white, #212529);
-  color: light-dark(black, white);
+  background-color: var(--lk-color-surface);
+  color: var(--lk-color-ink);
   border: 2px solid;
   padding: 5px;
 }
@@ -186,16 +190,4 @@ hr {
   top: 85vw;
   right: 10px;
   width: 70px;
-}
-
-/* Fast categories*/
-.fast-categories {
-  border: 2px solid;
-  margin: 5px;
-  padding: 5px;
-}
-
-.fast-categories fieldset {
-  border: 1px solid;
-  padding: 5px;
 }

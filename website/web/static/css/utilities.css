@@ -1,0 +1,261 @@
+/*
+ * Small shared helpers used by templates, Python-generated HTML and JS
+ * (class names are an API: grep templates/, static/js/ and __init__.py before
+ * renaming one). New reusable pieces should become `lk-` components instead.
+ *
+ * Load order: after base.css.
+ * Doc: doc/ui/css.md
+ */
+
+/* Big call-to-action buttons on the landing page and takedown form */
+.new-capture-button {
+  width: 270px;
+  height: 60px;
+  font-size: 1.5rem;
+  font-weight: var(--lk-font-weight-medium);
+  border-radius: var(--lk-radius-pill);
+  box-shadow: var(--lk-shadow-md);
+  transition: all var(--lk-transition-fast);
+  cursor: pointer;
+  outline: none;
+  align-items: center;
+}
+
+/* Collapse toggles: show one label or the other */
+[data-bs-toggle="collapse"].collapsed .if-not-collapsed {
+  display: none;
+}
+
+[data-bs-toggle="collapse"]:not(.collapsed) .if-collapsed {
+  display: none;
+}
+
+/* Make it more clear that an accordion is clickable */
+.accordion-button.collapsed {
+  background: var(--lk-color-surface-2);
+}
+
+/* Resource preview (images in hostname popup / body hash pages) */
+img.ressource_preview {
+  width: 100%;
+  height: 100%;
+  max-width: 150px;
+  max-height: 150px;
+  min-width: 10px;
+  min-height: 10px;
+}
+
+/* D3 tooltips (tree.js, stats). NOTE: same name as Bootstrap's .tooltip */
+.tooltip {
+  position: absolute;
+  text-align: left;
+  background-color: var(--lk-color-ink);
+  color: var(--lk-color-bg);
+  border: 1px solid var(--lk-color-rule-strong);
+  border-radius: var(--lk-radius-sm);
+  padding: 2px 5px;
+}
+
+.tooltip img {
+  background-color: var(--lk-color-surface);
+  border: 1px solid var(--lk-color-rule);
+  border-radius: var(--lk-radius-sm);
+  padding: 5px;
+  width: 150px;
+}
+
+/* Invisible honeypot field in forms */
+.boatymcboat {
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 0;
+  width: 0;
+  z-index: -1;
+}
+
+/* Rotations for the arrow images (images/ui/) */
+.arrow-down {
+  transform: rotate(180deg);
+}
+
+.arrow-right {
+  transform: rotate(90deg);
+}
+
+.arrow-left {
+  transform: rotate(270deg);
+}
+
+/* Round "?" help bubble, text in its title attribute */
+.help-tip {
+  text-align: center;
+  background-color: var(--lk-color-info);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 14px;
+  line-height: 26px;
+  cursor: default;
+  position: relative;
+  display: inline-block;
+}
+
+.help-tip::before {
+  content: '?';
+  font-weight: bold;
+  color: var(--lk-color-surface);
+}
+
+/* Blurred screenshots (enable_default_blur_screenshot) */
+.blur {
+  filter: blur(10px);
+}
+
+/* MiddleEllipsis: HTML built by SafeMiddleEllipsisString in __init__.py */
+.middleEllipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  display: block;
+}
+
+.middleEllipsisleft {
+  overflow: hidden;
+  display: inline-block;
+  max-width: 47%;
+}
+
+.middleEllipsiswrap {
+  overflow: hidden;
+  width: 100%;
+}
+
+.middleEllipsisright {
+  display: inline-block;
+  max-width: 47%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  direction: rtl;
+}
+
+/* ---- Vertical timeline (WebSocket messages in tree/hostname_popup.html) ---- */
+
+/* The vertical ruler */
+.timeline {
+  position: relative;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.timeline::after {
+  content: '';
+  position: absolute;
+  width: 6px;
+  background-color: var(--lk-color-ink);
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  margin-left: -3px;
+}
+
+/* Container around content */
+.tl-container {
+  padding: 10px 40px;
+  position: relative;
+  background-color: inherit;
+  color: var(--lk-color-bg);
+  width: 50%;
+}
+
+/* The circles on the timeline */
+.tl-container::after {
+  content: '';
+  position: absolute;
+  width: 25px;
+  height: 25px;
+  right: -17px;
+  background-color: var(--lk-color-ink);
+  border: 4px solid var(--lk-color-warning);
+  top: 15px;
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.tl-left {
+  left: 0;
+}
+
+.tl-right {
+  left: 50%;
+}
+
+/* Arrow of the left containers (pointing right) */
+.tl-left::before {
+  content: " ";
+  height: 0;
+  position: absolute;
+  top: 22px;
+  width: 0;
+  z-index: 1;
+  right: 30px;
+  border: medium solid;
+  border-width: 10px 0 10px 10px;
+  border-color: transparent transparent transparent var(--lk-color-ink);
+}
+
+/* Arrow of the right containers (pointing left) */
+.tl-right::before {
+  content: " ";
+  height: 0;
+  position: absolute;
+  top: 22px;
+  width: 0;
+  z-index: 1;
+  left: 30px;
+  border: medium solid;
+  border-width: 10px 10px 10px 0;
+  border-color: transparent var(--lk-color-ink) transparent transparent;
+}
+
+.tl-right::after {
+  left: -16px;
+}
+
+/* The actual content */
+.tl-content {
+  padding: 20px 30px;
+  background-color: var(--lk-color-ink);
+  position: relative;
+  border-radius: var(--lk-radius-md);
+  overflow-wrap: break-word;
+}
+
+/* Small screens: timeline on the left, all containers full width */
+@media screen and (max-width: 600px) {
+  .timeline::after {
+    left: 31px;
+  }
+
+  .tl-container {
+    width: 100%;
+    padding-left: 70px;
+    padding-right: 25px;
+  }
+
+  .tl-container::before {
+    left: 60px;
+    border: medium solid;
+    border-width: 10px 10px 10px 0;
+    border-color: transparent var(--lk-color-ink) transparent transparent;
+  }
+
+  .tl-left::after,
+  .tl-right::after {
+    left: 15px;
+  }
+
+  .tl-right {
+    left: 0%;
+  }
+}

@@ -1,8 +1,11 @@
 {
   "static": {
-    "css/generic.css": "hH3DlQc2Ge5JvdUzUcgTczfFTSHaXJrXU+V/OctfG7etWnHKzZ7KD4U1e4ymw5XrMO1RO+kFl+LpXPcXFld8cg==",
-    "css/stats.css": "/kY943FwWBTne4IIyf7iBROSfbGd82TeBicEXqKkRwawMVRIvM/Pk5MRa7okUyGIxaDjFQGmV/U1vy+PhN6Jbw==",
-    "css/tree.css": "vOna6sv0cakqlxTD2LOSL+AfKFVKsPSIDKX/bj3EBS4Ff5nf+wu1uzLzzQjoLlmcya43YdQhJGj2OySXlAMzLg==",
+    "css/base.css": "6CqHV2tX0TJhCpqBej66ogGyl5W9wlmZShevegsr1JeeEoA/JDK5vF19t66+zz4+AQM+OuYmPfosYDDABaC9OA==",
+    "css/bootstrap-bridge.css": "2fvxXHbtgyuOIfoZXGW/VAyFz/btu52MAwOPNLbdviSUbaxHgA17JulHmosJZ2EJHU3euzq3t17p5gJ535UytA==",
+    "css/stats.css": "MpaKtHrq8jHjeKaagVCzLJfNwTNwdRw5LHYoYAILw9ZtOEgymQ6mLjQT/LeFS7vlo6dZWfMgFUYRRu7QBO+pqQ==",
+    "css/theme.css": "0d2jj3WnjOGr2SkUyl3EmS6vXVu7mRZNdVy/bcKPO5JA7gfnKntmknkvfL/+pwQXcPunPPSh4xrwSQpN/yu9aw==",
+    "css/tree.css": "UQ9vOyQc06Jh0CMD5zkwmPkiDU5g8F5Y0lmOj9nyKZw4fbAUuiFEK0HTIJSpaLRah5E/D3OBeQXJSzooeq34jg==",
+    "css/utilities.css": "sPcxm6+q0fWQFNZqqZ0qAg1OG13BxvsAWiz9ea+3NHjJVjvZJ76yr8rlHyqYi2NdMXLqH4SOvw7/sTaPjeYWzA==",
     "images/brand/favicon.ico": "KOmrfwRbOQqhhwSeBkNpMRAxSVMmmLg+2kRMg9iSv7OWjE9spJc7x4MKB4AE/hi0knaV7UBVctAU6XZ7AC72ZA==",
     "images/brand/lookyloo.jpeg": "i6wBj8CsIM5YAQLEMQfhs3CNOSKkErF8AMqqM6ZygSwCyQgv9CU8xt94veMZhM/ufBWoz7kAXmR+yywmxsTxug==",
     "images/brand/lookyloo.png": "RBEyk/q/Iyinz5hroz4fsc7eeLSutjPbi7tW2AcB7VoANLdO4AIfmOH/6UAvGFvjtNKp5gMcU25OfcBQB6Tz1g==",

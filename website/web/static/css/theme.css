@@ -1,0 +1,183 @@
+/*
+ * Lookyloo design tokens.
+ *
+ * The ONLY file allowed to contain raw colour values. Everything else
+ * (bootstrap-bridge.css, base.css, utilities.css, page CSS, components) reads
+ * these --lk-* custom properties.
+ *
+ * Light values sit on :root and [data-bs-theme="light"], dark values on
+ * [data-bs-theme="dark"] (set on <html> by js/theme_toggle.js).
+ * A future theme only has to redefine these tokens, e.g. under
+ * [data-lk-theme="name"] / [data-lk-theme="name"][data-bs-theme="dark"].
+ *
+ * Doc: doc/ui/theme.md
+ */
+
+:root,
+[data-bs-theme="light"] {
+  /* Surfaces */
+  --lk-color-bg: #FAFAFA;
+  --lk-color-bg-rgb: 250, 250, 250;
+  --lk-color-surface: #FFFFFF;
+  --lk-color-surface-2: #F3F3F3;
+  --lk-color-surface-3: #EBEBEB;
+
+  /* Text */
+  --lk-color-ink: #171717;
+  --lk-color-ink-rgb: 23, 23, 23;
+  --lk-color-muted: #6B6B6B;
+  --lk-color-muted-rgb: 107, 107, 107;
+  --lk-color-emphasis: #000000;
+  --lk-color-emphasis-rgb: 0, 0, 0;
+
+  /* Lines */
+  --lk-color-rule: #E6E6E6;
+  --lk-color-rule-strong: #C9C9C9;
+
+  /* Primary action (ink-black buttons, mockup F) */
+  --lk-color-accent: #171717;
+  --lk-color-accent-rgb: 23, 23, 23;
+  --lk-color-accent-hover: #333333;
+  --lk-color-accent-active: #000000;
+  --lk-color-on-accent: #FFFFFF;
+
+  /* Links: kept blue so they stay recognisable in dense tables */
+  --lk-color-link: #1D4ED8;
+  --lk-color-link-rgb: 29, 78, 216;
+  --lk-color-link-hover: #1E3A8A;
+  --lk-color-link-hover-rgb: 30, 58, 138;
+
+  /* Status: strong (text/icon) + soft (background) + border */
+  --lk-color-danger: #C8102E;
+  --lk-color-danger-rgb: 200, 16, 46;
+  --lk-color-danger-soft: #FDECEE;
+  --lk-color-danger-border: #F5B5BF;
+  --lk-color-danger-hover: #A50D26;
+  --lk-color-on-danger: #FFFFFF;
+
+  --lk-color-warning: #A15C00;
+  --lk-color-warning-rgb: 161, 92, 0;
+  --lk-color-warning-soft: #FFF3DF;
+  --lk-color-warning-border: #F2CF94;
+
+  --lk-color-success: #1E7F4F;
+  --lk-color-success-rgb: 30, 127, 79;
+  --lk-color-success-soft: #E6F4EC;
+  --lk-color-success-border: #A9D9BF;
+
+  --lk-color-info: #1D4ED8;
+  --lk-color-info-rgb: 29, 78, 216;
+  --lk-color-info-soft: #E8EEFC;
+  --lk-color-info-border: #B4C6F4;
+
+  /* Focus ring */
+  --lk-focus-ring: rgba(23, 23, 23, 0.18);
+  --lk-focus-border: #171717;
+
+  /* Shadows */
+  --lk-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --lk-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+  /* Capture tree (tree.css) */
+  --lk-color-tree-node: #4682B4;
+
+  /* Logo: the PNG is black, invert it on dark backgrounds */
+  --lk-logo-filter: none;
+}
+
+[data-bs-theme="dark"] {
+  --lk-color-bg: #0E0E10;
+  --lk-color-bg-rgb: 14, 14, 16;
+  --lk-color-surface: #17171A;
+  --lk-color-surface-2: #1F1F23;
+  --lk-color-surface-3: #2A2A2F;
+
+  --lk-color-ink: #EDEDED;
+  --lk-color-ink-rgb: 237, 237, 237;
+  --lk-color-muted: #A0A0A0;
+  --lk-color-muted-rgb: 160, 160, 160;
+  --lk-color-emphasis: #FFFFFF;
+  --lk-color-emphasis-rgb: 255, 255, 255;
+
+  --lk-color-rule: #2A2A2E;
+  --lk-color-rule-strong: #3F3F45;
+
+  --lk-color-accent: #EDEDED;
+  --lk-color-accent-rgb: 237, 237, 237;
+  --lk-color-accent-hover: #FFFFFF;
+  --lk-color-accent-active: #D4D4D4;
+  --lk-color-on-accent: #171717;
+
+  --lk-color-link: #8AB4FF;
+  --lk-color-link-rgb: 138, 180, 255;
+  --lk-color-link-hover: #B5CEFF;
+  --lk-color-link-hover-rgb: 181, 206, 255;
+
+  --lk-color-danger: #FF6B7D;
+  --lk-color-danger-rgb: 255, 107, 125;
+  --lk-color-danger-soft: #3A1C21;
+  --lk-color-danger-border: #6E2A34;
+  --lk-color-danger-hover: #FF8A98;
+  --lk-color-on-danger: #171717;
+
+  --lk-color-warning: #F2B661;
+  --lk-color-warning-rgb: 242, 182, 97;
+  --lk-color-warning-soft: #33280F;
+  --lk-color-warning-border: #6B5020;
+
+  --lk-color-success: #4CC38A;
+  --lk-color-success-rgb: 76, 195, 138;
+  --lk-color-success-soft: #13291E;
+  --lk-color-success-border: #24573D;
+
+  --lk-color-info: #8AB4FF;
+  --lk-color-info-rgb: 138, 180, 255;
+  --lk-color-info-soft: #18233A;
+  --lk-color-info-border: #2E4470;
+
+  --lk-focus-ring: rgba(237, 237, 237, 0.22);
+  --lk-focus-border: #EDEDED;
+
+  --lk-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --lk-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+
+  --lk-color-tree-node: #6FA8DC;
+
+  --lk-logo-filter: invert(1);
+}
+
+/* Theme-independent tokens */
+:root {
+  /* Typography. Geist is not vendored yet: until static/fonts/ ships it,
+     the stack falls back to the system UI font. */
+  --lk-font-sans: "Geist", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --lk-font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  --lk-font-size-base: 0.9375rem;
+  --lk-font-size-sm: 0.8125rem;
+  --lk-font-size-xs: 0.75rem;
+  --lk-font-weight-normal: 400;
+  --lk-font-weight-medium: 500;
+  --lk-font-weight-semibold: 600;
+  --lk-line-height: 1.5;
+
+  /* Radii */
+  --lk-radius-sm: 4px;
+  --lk-radius-md: 6px;
+  --lk-radius-lg: 10px;
+  --lk-radius-pill: 999px;
+
+  /* Spacing scale (for our own components; Bootstrap utilities keep theirs) */
+  --lk-space-1: 0.25rem;
+  --lk-space-2: 0.5rem;
+  --lk-space-3: 0.75rem;
+  --lk-space-4: 1rem;
+  --lk-space-5: 1.5rem;
+  --lk-space-6: 2rem;
+  --lk-space-7: 3rem;
+
+  /* Layout */
+  --lk-content-max-width: 1440px;
+
+  /* Motion */
+  --lk-transition-fast: 120ms ease;
+}

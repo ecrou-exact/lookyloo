@@ -1,0 +1,55 @@
+/*
+ * Element-level defaults shared by every page (no classes, no IDs except the
+ * logos). Colours come from theme.css tokens only.
+ *
+ * Load order: after bootstrap-bridge.css.
+ * Doc: doc/ui/css.md
+ */
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: var(--lk-font-weight-semibold);
+}
+
+code, kbd, pre, samp {
+  font-family: var(--lk-font-mono);
+}
+
+/* Do not underline links unless hovered over */
+a:not([class*="btn"]) {
+  text-decoration: none;
+}
+a:not([class*="btn"]):hover {
+  text-decoration: underline;
+}
+
+/* Visible keyboard focus everywhere */
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--lk-focus-border);
+  outline-offset: 2px;
+}
+
+/* Tables: fixed layout, long values are cut with an ellipsis */
+table {
+  table-layout: fixed;
+}
+
+table td p {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+}
+
+/* Logos are black PNGs, inverted in dark mode (follows the theme toggle,
+   not only the OS preference) */
+#tree_logo,
+#navbar_logo {
+  filter: var(--lk-logo-filter);
+}

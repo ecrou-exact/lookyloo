@@ -1,0 +1,204 @@
+/*
+ * Maps the --lk-* tokens (theme.css) onto Bootstrap 5.3.
+ *
+ * No raw colours here: only var(--lk-*).
+ *
+ * 1. Bootstrap's global --bs-* variables. They are redeclared on every
+ *    [data-bs-theme] element (not only :root) so that they resolve against the
+ *    tokens of that theme: a custom property referencing another one is
+ *    computed where it is declared, then inherited as a value.
+ * 2. Components whose colours Bootstrap compiles as literals (#0d6efd…)
+ *    instead of reading --bs-primary: buttons, form focus, checkboxes,
+ *    pagination, nav pills, dropdown/list-group active items, progress bars.
+ *
+ * Load order: after bootstrap.min.css and the vendor CSS, before base.css.
+ * Doc: doc/ui/theme.md
+ */
+
+/* 1. Global variables */
+:root,
+[data-bs-theme] {
+  --bs-body-font-family: var(--lk-font-sans);
+  --bs-font-sans-serif: var(--lk-font-sans);
+  --bs-font-monospace: var(--lk-font-mono);
+  --bs-body-font-size: var(--lk-font-size-base);
+  --bs-body-line-height: var(--lk-line-height);
+
+  --bs-body-bg: var(--lk-color-bg);
+  --bs-body-bg-rgb: var(--lk-color-bg-rgb);
+  --bs-body-color: var(--lk-color-ink);
+  --bs-body-color-rgb: var(--lk-color-ink-rgb);
+  --bs-emphasis-color: var(--lk-color-emphasis);
+  --bs-emphasis-color-rgb: var(--lk-color-emphasis-rgb);
+  --bs-heading-color: inherit;
+
+  --bs-secondary-color: var(--lk-color-muted);
+  --bs-secondary-color-rgb: var(--lk-color-muted-rgb);
+  --bs-secondary-bg: var(--lk-color-surface-2);
+  --bs-tertiary-color: var(--lk-color-muted);
+  --bs-tertiary-bg: var(--lk-color-surface-2);
+
+  --bs-border-color: var(--lk-color-rule);
+  --bs-border-color-translucent: var(--lk-color-rule);
+  --bs-border-radius: var(--lk-radius-md);
+  --bs-border-radius-sm: var(--lk-radius-sm);
+  --bs-border-radius-lg: var(--lk-radius-lg);
+  --bs-border-radius-pill: var(--lk-radius-pill);
+
+  --bs-link-color: var(--lk-color-link);
+  --bs-link-color-rgb: var(--lk-color-link-rgb);
+  --bs-link-hover-color: var(--lk-color-link-hover);
+  --bs-link-hover-color-rgb: var(--lk-color-link-hover-rgb);
+
+  --bs-focus-ring-color: var(--lk-focus-ring);
+
+  --bs-box-shadow-sm: var(--lk-shadow-sm);
+  --bs-box-shadow: var(--lk-shadow-md);
+
+  --bs-primary: var(--lk-color-accent);
+  --bs-primary-rgb: var(--lk-color-accent-rgb);
+  --bs-primary-text-emphasis: var(--lk-color-ink);
+  --bs-primary-bg-subtle: var(--lk-color-surface-2);
+  --bs-primary-border-subtle: var(--lk-color-rule-strong);
+
+  --bs-danger: var(--lk-color-danger);
+  --bs-danger-rgb: var(--lk-color-danger-rgb);
+  --bs-danger-text-emphasis: var(--lk-color-danger);
+  --bs-danger-bg-subtle: var(--lk-color-danger-soft);
+  --bs-danger-border-subtle: var(--lk-color-danger-border);
+
+  --bs-warning: var(--lk-color-warning);
+  --bs-warning-rgb: var(--lk-color-warning-rgb);
+  --bs-warning-text-emphasis: var(--lk-color-warning);
+  --bs-warning-bg-subtle: var(--lk-color-warning-soft);
+  --bs-warning-border-subtle: var(--lk-color-warning-border);
+
+  --bs-success: var(--lk-color-success);
+  --bs-success-rgb: var(--lk-color-success-rgb);
+  --bs-success-text-emphasis: var(--lk-color-success);
+  --bs-success-bg-subtle: var(--lk-color-success-soft);
+  --bs-success-border-subtle: var(--lk-color-success-border);
+
+  --bs-info: var(--lk-color-info);
+  --bs-info-rgb: var(--lk-color-info-rgb);
+  --bs-info-text-emphasis: var(--lk-color-info);
+  --bs-info-bg-subtle: var(--lk-color-info-soft);
+  --bs-info-border-subtle: var(--lk-color-info-border);
+
+  --bs-light-bg-subtle: var(--lk-color-surface-2);
+  --bs-dark-bg-subtle: var(--lk-color-surface-3);
+}
+
+/* 2. Components with compiled colours */
+.btn-primary {
+  --bs-btn-color: var(--lk-color-on-accent);
+  --bs-btn-bg: var(--lk-color-accent);
+  --bs-btn-border-color: var(--lk-color-accent);
+  --bs-btn-hover-color: var(--lk-color-on-accent);
+  --bs-btn-hover-bg: var(--lk-color-accent-hover);
+  --bs-btn-hover-border-color: var(--lk-color-accent-hover);
+  --bs-btn-focus-shadow-rgb: var(--lk-color-accent-rgb);
+  --bs-btn-active-color: var(--lk-color-on-accent);
+  --bs-btn-active-bg: var(--lk-color-accent-active);
+  --bs-btn-active-border-color: var(--lk-color-accent-active);
+  --bs-btn-disabled-color: var(--lk-color-on-accent);
+  --bs-btn-disabled-bg: var(--lk-color-accent);
+  --bs-btn-disabled-border-color: var(--lk-color-accent);
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--lk-color-ink);
+  --bs-btn-border-color: var(--lk-color-rule-strong);
+  --bs-btn-hover-color: var(--lk-color-on-accent);
+  --bs-btn-hover-bg: var(--lk-color-accent);
+  --bs-btn-hover-border-color: var(--lk-color-accent);
+  --bs-btn-focus-shadow-rgb: var(--lk-color-accent-rgb);
+  --bs-btn-active-color: var(--lk-color-on-accent);
+  --bs-btn-active-bg: var(--lk-color-accent-active);
+  --bs-btn-active-border-color: var(--lk-color-accent-active);
+  --bs-btn-disabled-color: var(--lk-color-muted);
+  --bs-btn-disabled-border-color: var(--lk-color-rule);
+}
+
+.btn-danger {
+  --bs-btn-color: var(--lk-color-on-danger);
+  --bs-btn-bg: var(--lk-color-danger);
+  --bs-btn-border-color: var(--lk-color-danger);
+  --bs-btn-hover-color: var(--lk-color-on-danger);
+  --bs-btn-hover-bg: var(--lk-color-danger-hover);
+  --bs-btn-hover-border-color: var(--lk-color-danger-hover);
+  --bs-btn-focus-shadow-rgb: var(--lk-color-danger-rgb);
+  --bs-btn-active-bg: var(--lk-color-danger-hover);
+  --bs-btn-active-border-color: var(--lk-color-danger-hover);
+  --bs-btn-disabled-bg: var(--lk-color-danger);
+  --bs-btn-disabled-border-color: var(--lk-color-danger);
+}
+
+.btn-outline-danger {
+  --bs-btn-color: var(--lk-color-danger);
+  --bs-btn-border-color: var(--lk-color-danger);
+  --bs-btn-hover-color: var(--lk-color-on-danger);
+  --bs-btn-hover-bg: var(--lk-color-danger);
+  --bs-btn-hover-border-color: var(--lk-color-danger);
+  --bs-btn-focus-shadow-rgb: var(--lk-color-danger-rgb);
+  --bs-btn-active-bg: var(--lk-color-danger-hover);
+  --bs-btn-active-border-color: var(--lk-color-danger-hover);
+}
+
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+  border-color: var(--lk-focus-border);
+  box-shadow: 0 0 0 0.2rem var(--lk-focus-ring);
+}
+
+.form-check-input:checked {
+  background-color: var(--lk-color-accent);
+  border-color: var(--lk-color-accent);
+}
+
+.form-switch .form-check-input:checked {
+  --bs-form-switch-bg: none;
+}
+
+.nav-pills {
+  --bs-nav-pills-link-active-color: var(--lk-color-on-accent);
+  --bs-nav-pills-link-active-bg: var(--lk-color-accent);
+}
+
+.nav-link {
+  --bs-nav-link-color: var(--lk-color-link);
+  --bs-nav-link-hover-color: var(--lk-color-link-hover);
+}
+
+.pagination {
+  --bs-pagination-color: var(--lk-color-ink);
+  --bs-pagination-hover-color: var(--lk-color-ink);
+  --bs-pagination-focus-color: var(--lk-color-ink);
+  --bs-pagination-focus-box-shadow: 0 0 0 0.2rem var(--lk-focus-ring);
+  --bs-pagination-active-color: var(--lk-color-on-accent);
+  --bs-pagination-active-bg: var(--lk-color-accent);
+  --bs-pagination-active-border-color: var(--lk-color-accent);
+}
+
+.dropdown-menu {
+  --bs-dropdown-link-active-color: var(--lk-color-on-accent);
+  --bs-dropdown-link-active-bg: var(--lk-color-accent);
+}
+
+.list-group {
+  --bs-list-group-active-color: var(--lk-color-on-accent);
+  --bs-list-group-active-bg: var(--lk-color-accent);
+  --bs-list-group-active-border-color: var(--lk-color-accent);
+}
+
+.progress,
+.progress-stacked {
+  --bs-progress-bar-bg: var(--lk-color-accent);
+}
+
+.accordion {
+  --bs-accordion-active-color: var(--lk-color-ink);
+  --bs-accordion-active-bg: var(--lk-color-surface-2);
+  --bs-accordion-btn-focus-box-shadow: 0 0 0 0.2rem var(--lk-focus-ring);
+}

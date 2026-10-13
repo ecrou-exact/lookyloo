@@ -80,8 +80,7 @@
         crossorigin="anonymous"></script>
 {% endblock %}
 
-{% block styles %}
-{{ super() }}
+{% block page_styles %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/stats.css') }}"
       {{get_sri('static', 'css/stats.css')}}
       crossorigin="anonymous">

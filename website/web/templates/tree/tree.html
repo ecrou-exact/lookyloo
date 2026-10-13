@@ -41,6 +41,10 @@
           id="tree_js" data-remote="{{url_for('GenericAPI_tree_dump', capture_uuid=tree_uuid, seed=seed)}}"
                        {% if urlnode_uuid %}data-urlnode="{{urlnode_uuid}}" {%endif%}>
   </script>
+  <script src='{{ url_for('static', filename='js/capture_page.js') }}'
+          {{get_sri('static', 'js/capture_page.js')}}
+          nonce="{{ csp_nonce() }}"
+          crossorigin="anonymous"></script>
   <script src='{{ url_for('static', filename='js/tree_modals.js') }}'
           {{get_sri('static', 'js/tree_modals.js')}}
           nonce="{{ csp_nonce() }}"
@@ -122,6 +126,10 @@
 </script>
 
 <a class="visually-hidden-focusable lk-skip-link" href="#tree_viewport">Skip to the capture tree</a>
+{# Top of the page, stays visible while the page scrolls: site header, capture bar,
+   messages. js/capture_page.js measures it (the tree fills the rest of the screen)
+   and folds the capture bar. #}
+<div class="lk-capture-top" id="capture_top">
 {% include 'partials/header.html' %}
 
 {#
@@ -131,6 +139,8 @@
 #}
 {% set verdict = capture_verdict(info.categories) %}
 <section class="lk-capture-bar" id="menu_vertical" aria-label="Capture">
+  <button type="button" class="lk-capture-fold" id="capture_fold" aria-expanded="true" aria-controls="menu_vertical"
+          title="Fold the capture bar">{{ icon('bi:chevron-up') }}<span class="visually-hidden">Fold the capture bar</span></button>
   <div class="lk-capture-identity">
     <button type="button" class="lk-capture-thumb" data-bs-toggle="modal" data-bs-target="#screenshotModal"
             title="Show the screenshot of the rendered page" aria-label="Show the screenshot of the rendered page">
@@ -141,7 +151,7 @@
         {% if favicon %}<img class="lk-capture-favicon" src="data:{{ mime_favicon }};base64,{{ favicon }}" alt="" width="16" height="16">{% endif %}
         <span>{{ page_title or 'Untitled page' }}</span>
       </h1>
-      <p class="lk-capture-url">{{ shorten_string(info.url, with_copy_button=True) }}</p>
+      <div class="lk-capture-url">{{ shorten_string(info.url, with_copy_button=True) }}</div>
       <ul class="lk-capture-meta">
         {% if info.timestamp %}
         <li>{{ icon('bi:clock') }} <span data-lk-time="{{ info.timestamp.isoformat() }}">{{ info.timestamp.strftime('%Y-%m-%d %H:%M') }}</span></li>
@@ -288,6 +298,7 @@
 <div class="lk-capture-flashes">{{ render_messages(dismissible=True) }}</div>
 {% endif %}
 {% endwith %}
+</div>
 
 {# The tree area: the scrolling viewport, and the legend over its bottom right corner #}
 <div class="lk-tree-area">

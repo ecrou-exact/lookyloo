@@ -5,32 +5,63 @@
  * Doc: doc/ui/pages/tree.md
  */
 
-/* ---------- Page: header + bar at the top, the tree takes the rest ---------- */
+/* ---------- Page: top block (sticky), the tree fills the screen, footer below ---------- */
 
-body.lk-capture-page {
-  height: 100vh;
-  height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  background: var(--lk-color-bg);
+body.lk-capture-page { background: var(--lk-color-bg); }
+
+/* Site header + capture bar + messages: stay visible while the page scrolls.
+   js/capture_page.js keeps --lk-capture-top-height equal to its height. */
+.lk-capture-top {
+  position: sticky;
+  top: 0;
+  z-index: 1030;
 }
-
-body.lk-capture-page .lk-header { position: static; flex: none; }
+body.lk-capture-page .lk-header { position: static; }
 
 /* ---------- Capture bar ---------- */
 
 .lk-capture-bar {
-  flex: none;
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: var(--lk-space-3) var(--lk-space-5);
-  padding: var(--lk-space-3) var(--lk-space-5);
+  padding: var(--lk-space-3) calc(var(--lk-space-5) + 28px) var(--lk-space-3) var(--lk-space-5);
   background: var(--lk-color-surface);
   border-bottom: 1px solid var(--lk-color-rule);
 }
+
+/* Fold button (top right of the bar) */
+.lk-capture-fold {
+  position: absolute;
+  top: var(--lk-space-2);
+  right: var(--lk-space-2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--lk-radius-sm);
+  background: none;
+  color: var(--lk-color-muted);
+}
+.lk-capture-fold:hover,
+.lk-capture-fold:focus-visible { border-color: var(--lk-color-rule); color: var(--lk-color-ink); background: var(--lk-color-surface-2); }
+.lk-capture-fold .lk-icon { transition: transform var(--lk-transition-fast); }
+
+/* Folded: one line, title and toolbar icons only */
+.lk-capture-bar.is-folded { padding-block: var(--lk-space-1); flex-wrap: nowrap; }
+.lk-capture-bar.is-folded .lk-capture-fold { top: 50%; transform: translateY(-50%); }
+.lk-capture-bar.is-folded .lk-capture-fold .lk-icon { transform: rotate(180deg); }
+.lk-capture-bar.is-folded .lk-capture-thumb,
+.lk-capture-bar.is-folded .lk-capture-url,
+.lk-capture-bar.is-folded .lk-capture-meta { display: none; }
+.lk-capture-bar.is-folded .lk-capture-title { font-size: var(--lk-font-size-sm); }
+.lk-capture-bar.is-folded .lk-tool-btn span { display: none; }
+.lk-capture-bar.is-folded .lk-tool-btn { padding-block: 2px; padding-inline: var(--lk-space-2); }
 
 .lk-capture-identity {
   display: flex;
@@ -183,7 +214,6 @@ body.lk-capture-page .lk-header { position: static; flex: none; }
 /* ---------- Messages (flash) under the bar ---------- */
 
 .lk-capture-flashes {
-  flex: none;
   padding: var(--lk-space-2) var(--lk-space-5) 0;
   background: var(--lk-color-bg);
 }
@@ -197,8 +227,10 @@ body.lk-capture-page .lk-header { position: static; flex: none; }
 /* ---------- Tree area: viewport + legend ---------- */
 
 .lk-tree-area {
-  flex: 1 1 auto;
-  min-height: 0;
+  /* The rest of the screen under the top block; the footer comes after */
+  height: calc(100vh - var(--lk-capture-top-height, 200px));
+  height: calc(100dvh - var(--lk-capture-top-height, 200px));
+  min-height: 320px;
   position: relative;
   display: flex;
 }
@@ -210,10 +242,6 @@ body.lk-capture-page .lk-header { position: static; flex: none; }
   position: relative;
   outline: none;
 }
-
-/* ---------- Footer: the site footer (partials/footer.html), as on every page ---------- */
-
-body.lk-capture-page .lk-footer { flex: none; }
 
 /* ---------- Legend & icon filter (tree/legend.html, js/tree.js) ---------- */
 

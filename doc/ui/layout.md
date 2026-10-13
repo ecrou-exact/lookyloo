@@ -149,4 +149,4 @@ Injected by the `inject_layout_context()` context processor in
 `password` to the same route.
 
 The footer is also on the capture page (`tree/tree.html`), the same as on
-every page, under the tree.
+every page, at the bottom of the page under the tree (scroll down to see it).

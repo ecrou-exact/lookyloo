@@ -5,18 +5,26 @@ Template `tree/tree.html`, CSS `css/tree.css`, JS `js/tree.js` (D3 tree) and
 
 ## Layout
 
-The page fills the window and does not scroll as a whole (`body.lk-capture-page`):
-
 ```
-site header (partials/header.html)
-capture bar  (.lk-capture-bar)       what was captured + actions
-messages     (.lk-capture-flashes)   flash messages, dismissible
-tree area    (.lk-tree-area)
+top block    (#capture_top, sticky)  stays visible while the page scrolls:
+  site header (partials/header.html)
+  capture bar (.lk-capture-bar)      what was captured + actions, foldable
+  messages    (.lk-capture-flashes)  flash messages, dismissible
+tree area    (.lk-tree-area)         exactly the rest of the screen:
   tree       (#tree_viewport)        scrolls in both directions, holds #tree_svg
-  legend     (tree/legend.html)      legend & icon filter, over the bottom right corner, closed
-footer       (partials/footer.html)  the site footer, as on every page
+  legend     (tree/legend.html)      legend & icon filter, bottom right corner
+footer       (partials/footer.html)  the site footer, at the bottom of the page
 modals       (block content)
 ```
+
+The page scrolls normally: the tree fills the screen when it opens, the
+footer is below it. `js/capture_page.js` keeps `--lk-capture-top-height`
+equal to the height of the top block (ResizeObserver), and `.lk-tree-area`
+is `100dvh` minus that height.
+
+The capture bar folds to one line (title + toolbar icons) with the chevron at
+its top right (`#capture_fold`, `.lk-capture-bar.is-folded`); the choice is
+remembered in `localStorage` (`lk-capture-bar-folded`).
 
 ## Capture bar
 

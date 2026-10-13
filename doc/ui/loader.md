@@ -21,6 +21,9 @@ in opposite directions and an occasional blink.
 | `label` | `'Loading'` | Text announced by screen readers (`role="status"`) |
 | `size` | `'md'` | `sm` (40px wide), `md` (72px), `lg` (128px) |
 | `show_label` | `False` | Display the label under the eyes |
+| `decorative` | `False` | Eyes as an illustration (error pages): no `role="status"`, visible at once |
+
+Sizes: `sm` 40px, `md` 72px, `lg` 128px, `xl` 200px wide.
 
 The eyes use `currentColor`: they follow the text colour (ink in light mode,
 light grey in dark mode); set `color` on a parent to change it.

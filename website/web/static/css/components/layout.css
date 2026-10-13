@@ -32,6 +32,51 @@ body {
   padding-block: var(--lk-space-6) var(--lk-space-7);
 }
 
+/* ---- Decorative background (layouts/page.html) ----
+   Faint capture tree (images/ui/backdrop-tree.svg, used as a mask so it takes
+   the accent colour), dot grid and accent glow at the top of every standard
+   page, fading out. Strength set with the variables below (stronger on the
+   home page, css/home.css). */
+
+body {
+  --lk-backdrop-tree-opacity: 0.08;
+  --lk-backdrop-glow: 0.10;
+  --lk-backdrop-height: 560px;
+}
+
+[data-bs-theme="dark"] body {
+  --lk-backdrop-tree-opacity: 0.12;
+}
+
+.lk-main {
+  position: relative;
+  isolation: isolate; /* keeps the backdrop (z-index -1) above the page background */
+}
+
+.lk-backdrop {
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: var(--lk-backdrop-height);
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 70% 55% at 60% 0%, rgba(var(--lk-color-accent-rgb), var(--lk-backdrop-glow)), transparent 70%),
+    radial-gradient(circle at 1px 1px, rgba(var(--lk-color-ink-rgb), 0.13) 1px, transparent 1.5px) 0 0 / 22px 22px;
+  -webkit-mask-image: linear-gradient(to bottom, #000 50%, transparent);
+  mask-image: linear-gradient(to bottom, #000 50%, transparent);
+}
+
+.lk-backdrop::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: var(--lk-color-accent);
+  opacity: var(--lk-backdrop-tree-opacity);
+  -webkit-mask: url("../../images/ui/backdrop-tree.svg") center 40px / 1600px auto no-repeat;
+  mask: url("../../images/ui/backdrop-tree.svg") center 40px / 1600px auto no-repeat;
+}
+
+
 .lk-skip-link {
   position: absolute;
   top: var(--lk-space-2);
@@ -95,4 +140,62 @@ body {
   border: 1px solid var(--lk-color-rule);
   border-radius: var(--lk-radius-lg);
   padding: var(--lk-space-5);
+}
+
+/* Error pages (errors/error.html) */
+.lk-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding-block: var(--lk-space-7);
+}
+
+.lk-error .lk-loader {
+  margin-bottom: var(--lk-space-5);
+}
+
+.lk-error-code {
+  font-family: var(--lk-font-mono);
+  font-size: var(--lk-font-size-sm);
+  letter-spacing: 0.2em;
+  color: var(--lk-color-accent);
+  margin: 0 0 var(--lk-space-2);
+}
+
+.lk-error-title {
+  font-size: clamp(1.6rem, 3vw, 2.25rem);
+  letter-spacing: -0.02em;
+  margin: 0 0 var(--lk-space-3);
+}
+
+.lk-error-message {
+  color: var(--lk-color-muted);
+  max-width: 52ch;
+  margin: 0 0 var(--lk-space-4);
+}
+
+.lk-error-path code {
+  display: inline-block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  padding: var(--lk-space-1) var(--lk-space-3);
+  border: 1px solid var(--lk-color-rule);
+  border-radius: var(--lk-radius-md);
+  background: var(--lk-color-surface);
+  color: var(--lk-color-ink);
+}
+
+.lk-error-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--lk-space-2);
+  margin-top: var(--lk-space-4);
+}
+
+.lk-error-actions .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--lk-space-2);
 }

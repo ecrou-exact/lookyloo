@@ -14,6 +14,8 @@
 <a class="visually-hidden-focusable lk-skip-link" href="#main">Skip to content</a>
 {% include 'partials/header.html' %}
 <main id="main" class="lk-main">
+  {# Decorative background, see css/components/layout.css #}
+  <div class="lk-backdrop" aria-hidden="true"></div>
   <div class="lk-container {% block main_class %}{% endblock %}">
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}

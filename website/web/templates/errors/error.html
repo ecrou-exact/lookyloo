@@ -1,9 +1,28 @@
 {% extends "layouts/page.html" %}
-{% block title %}Error{% endblock %}
+{#
+  Error page (404, 500 and the errors raised in the capture views).
+  Variables: error_title, error_message, error_code (optional), requested_path (optional).
+  Doc: doc/ui/errors.md
+#}
+{% from 'macros/loader.html' import loader %}
 
-{% block content %}
-<div class="container">
-  <h1>Something went wrong</h1>
-  <b>{{ error_message }}</b>
-</div>
+{% block title %}{{ error_title or 'Error' }} · Lookyloo{% endblock %}
+
+{% block main_class %}lk-container-narrow{% endblock %}
+
+{% block main %}
+<section class="lk-error">
+  {{ loader('', size='xl', decorative=True) }}
+  {% if error_code %}<p class="lk-error-code">{{ error_code }}</p>{% endif %}
+  <h1 class="lk-error-title">{{ error_title or 'Something went wrong' }}</h1>
+  <p class="lk-error-message">{{ error_message }}</p>
+  {% if requested_path %}
+  <p class="lk-error-path"><code>{{ requested_path }}</code></p>
+  {% endif %}
+  <div class="lk-error-actions">
+    <a class="btn btn-primary" href="{{ url_for('landing_page') }}">{{ icon('bi:house') }} Back to the home page</a>
+    <a class="btn btn-outline-primary" href="{{ url_for('index') }}">Recent captures</a>
+    <a class="btn btn-outline-primary" href="{{ url_for('search') }}">{{ icon('bi:search') }} Search</a>
+  </div>
+</section>
 {% endblock %}

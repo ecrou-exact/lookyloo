@@ -11,7 +11,9 @@ pagination, hidden captures) is the index page, [index.md](index.md).
 
 ## Hero
 
-The top block (`.lk-hero`) has three parts:
+The hero sits directly on the decorative background of the layout (stronger on
+this page, see [layout.md](../layout.md)); the capture bar keeps a solid surface
+and only the three points are in a (translucent) box. It has three parts:
 
 - **Brand** (left, on top on small screens): the logo (`.lk-logo`, inverted in
   dark mode) and "Web forensics tool".

@@ -30,6 +30,13 @@
 .lk-loader-sm .lk-loader-eyes { width: 40px; }
 .lk-loader-md .lk-loader-eyes { width: 72px; }
 .lk-loader-lg .lk-loader-eyes { width: 128px; }
+.lk-loader-xl .lk-loader-eyes { width: 200px; }
+
+/* Eyes used as an illustration (error pages): visible at once */
+.lk-loader-decorative {
+  --lk-loader-delay: 0s;
+  animation-duration: 0s;
+}
 
 .lk-loader-label {
   color: var(--lk-color-muted);

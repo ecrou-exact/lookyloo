@@ -3,14 +3,23 @@
  * Doc: doc/ui/pages/home.md
  */
 
+/* Stronger decorative background on the home page (see components/layout.css) */
+.lk-page-home {
+  --lk-backdrop-tree-opacity: 0.15;
+  --lk-backdrop-glow: 0.16;
+  --lk-backdrop-height: 820px;
+}
+
+[data-bs-theme="dark"] .lk-page-home {
+  --lk-backdrop-tree-opacity: 0.22;
+}
+
 /* ---- Hero: quick capture ---- */
 
+/* The hero sits directly on the decorative background; only the key points
+   below it are in a box */
 .lk-hero {
-  background: var(--lk-color-surface);
-  border: 1px solid var(--lk-color-rule);
-  border-radius: var(--lk-radius-lg);
   margin-bottom: var(--lk-space-5);
-  overflow: hidden;
 }
 
 .lk-hero-main {
@@ -18,7 +27,12 @@
   grid-template-columns: minmax(220px, 0.8fr) minmax(0, 1.7fr);
   gap: var(--lk-space-6) var(--lk-space-7);
   align-items: center;
-  padding: var(--lk-space-7);
+  padding: var(--lk-space-6) var(--lk-space-5) var(--lk-space-7);
+}
+
+/* The form keeps a solid surface: readable whatever is behind it */
+.lk-capture-bar {
+  box-shadow: var(--lk-shadow-md);
 }
 
 .lk-hero-brand {
@@ -63,7 +77,7 @@
   align-items: center;
   gap: var(--lk-space-2);
   padding: var(--lk-space-2) var(--lk-space-2) var(--lk-space-2) var(--lk-space-4);
-  background: var(--lk-color-bg);
+  background: var(--lk-color-surface);
   border: 1px solid var(--lk-color-rule-strong);
   border-radius: calc(var(--lk-radius-lg) + 2px);
   transition: border-color var(--lk-transition-fast), box-shadow var(--lk-transition-fast);
@@ -190,8 +204,12 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  border-top: 1px solid var(--lk-color-rule);
-  background: var(--lk-color-surface-2);
+  border: 1px solid var(--lk-color-rule);
+  border-radius: var(--lk-radius-lg);
+  background: color-mix(in srgb, var(--lk-color-surface) 82%, transparent);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  overflow: hidden;
 }
 
 .lk-hero-features li {

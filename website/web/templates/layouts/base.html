@@ -54,7 +54,7 @@
 
     {% endblock %}
   </head>
-  <body>
+  <body{% block body_attrs %}{% endblock %}>
     {% include "custom_header.html" ignore missing %}
     {% block body %}
     <div id="content" class="container">

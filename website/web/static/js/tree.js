@@ -26,6 +26,8 @@ const active_filters = new Set();
 // Text of the search field over the tree (lower case, '' = no text filter)
 let search_text = '';
 let search_index = -1;   // match centred by the previous / next buttons
+// Node focused by a click on its card: it and its neighbours (parent, children) stay lit
+let focus_uuid = null;
 
 // First display: the tree grows from the root, one depth column after the other
 // (animateTreeEntry). Off with prefers-reduced-motion.
@@ -248,10 +250,18 @@ function nodeText(d) {
 
 // The filters of the tree: icons (legend) AND text (search field). A node
 // matches when it passes every active filter; the others are dimmed.
+// The focused node, its parent or one of its children
+function isNeighbour(d) {
+    if (d.data.uuid === focus_uuid) return true;
+    if (d.parent && d.parent.data.uuid === focus_uuid) return true;
+    return (d.children || []).some(child => child.data.uuid === focus_uuid);
+}
+
 function nodeMatches(d) {
     const icon_ok = active_filters.size === 0 || [...active_filters].some(key => nodeHas(d, key));
     const text_ok = !search_text || nodeText(d).includes(search_text);
-    return icon_ok && text_ok;
+    const focus_ok = !focus_uuid || isNeighbour(d);
+    return icon_ok && text_ok && focus_ok;
 }
 
 function matchingNodes() {
@@ -259,15 +269,19 @@ function matchingNodes() {
 }
 
 function applyTreeFilter() {
-    const filtering = active_filters.size > 0 || search_text !== '';
+    const filtering = active_filters.size > 0 || search_text !== '' || focus_uuid !== null;
     let matches = 0;
     node_container.selectAll('g.node').each(function(d) {
         const match = filtering && nodeMatches(d);
         if (match) matches++;
         d3.select(this)
           .classed('is-filter-match', match)
-          .classed('is-filter-dimmed', filtering && !match);
+          .classed('is-filter-dimmed', filtering && !match)
+          .classed('is-focused', d.data.uuid === focus_uuid);
     });
+    // A link stays lit when both its ends do (its datum is the child node)
+    node_container.selectAll('path.link')
+        .classed('is-filter-dimmed', l => filtering && !(nodeMatches(l) && nodeMatches(l.parent)));
     const label = `${matches} node${matches === 1 ? '' : 's'}`;
     const active = document.getElementById('legend-active');
     if (active) {
@@ -298,7 +312,36 @@ function focusMatch(step) {
     if (count && nodes.length > 1) count.textContent = `${search_index + 1} / ${nodes.length}`;
 }
 
+// Click on a card: focus the node and its neighbours; again on it: show everything
+function toggleNeighbours(d) {
+    focus_uuid = focus_uuid === d.data.uuid ? null : d.data.uuid;
+    const pill = document.getElementById('tree-focus');
+    if (pill) {
+        pill.hidden = focus_uuid === null;
+        document.getElementById('tree-focus-name').textContent = focus_uuid ? (d.data.idna || d.data.name) : '';
+    }
+    applyTreeFilter();
+}
+
+function clearNeighbours() {
+    if (focus_uuid === null) return;
+    focus_uuid = null;
+    document.getElementById('tree-focus').hidden = true;
+    applyTreeFilter();
+}
+
 function setupTreeSearch() {
+    document.getElementById('tree-focus-clear')?.addEventListener('click', clearNeighbours);
+    // Click on the background of the tree, or Esc outside a field: show everything
+    main_svg.on('click', (event) => {
+        if (event.target === main_svg.node() || event.target.classList?.contains('tree-background')) clearNeighbours();
+    });
+    document.addEventListener('keydown', (event) => {
+        if (event.key !== 'Escape' || document.querySelector('.modal.show')) return;
+        if (document.activeElement?.tagName === 'INPUT') return;
+        clearNeighbours();
+    });
+
     const input = document.getElementById('tree-search');
     if (!input) return;
     let timer = null;
@@ -610,6 +653,7 @@ function update(root, computed_node_width=0) {
 
     // Set background based on the computed width and height
     let background = main_svg.insert('rect', ':first-child')
+      .attr('class', 'tree-background')
       .attr('y', 0)
       // Note: We want the background width with an extra computed_node_width
       // in order to make sure the last node is completely covered
@@ -676,6 +720,7 @@ function update(root, computed_node_width=0) {
 
             node_data.append('rect')
               .attr('class', 'node-card')
+              .on('click', (event, d) => toggleNeighbours(d))
               .attr("rx", 8)
               .attr("ry", 8)
               .attr('x', 0)
@@ -1015,5 +1060,5 @@ function update(root, computed_node_width=0) {
     update(root, node_width)
   }
   // Nodes shown again after an expand keep the filters
-  if (active_filters.size > 0 || search_text) applyTreeFilter();
+  if (active_filters.size > 0 || search_text || focus_uuid) applyTreeFilter();
 }

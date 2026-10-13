@@ -320,6 +320,12 @@
     <button type="button" class="lk-tree-search-nav" id="tree-search-next" title="Next match" aria-label="Next match" hidden>{{ icon('bi:chevron-down') }}</button>
   </div>
 
+  {# Shown while a node and its neighbours are focused (click on a card, js/tree.js) #}
+  <div class="lk-tree-focus" id="tree-focus" role="status" hidden>
+    {{ icon('bi:diagram-3') }}<span>Neighbours of <strong id="tree-focus-name"></strong></span>
+    <button type="button" id="tree-focus-clear" title="Show every node (Esc)" aria-label="Show every node">{{ icon('bi:x-lg') }}</button>
+  </div>
+
   {% include 'tree/legend.html' %}
 </div>
 

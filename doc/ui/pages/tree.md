@@ -155,3 +155,13 @@ icons (`nodeMatches()`, `applyTreeFilter()`); the others are dimmed.
 - the number of matching nodes shows in the field; **Enter** / **Shift+Enter**
   or the arrows centre the next / previous match (`.is-search-current`);
 - **/** anywhere on the page focuses the field, **Esc** clears it.
+
+## Neighbours of a node
+
+A click on a node card (`.node-card`, outside the hostname and the icons)
+focuses the node: it (`.is-focused`), its parent and its children stay lit,
+the other nodes and the links that don't join two lit nodes are dimmed. A pill
+under the search says which node is focused. Click the card again, the
+background of the tree, the pill's ✕ or press Esc to show everything. It is a
+third filter, combined with the search and the icons (`isNeighbour()` in
+`nodeMatches()`).

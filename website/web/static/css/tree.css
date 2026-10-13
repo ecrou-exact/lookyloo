@@ -325,6 +325,36 @@ body.lk-capture-page .lk-header { position: static; }
 /* The tree starts under the search field */
 #tree_svg { padding-top: var(--lk-space-7); }
 
+/* Pill shown while a node and its neighbours are focused */
+.lk-tree-focus {
+  position: absolute;
+  top: calc(var(--lk-space-3) + 44px);
+  left: var(--lk-space-4);
+  z-index: 1020;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--lk-space-2);
+  max-width: calc(100% - 2 * var(--lk-space-4));
+  padding: var(--lk-space-1) var(--lk-space-1) var(--lk-space-1) var(--lk-space-3);
+  border: 1px solid var(--lk-color-accent);
+  border-radius: var(--lk-radius-pill);
+  background: var(--lk-color-accent-soft);
+  color: var(--lk-color-ink);
+  font-size: var(--lk-font-size-sm);
+  box-shadow: var(--lk-shadow-sm);
+}
+.lk-tree-focus[hidden] { display: none; }
+.lk-tree-focus span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lk-tree-focus button {
+  display: inline-flex;
+  padding: var(--lk-space-1);
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--lk-color-muted);
+}
+.lk-tree-focus button:hover { background: var(--lk-color-surface); color: var(--lk-color-ink); }
+
 /* ---------- Legend & icon filter (tree/legend.html, js/tree.js) ---------- */
 
 .lk-tree-legend {
@@ -417,6 +447,11 @@ body.lk-capture-page .lk-header { position: static; }
 g.node { transition: opacity var(--lk-transition-fast); }
 g.node.is-filter-dimmed { opacity: 0.22; }
 g.node.is-filter-match .node-card { stroke: var(--lk-color-accent); stroke-width: 2px; }
+path.link { transition: opacity var(--lk-transition-fast); }
+path.link.is-filter-dimmed { opacity: 0.18; }
+/* Node focused by a click on its card (its neighbours are .is-filter-match) */
+.node-card { cursor: pointer; }
+g.node.is-focused .node-card { fill: var(--lk-color-accent-soft); stroke: var(--lk-color-accent); stroke-width: 3px; }
 /* Match centred by the search (previous / next) */
 g.node.is-search-current .node-card { fill: var(--lk-color-accent-soft); stroke-width: 3px; }
 

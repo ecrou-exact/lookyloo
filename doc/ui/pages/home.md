@@ -13,7 +13,7 @@ pagination, hidden captures) is the index page, [index.md](index.md).
 
 The hero sits directly on the decorative background of the layout (stronger on
 this page, see [layout.md](../layout.md)); the capture bar keeps a solid surface
-and only the three points are in a (translucent) box. It has three parts:
+and only the three points are in a (translucent) box. It has two parts:
 
 - **Brand** (left, on top on small screens): the logo (`.lk-logo`, inverted in
   dark mode) and "Web forensics tool".
@@ -24,8 +24,6 @@ and only the three points are in a (translucent) box. It has three parts:
   changes, stops on focus/input, off with `prefers-reduced-motion`), then the **options**
   as pill selects (`.lk-pill-select`: icon + native `<select>` without its
   arrow, caret drawn in CSS) and links to all capture options / upload.
-- **Three points** (`.lk-hero-features`): real browser, every hop and resource,
-  a link to share. Descriptions are hidden on phones.
 
 The form posts to `/capture` (same handler as the full form, `capture_web`)
 with:

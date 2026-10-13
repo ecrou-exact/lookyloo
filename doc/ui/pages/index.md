@@ -5,10 +5,22 @@ captures on `index_hidden` (`/hidden`, logged-in users). Template
 `home/index.html`, CSS `css/index.css`. Design direction: mockup F ("report"),
 see the redesign notes.
 
-## Quick capture
+## Hero: quick capture
 
-A compact form posting to `/capture` (same handler as the full form,
-`capture_web`) with:
+The top block (`.lk-hero`) has three parts:
+
+- **Brand** (left, on top on small screens): the logo (`.lk-logo`, inverted in
+  dark mode) and "Web forensics tool".
+- **Form**: headline "See where a link really goes.", one-sentence explanation,
+  the **capture bar** (`.lk-capture-bar`: globe icon + URL field + Capture
+  button in one box, with the focus ring on the whole bar), then the **options**
+  as pill selects (`.lk-pill-select`: icon + native `<select>` without its
+  arrow, caret drawn in CSS) and links to all capture options / upload.
+- **Three points** (`.lk-hero-features`): real browser, every hop and resource,
+  a link to share. Descriptions are hidden on phones.
+
+The form posts to `/capture` (same handler as the full form, `capture_web`)
+with:
 
 | Field | Value |
 |-------|-------|

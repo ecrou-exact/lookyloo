@@ -50,6 +50,7 @@ table td p {
 /* Logos are black PNGs, inverted in dark mode (follows the theme toggle,
    not only the OS preference) */
 #tree_logo,
-#navbar_logo {
+#navbar_logo,
+.lk-logo {
   filter: var(--lk-logo-filter);
 }

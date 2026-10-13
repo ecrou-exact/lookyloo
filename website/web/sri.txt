@@ -1,6 +1,6 @@
 {
   "static": {
-    "css/base.css": "6CqHV2tX0TJhCpqBej66ogGyl5W9wlmZShevegsr1JeeEoA/JDK5vF19t66+zz4+AQM+OuYmPfosYDDABaC9OA==",
+    "css/base.css": "DRmy7llAw+seMHgLKVaANNF35ZORc0HSGQ9sYu6Tgp3kFPtR9ddx+qWGM1bsmEdUi5R4Wit3BfMNdQlwetgglw==",
     "css/bootstrap-bridge.css": "2fvxXHbtgyuOIfoZXGW/VAyFz/btu52MAwOPNLbdviSUbaxHgA17JulHmosJZ2EJHU3euzq3t17p5gJ535UytA==",
     "css/components/footer.css": "otIf4fWcIZJB6N2DpAJfPvOFdKfUC2cmf1Ar+WFemei7FkNYNbC0ZmzVIkybUecLeDgyKNgthWd7EUsSC/SCtw==",
     "css/components/header.css": "AmiFiD0B9091DE73YH8ryFfZrL5kwDFSiaSf8sBmQmKSt4FFeBpX18iD8e5UxmbRZf3JVfr9s9s2jQ3RI98B0g==",
@@ -8,7 +8,7 @@
     "css/components/layout.css": "aPNNVXGvSDAzyAh/4z8pf4SZ3t3oPXye2egNbmPnSRDsmEtxz4AvD9ENhlz9d9upkQerolLA8vrc6kwZaMBPWQ==",
     "css/components/loader.css": "r3KI3v/QCidXIcbhI5z2QMkYX0gEEGvUsbmTNmj/8UsF7ATcqOY5/Q81QYbeXX8piKMfHPRZeLGtREl1ZdPaUw==",
     "css/fonts.css": "8VDNfmqZtRf4vaHfBlS1Nrx/B4up9f41oyV6PFwUrrU7ZHXMMS1ToAX9FBji6YllZh/Ay4j1F0Hfn/+9Qdx9zA==",
-    "css/index.css": "TGidJ6WCPv/QV4IKJbHh0/85n7BPlG5KSjtMpW8zN1RLRf38L1xBNVUtwAlDFJJlQVeIH1eBrfIak/SGpi4ryA==",
+    "css/index.css": "Q4wTTSmCI/Fc2alFA8ysvyz84I9jk7tG9hkBNwtFDjTBDfGrzXg+jGVd6aMPW7+OagAber3PVavR01H4nWyvjQ==",
     "css/stats.css": "MpaKtHrq8jHjeKaagVCzLJfNwTNwdRw5LHYoYAILw9ZtOEgymQ6mLjQT/LeFS7vlo6dZWfMgFUYRRu7QBO+pqQ==",
     "css/theme.css": "SkstWxLu55lVNVS5xClhuK0ZoTlVat/en8rHeZ3vd8w8/rG9k/OA1er0ufGzluzJiq7M9Ak54CbIcAnxx+OzYA==",
     "css/tree.css": "ANZ1RZy1rEwBMq3IUJBqVgmm2eSO4QaJIXEaDdow1KT8dYKeUMGOaRdHNYVWaSfejMIb7i83eLW9JVMqnRxizg==",
@@ -39,7 +39,7 @@
     "images/icons/redirect.png": "PAjzlPV97rEFvH55mG1ZC9wRl98be3yMeX/nENuFkJcds6/AXgSR2ig/QyPULgobSnNgiYieLVWY/oqsgeywrQ==",
     "images/icons/secure.svg": "H8ni7t0d60nCJDVGuZpuxC+RBy/ipAjWT627D12HlZGg6LUmjSwPTQTUekm3UJupEP7TUkhXyq6WHc5gy7QBjg==",
     "images/icons/send-arrow-up.svg": "9PCEcHs82uLwxdSFjvWW2GIPMPStWMmZAWBI7Tl9U3zkUws4LMEKnxkGYdXGroHEdjAAbQm7MlbPlflItoUM9Q==",
-    "images/icons/sprite.svg": "znwyIMKYhe2QGV5EZkvFQQUcu6wv5hfFfM9R/aVWinJWK6Zd0QnSFLLp3QSBgDxNasQqldl3THeS15/KJvaHjQ==",
+    "images/icons/sprite.svg": "m4hZRwcV+JXKKhId57oAPar+yKaYqZ+HQuC0PvPaF5HJ4EdAYc4xjhzskjwzKsubClZKsMF03RUkEb7ZQbB6PQ==",
     "images/icons/video.png": "gJtmkfr8I1Kw43pYEKjg6CAjgmhl1vIBKBQ3ZkxCu3wvxQm+6kf93iLrrFiY2WuiXzxEn2Leu52GJzmVN5id0g==",
     "images/icons/websocket.svg": "RlyPvy5lv81VrUnQYujUTSU7u75vbl9wMdkhOyDchH4qgrFPC/ehNvQHZWEP0Edq5Aj3bJVghH2BZgz+4WelMA==",
     "images/icons/wtf.png": "5iUj4m5G3tJN3wQvR1jD/hF4OKFrboVeuFejd+6ZUvdll3zjkLeewJQ+zptO9ckzktsMPC2+bKM3zM3CXXWoCw==",

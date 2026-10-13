@@ -39,45 +39,75 @@
 {% endblock %}
 
 {% block main %}
-<section class="lk-quick-capture" aria-labelledby="quick-capture-title">
-  <div class="lk-quick-capture-intro">
-    <h1 id="quick-capture-title">Capture a URL</h1>
-    <p>Lookyloo opens the page in a real browser and records every redirect, request and resource it loads.</p>
+<section class="lk-hero" aria-labelledby="quick-capture-title">
+  <div class="lk-hero-main">
+    <div class="lk-hero-brand">
+      <img class="lk-logo" src="{{ url_for('static', filename='images/brand/lookyloo.png') }}"
+           alt="" width="320"
+           {{get_sri('static', 'images/brand/lookyloo.png')}}
+           crossorigin="anonymous">
+      <p>Web forensics tool</p>
+    </div>
+
+    <form class="lk-hero-form" method="post" action="{{ url_for('capture_web') }}">
+      <h1 id="quick-capture-title">See where a link really goes.</h1>
+      <p class="lk-hero-lead">Paste a URL: Lookyloo opens it in a real browser and records every redirect, request and resource it loads.</p>
+
+      {# Honeypot: bots fill it, the capture route rejects them #}
+      <input class="boatymcboat" type="text" name="name" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <input type="hidden" name="java_script_enabled" value="1">
+
+      <div class="lk-capture-bar">
+        {{ icon('bi:globe2', classes='lk-capture-bar-icon') }}
+        <label for="quick-capture-url" class="visually-hidden">URL to capture</label>
+        <input type="text" id="quick-capture-url" name="url"
+               placeholder="https://suspicious-link.example/login" required
+               autocomplete="off" autocapitalize="off" spellcheck="false">
+        <button type="submit" class="btn btn-primary btn-lg">{{ icon('bi:camera') }} Capture</button>
+      </div>
+
+      <div class="lk-capture-options">
+        <label class="lk-pill-select">
+          {{ icon('bi:laptop') }}
+          <span class="visually-hidden">Device</span>
+          <select name="device_name">
+            <option value="{{ default_device }}" selected>{{ default_device }}</option>
+            {% if default_mobile_device %}
+            <option value="{{ default_mobile_device }}">{{ default_mobile_device }}</option>
+            {% endif %}
+          </select>
+        </label>
+        <label class="lk-pill-select">
+          {{ icon('bi:eye') }}
+          <span class="visually-hidden">Visibility</span>
+          <select name="visibility">
+            <option value="public" {% if default_public and not default_private %}selected{% endif %}>Public</option>
+            <option value="unlisted" {% if not default_public and not default_private %}selected{% endif %}>Unlisted</option>
+            <option value="private" {% if default_private %}selected{% endif %}>Private</option>
+          </select>
+        </label>
+        <span class="lk-capture-options-links">
+          <a href="{{ url_for('capture_web') }}">{{ icon('bi:sliders') }} All capture options</a>
+          <a href="{{ url_for('submit_capture') }}">{{ icon('bi:upload') }} Upload a capture</a>
+        </span>
+      </div>
+    </form>
   </div>
-  <form class="lk-quick-capture-form" method="post" action="{{ url_for('capture_web') }}">
-    {# Honeypot: bots fill it, the capture route rejects them #}
-    <input class="boatymcboat" type="text" name="name" tabindex="-1" autocomplete="off" aria-hidden="true">
-    <input type="hidden" name="java_script_enabled" value="1">
-    <div class="lk-quick-capture-row">
-      <label for="quick-capture-url" class="visually-hidden">URL to capture</label>
-      <input type="text" class="form-control" id="quick-capture-url" name="url"
-             placeholder="https://example.com" required autocomplete="off" spellcheck="false">
-      <button type="submit" class="btn btn-primary">{{ icon('bi:camera') }} Capture</button>
-    </div>
-    <div class="lk-quick-capture-options">
-      <label class="lk-inline-field">
-        <span>Device</span>
-        <select class="form-select form-select-sm" name="device_name">
-          <option value="{{ default_device }}" selected>{{ default_device }}</option>
-          {% if default_mobile_device %}
-          <option value="{{ default_mobile_device }}">{{ default_mobile_device }}</option>
-          {% endif %}
-        </select>
-      </label>
-      <label class="lk-inline-field">
-        <span>Visibility</span>
-        <select class="form-select form-select-sm" name="visibility">
-          <option value="public" {% if default_public and not default_private %}selected{% endif %}>Public</option>
-          <option value="unlisted" {% if not default_public and not default_private %}selected{% endif %}>Unlisted</option>
-          <option value="private" {% if default_private %}selected{% endif %}>Private</option>
-        </select>
-      </label>
-      <span class="lk-quick-capture-links">
-        <a href="{{ url_for('submit_capture') }}">Upload a capture</a>
-        <a href="{{ url_for('capture_web') }}">All capture options {{ icon('bi:arrow-right') }}</a>
-      </span>
-    </div>
-  </form>
+
+  <ul class="lk-hero-features">
+    <li>
+      {{ icon('bi:browser-chrome', classes='lk-icon-lg') }}
+      <div><strong>A real browser</strong><span>The page is rendered like a visitor would see it, scripts included.</span></div>
+    </li>
+    <li>
+      {{ icon('bi:diagram-3', classes='lk-icon-lg') }}
+      <div><strong>Every hop and resource</strong><span>Redirects, requests, cookies and third parties, drawn as a tree.</span></div>
+    </li>
+    <li>
+      {{ icon('bi:link-45deg', classes='lk-icon-lg') }}
+      <div><strong>A link to share</strong><span>Each capture keeps its own page to investigate or send to a colleague.</span></div>
+    </li>
+  </ul>
 </section>
 
 <section class="lk-recent" aria-labelledby="recent-captures-title">

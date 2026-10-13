@@ -44,3 +44,13 @@ Three rendering modes:
 The captures tables keep their ids and `data-*` attributes (`hostnameTable`,
 `data-hostname`, `bodyHashDetailsTable`...): `js/render_tables.js` reads them and
 `post_table()` fills them.
+
+## Navigation when opened as a page
+
+`pivot_header(..., back=(label, url))`: breadcrumb `Home / Explore / <label> /
+<value>` (value shortened after 32 characters) and a "Back to <label>" button.
+The button goes back in the browser history when the page was opened from that
+list (keeps its page, search and filters, `js/generic.js`), otherwise follows the
+link. Used by resources, cookies, favicons and HTTP headers hashes; the other
+pivots (hostname, IP...) get a plain "Back" button. The resource page shows the
+Lookyloo type icon of the file in its header.

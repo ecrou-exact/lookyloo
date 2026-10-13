@@ -14,8 +14,8 @@
 {% block content %}
 <div class="lk-pivot">
 {% call pivot_header('Resource', body_hash, description='A file loaded by the captured pages (script, image, style...), identified by its SHA512.',
-                       icon_name='misp:attributes/sha256',
-                       share_url=url_for('body_hash_details', body_hash=body_hash, from_popup=True), from_popup=from_popup) %}
+                       image_src=url_for('static', filename='images/icons/' ~ (get_icon(generic_type(mimetype)) or get_icon('unset_mimetype'))['icon']),
+                       share_url=url_for('body_hash_details', body_hash=body_hash, from_popup=True), from_popup=from_popup, back=('Resources', url_for('ressources'))) %}
   <a class="btn btn-primary btn-sm" href="{{ url_for('ressource_by_hash', sha512=body_hash) }}">{{ icon('bi:download') }} Download</a>
 {% endcall %}
 

@@ -14,6 +14,8 @@
     share_url    standalone page of this pivot (from_popup=True); shown as
                  "Open as a page" when we are in a modal
     from_popup   standalone page: adds the "Go back" button
+    back         (label, url) of the list page this pivot belongs to (Resources,
+                 Cookies...): breadcrumb + "Back to <label>" when opened as a page
     {% call %}   extra actions (links, buttons) on the right
 
   captures_section(title='Seen in these captures')
@@ -22,7 +24,30 @@
 #}
 
 {% macro pivot_header(kind, value, description=None, icon_name=None, image_src=None,
-                      share_url=None, from_popup=False, copy=True) -%}
+                      share_url=None, from_popup=False, copy=True, back=None) -%}
+{% if as_page and not from_popup %}
+{# Opened as a page: breadcrumb + back button to the list it comes from (back = (label, url)) #}
+<nav class="lk-breadcrumb" aria-label="Breadcrumb">
+  <ol>
+    <li><a href="{{ url_for('landing_page') }}">{{ icon('bi:house') }} Home</a></li>
+    {% if back %}
+    <li><span>Explore</span></li>
+    <li><a href="{{ back[1] }}">{{ back[0] }}</a></li>
+    {% endif %}
+    {# The value, not the kind: "Resources / Resource" would read twice #}
+    <li><span aria-current="page" title="{{ value }}">{{ value if value|length <= 32 else value[:16] ~ '…' }}</span></li>
+  </ol>
+</nav>
+<div class="lk-pivot-back">
+  {% if back %}
+  {# lk-back-to-list: js/generic.js goes back in history when we come from that list
+     (keeps its page and filters), the href is the fallback #}
+  <a class="btn btn-outline-primary btn-sm lk-back-to-list" href="{{ back[1] }}">{{ icon('bi:arrow-left') }} Back to {{ back[0] }}</a>
+  {% else %}
+  <button class="btn btn-outline-primary btn-sm goBack" type="button">{{ icon('bi:arrow-left') }} Back</button>
+  {% endif %}
+</div>
+{% endif %}
 {% if from_popup %}
 <div class="lk-pivot-back">
   <button class="btn btn-outline-primary btn-sm goBack" type="button">{{ icon('bi:arrow-left') }} Go back</button>

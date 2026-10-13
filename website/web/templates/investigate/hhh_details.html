@@ -13,7 +13,7 @@
 {% block content %}
 <div class="lk-pivot">
 {{ pivot_header('HTTP headers hash', hhh, description='Responses whose HTTP headers have the same names in the same order: servers configured the same way.', icon_name='bi:fingerprint',
-                 share_url=url_for('hhh_detail', hhh=hhh, from_popup=True), from_popup=from_popup) }}
+                 share_url=url_for('hhh_detail', hhh=hhh, from_popup=True), from_popup=from_popup, back=('HTTP headers hashes', url_for('hhhashes_lookup'))) }}
 
 {% call pivot_section('Headers', icon_name='bi:list-ul') %}
 <div class="table-responsive">

@@ -241,3 +241,18 @@ function lkRelativeTimes(root = document) {
     });
 }
 document.addEventListener('DOMContentLoaded', () => lkRelativeTimes());
+
+// "Back to <list>" buttons of the pivot pages (macros/investigate.html): when we
+// arrived from that list, go back in history so its page and filters are kept.
+document.addEventListener('click', event => {
+    const link = event.target.closest('.lk-back-to-list');
+    if (!link || !document.referrer) {
+        return;
+    }
+    const list = new URL(link.href, window.location.href);
+    const from = new URL(document.referrer);
+    if (from.origin === list.origin && from.pathname === list.pathname && window.history.length > 1) {
+        event.preventDefault();
+        window.history.back();
+    }
+});

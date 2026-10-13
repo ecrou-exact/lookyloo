@@ -14,7 +14,7 @@
 <div class="lk-pivot">
 {{ pivot_header('Cookie name', cookie_name, description='Captures in which a page set a cookie with this name.',
                  icon_name='misp:attributes/cookie',
-                 share_url=url_for('cookies_name_detail', cookie_name=cookie_name, from_popup=True), from_popup=from_popup) }}
+                 share_url=url_for('cookies_name_detail', cookie_name=cookie_name, from_popup=True), from_popup=from_popup, back=('Cookies', url_for('cookies_lookup'))) }}
 
 {% call captures_section() %}
 <table id="cookieNameTable" class="table lk-pivot-table" style="width:100%" data-cookiename="{{cookie_name}}">

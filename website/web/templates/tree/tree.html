@@ -431,6 +431,12 @@
      the tree on it (js/tree.js, setupAttention). Hidden when there are none. #}
   <div class="lk-tree-alerts" id="tree-alerts" aria-label="Points of attention" hidden></div>
 
+  {# Shown while the tree is viewed from one of its nodes (js/tree.js, viewFrom) #}
+  <div class="lk-tree-focus lk-tree-view-from" id="tree-view-from" role="status" hidden>
+    {{ icon('bi:diagram-2') }}<span>Tree from <strong id="tree-view-from-name"></strong></span>
+    <button type="button" id="tree-view-from-clear" title="Show the whole tree" aria-label="Show the whole tree">{{ icon('bi:x-lg') }}</button>
+  </div>
+
   {# Shown while a node and its neighbours are focused (click on a card, js/tree.js) #}
   <div class="lk-tree-focus" id="tree-focus" role="status" hidden>
     {{ icon('bi:diagram-3') }}<span>Neighbours of <strong id="tree-focus-name"></strong></span>
@@ -846,6 +852,7 @@
   ("#tree-alerts", "Points of attention", "What an analyst checks first: data sent (POST), downloads, plain HTTP, third-party hosts… Click a chip to light up the hosts concerned."),
   ("g.node .node-card", "A host", "Each card is a host. Click its name for its details (URLs, IPs, certificates); click the card itself to light up its neighbours; hover it for its network information."),
   ("g.node .icons_list", "What it loaded", "The icons tell what this host sent: scripts, images, cookies, redirects… with how many. Click an icon to light up every host that has it."),
+  ("g.node .node-view", "View from a host", "Hover a card and click this icon: the tree is drawn from this host, as if it were the start, with only what it loaded. The pill at the top left shows it; its ✕ brings the whole tree back."),
   ("circle.node", "Fold a branch", "Click a circle to hide or show the hosts loaded by this one."),
   ("path.link.is-main-path", "The path to the page", "In colour: the redirects from the URL you gave to the page the browser finally showed."),
   (".lk-tree-controls", "Tree tools", "Draw the tree from left to right or from top to bottom, fold or unfold everything, compare with another capture, change the background, full screen."),

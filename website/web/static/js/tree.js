@@ -45,6 +45,9 @@ try {
 // Vertical: height of a depth row (card + thumbnail of the rendered node + gap)
 const VERTICAL_ROW = 190;
 let tree_root = null;
+// "View the tree from here": the hierarchy shown instead of the whole tree (null = whole tree)
+let view_root = null;
+const currentRoot = () => view_root || tree_root;
 
 // ---- Analysis state (declared before the first await: used while the tree loads)
 
@@ -912,6 +915,45 @@ function iconHref(name) {
     return `${sprite}#${name.replace(':', '-').replace('/', '-')}`;
 }
 
+// ****************** View the tree from a node ******************
+
+// Draw the tree from scratch with this root (the whole tree, or a part of it)
+function redraw(root) {
+    hideNodeInfo();
+    node_container.selectAll('g.node, path.link').remove();
+    root.x0 = min_height / 2;
+    root.y0 = 0;
+    tree_entry_done = false;
+    update(root);
+    animateTreeEntry(root).then(() => {
+        const root_node = document.getElementById(`node_${root.data.uuid}`);
+        if (root_node) centerInViewport(root_node.querySelector('.node-card') || root_node);
+    });
+    if (active_filters.size > 0 || search_text || focus_uuid || compare_only_new) applyTreeFilter();
+}
+
+// The node becomes the root: only it and what it loaded are shown. A filter:
+// the pill (#tree-view-from) or clearView() shows the whole tree again.
+function viewFrom(d) {
+    // A fresh hierarchy of the data under this node (the whole tree keeps its own
+    // collapsed / expanded branches for when it is shown again)
+    view_root = d3.hierarchy(d.data);
+    const pill = document.getElementById('tree-view-from');
+    if (pill) {
+        pill.hidden = false;
+        document.getElementById('tree-view-from-name').textContent = d.data.idna || d.data.name;
+    }
+    redraw(view_root);
+}
+
+function clearView() {
+    if (!view_root) return;
+    view_root = null;
+    const pill = document.getElementById('tree-view-from');
+    if (pill) pill.hidden = true;
+    redraw(tree_root);
+}
+
 // Click on a card: focus the node and its neighbours; again on it: show everything
 function toggleNeighbours(d) {
     focus_uuid = focus_uuid === d.data.uuid ? null : d.data.uuid;
@@ -953,10 +995,10 @@ function controlsStatus(message) {
 }
 
 function relayout() {
-    update(tree_root);
+    update(currentRoot());
     // Centre the root once the nodes have moved (300 ms transition)
     setTimeout(() => {
-        const root_node = document.getElementById(`node_${tree_root.data.uuid}`);
+        const root_node = document.getElementById(`node_${currentRoot().data.uuid}`);
         if (root_node) centerInViewport(root_node.querySelector('.node-card') || root_node);
     }, reduce_motion ? 0 : 350);
 }
@@ -983,8 +1025,9 @@ function setupTreeControls() {
 
     // Collapse every node but the root: the first level stays visible
     document.getElementById('tree-collapse-all').addEventListener('click', () => {
-        allNodes(tree_root).forEach(d => {
-            if (d === tree_root) {
+        const root = currentRoot();
+        allNodes(root).forEach(d => {
+            if (d === root) {
                 d.children = d.children || d._children;
                 d._children = null;
             } else if (d.children) {
@@ -997,8 +1040,9 @@ function setupTreeControls() {
 
     // Expand level after level, as long as the tree stays under MAX_EXPANDED_NODES
     document.getElementById('tree-expand-all').addEventListener('click', () => {
-        let shown = tree_root.descendants().length;
-        let level = tree_root.descendants().filter(d => d._children);
+        const root = currentRoot();
+        let shown = root.descendants().length;
+        let level = root.descendants().filter(d => d._children);
         let stopped = false;
         while (level.length) {
             const added = level.reduce((sum, d) => sum + allNodes(d).length - 1, 0);
@@ -1018,7 +1062,7 @@ function setupTreeControls() {
             break;
         }
         relayout();
-        const total = allNodes(tree_root).length;
+        const total = allNodes(root).length;
         if (stopped || shown < total) {
             controlsStatus(`${shown} of ${total} nodes shown: expanding all of them would slow the page down. Expand the others one by one.`);
         }
@@ -1092,6 +1136,7 @@ function setupFullscreen() {
 
 function setupTreeSearch() {
     document.getElementById('tree-focus-clear')?.addEventListener('click', clearNeighbours);
+    document.getElementById('tree-view-from-clear')?.addEventListener('click', clearView);
     // Click on the background of the tree, or Esc outside a field: show everything
     main_svg.on('click', (event) => {
         if (event.target === main_svg.node() || event.target.classList?.contains('tree-background')) clearNeighbours();
@@ -1612,6 +1657,28 @@ function update(root, computed_node_width=0) {
                     note_button.append('rect').attr('width', 22).attr('height', 22).attr('rx', 5);
                     note_button.append('use')
                         .attr('href', iconHref('bi:pencil'))
+                        .attr('x', 4).attr('y', 4).attr('width', 14).attr('height', 14);
+                }
+                // View the tree from this node (shown on hover, not on the root of the view)
+                if (d.parent) {
+                    const view_x = selected_node_bbox.width - (enable_bookmark ? 50 : 30) - 26 * (notes_enabled ? 2 : 1);
+                    const view_button = d3.select(this).append('g')
+                        .attr('class', 'node-capture node-view')
+                        .attr('transform', `translate(${view_x}, 5)`)
+                        .attr('cursor', 'pointer')
+                        .attr('role', 'button')
+                        .on('click', (event, d) => { event.stopPropagation(); d3.select('#tooltip').style('opacity', 0); viewFrom(d); })
+                        .on('mouseover', (event, d) => {
+                            d3.select('#tooltip')
+                                .style('opacity', 1)
+                                .style('left', `${tipX(event) + 10}px`)
+                                .style('top', `${tipY(event) + 10}px`)
+                                .text(`View the tree from ${d.data.name}: only this host and what it loaded`);
+                        })
+                        .on('mouseout', () => d3.select('#tooltip').style('opacity', 0));
+                    view_button.append('rect').attr('width', 22).attr('height', 22).attr('rx', 5);
+                    view_button.append('use')
+                        .attr('href', iconHref('bi:diagram-2'))
                         .attr('x', 4).attr('y', 4).attr('width', 14).attr('height', 14);
                 }
                 capture_button.append('use')

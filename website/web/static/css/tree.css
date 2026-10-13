@@ -452,6 +452,10 @@ body.lk-capture-page > .lk-footer { flex: none; display: block; width: 100%; }
 }
 .lk-tree-controls-status[hidden] { display: none; }
 
+/* Pill of "view the tree from a node": first line; the neighbours pill goes under it */
+.lk-tree-view-from { top: calc(var(--lk-space-3) + 40px); }
+.lk-tree-view-from:not([hidden]) ~ #tree-focus { top: calc(var(--lk-space-3) + 80px); }
+
 /* Pill shown while a node and its neighbours are focused */
 .lk-tree-focus {
   position: absolute;

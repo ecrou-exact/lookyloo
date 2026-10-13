@@ -333,3 +333,18 @@ Copy buttons (MISP export, notes) say **Copied** (green) or **Copy failed**
 
 The capture page has the most detailed tour of the tutorial mode
 (doc/ui/tour.md), started by `js/tree.js` once the tree is drawn.
+
+## View the tree from a node
+
+Hover a card (not the root) and click the **diagram** icon, next to the camera
+(`.node-view`, `viewFrom()` in `js/tree.js`): the tree is drawn again from
+scratch with this host as its root, as if the capture started there — only
+this host and what it loaded. It is a filter: the pill **Tree from <host> ✕**
+(`#tree-view-from`) shows it, its ✕ (`clearView()`) brings the whole tree back,
+with its own collapsed / expanded branches as they were.
+
+The view is a fresh d3 hierarchy of the node's data (`view_root`);
+`currentRoot()` is what the tree controls work on (orientation, collapse /
+expand all), and the other filters (search, icons, neighbours, compare) apply
+to the nodes of the view. The points of attention and the legend counts stay
+those of the whole capture.

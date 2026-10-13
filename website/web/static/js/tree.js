@@ -1,4 +1,8 @@
 "use strict";
+// This is an ES module with a top-level await (the tree is loaded below): every
+// top-level const / let used while the tree loads (update(), setup*()) must be
+// declared ABOVE the loading block, or it throws "Cannot access … before
+// initialization" and stops the page (state section, near the top).
 // From : https://bl.ocks.org/d3noob/43a860bc0024792f8803bba8ca0d5ecd
 
 // Set the dimensions and margins of the diagram.
@@ -43,6 +47,22 @@ const VERTICAL_ROW = 190;
 let tree_root = null;
 
 // ---- Analysis state (declared before the first await: used while the tree loads)
+
+// Notes editor, network info panel, expand all
+let note_target = null;
+let note_text = '';
+let info_timer = null;
+const MAX_EXPANDED_NODES = 400;
+
+
+// Background of the tree area (setupBackground): plain, dots, grid or columns
+const BACKGROUNDS = ['plain', 'dots', 'grid', 'columns'];
+let background_choice = 'plain';
+try {
+    const saved = localStorage.getItem('lk-tree-background');
+    if (BACKGROUNDS.includes(saved)) background_choice = saved;
+} catch (e) { /* storage unavailable */ }
+
 
 // Comparison with another capture: hostnames of the other capture (null = off),
 // and "only the new hosts" filter
@@ -357,8 +377,6 @@ function saveNotes() {
 }
 
 // The note being edited in #noteModal: {uuid, host}, and its current text
-let note_target = null;
-let note_text = '';
 
 function editNote(uuid, host) {
     // The editor is a modal of the page: leave the full screen tree first
@@ -663,7 +681,6 @@ function placeNextTo(floating, anchor) {
     floating.style.top = `${top}px`;
 }
 
-let info_timer = null;
 function showNodeInfo(event, d) {
     clearTimeout(info_timer);
     const panel = document.getElementById('tree-node-info');
@@ -910,7 +927,6 @@ function clearNeighbours() {
 // ****************** Tree controls: orientation, collapse / expand all ******************
 
 // Expanding more nodes than this at once would make the page too slow
-const MAX_EXPANDED_NODES = 400;
 
 // Every node, shown or collapsed
 function allNodes(root) {
@@ -1012,12 +1028,6 @@ function tipY(event) { return document.fullscreenElement ? event.clientY : event
 
 // plain, dots, grid or columns (one band per depth, following the orientation);
 // drawn by css/tree.css on #tree_viewport, remembered in localStorage
-const BACKGROUNDS = ['plain', 'dots', 'grid', 'columns'];
-let background_choice = 'plain';
-try {
-    const saved = localStorage.getItem('lk-tree-background');
-    if (BACKGROUNDS.includes(saved)) background_choice = saved;
-} catch (e) { /* storage unavailable */ }
 
 function applyBackground() {
     BACKGROUNDS.forEach(name => tree_viewport.classList.toggle(`lk-tree-bg-${name}`, name === background_choice));

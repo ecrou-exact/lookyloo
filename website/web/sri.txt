@@ -69,7 +69,7 @@
     "js/render_tables.js": "SLxvX2IBQng4/WBBjvSxPEg/nAwICOFuYpaZw54wIPWqWzgev/sH0hk7ARIcjFk3+CcdzNvEtWvtM6n4P8svmA==",
     "js/stats_graph.js": "S/sMNQK1UMMLD0xQeEa7sq3ce8o6oPxwxGlyKVtaHOODjair86dbBDm7cu6pa/elMRDJT1j09jEFjWp+5GbhTw==",
     "js/theme_toggle.js": "UNUBD2svV32byB8JZryHhmFcm3aWhN0QzXQ5kOUfCUYyRsQTPcQoup5hA0n1ivFDDe2tj1suKQl4+8+USZKmcg==",
-    "js/tree.js": "JxZkCPFywSs2trcg1ZJnIKaI7XS0l4/35hW0sVJrTvtKwZC8sKgqFRRd0JRwMd/c9jjdRRDr+zGi96PfDb30Hw==",
+    "js/tree.js": "M7gmG+EOtQEjDKIXcOfn0ZCDLlffes+QXYpjmXuPxg/oGFvw8En+0ovSnaZVzU/5WEn0880kEmjl3Szlpz2Q+g==",
     "js/tree_modals.js": "+cFVWiqxJlk7TBf51noyO65GtskRSL3O+Qkl1TOf3v/KG8MnXIvNBocIGyYbIIVi1ymXcEznYTlaJQT8Xj7HeA==",
     "js/vitrine_setup.js": "tDa/j2HONimzoxsRdq8CK4fIFvALbE4ceSsYc6aoG5nKnYMAcISIp6QeLfv4MiK/J5iGO8hZXM+XjqHhQhQOgg==",
     "vendor/d3.min.js": "vc58qvvBdrDR4etbxMdlTt4GBQk1qjvyORR2nrsPsFPyrs+/u5c3+1Ct6upOgdZoIl7eq6k3a1UPDSNAQi/32A==",

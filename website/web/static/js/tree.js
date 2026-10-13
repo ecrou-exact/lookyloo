@@ -24,6 +24,13 @@ let center_node = null;
 // least one of them are highlighted, the others dimmed. Before the first await.
 const active_filters = new Set();
 
+// First display: the tree grows from the root, one depth column after the other
+// (animateTreeEntry). Off with prefers-reduced-motion.
+const reduce_motion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let tree_entry_done = false;
+const ENTRY_STEP_MS = 160;   // delay between two depth columns
+const ENTRY_MOVE_MS = 420;   // duration of the move of a node
+
 document.getElementById('tree_svg').style.width = min_width;
 document.getElementById('tree_svg').style.height = min_height;
 
@@ -78,9 +85,11 @@ try {
   root.x0 = min_height / 2;
   root.y0 = 0;
 
+  document.getElementById("tree-loading").style.display = "none";
   update(root);
   setupLegendFilter(root);
-  document.getElementById("tree-loading").style.display = "none";
+  // Scroll once the nodes are in place
+  await animateTreeEntry(root);
 
   if (document.getElementById('tree_js').dataset.urlnode != null){
     history.scrollRestoration = "manual";
@@ -180,6 +189,34 @@ try {
 }
 
 
+// ****************** Entry animation ******************
+
+// The nodes start on the root and move to their place, depth after depth; the
+// links fade in once their node has arrived. Resolves when it is over.
+function animateTreeEntry(root) {
+    tree_entry_done = true;
+    if (reduce_motion) return Promise.resolve();
+    const nodes = node_container.selectAll('g.node');
+    const links = node_container.selectAll('path.link');
+    nodes.interrupt()
+        .attr('opacity', 0)
+        .attr('transform', `translate(${root.y}, ${root.x})`);
+    links.interrupt().attr('opacity', 0);
+    const moved = nodes.transition('entry')
+        .delay(d => d.depth * ENTRY_STEP_MS)
+        .duration(ENTRY_MOVE_MS)
+        .ease(d3.easeCubicOut)
+        .attr('opacity', 1)
+        .attr('transform', d => `translate(${d.y}, ${d.x})`)
+        .end();
+    const shown = links.transition('entry')
+        .delay(d => d.depth * ENTRY_STEP_MS + ENTRY_MOVE_MS * 0.6)
+        .duration(ENTRY_MOVE_MS)
+        .attr('opacity', 1)
+        .end();
+    return Promise.all([moved, shown]).catch(() => {});
+}
+
 // ****************** Legend & icon filter (tree/legend.html) ******************
 
 // Does the node have this icon? Same test as icon_list(): true, a non-empty
@@ -210,6 +247,18 @@ function applyLegendFilter() {
     if (clear) clear.hidden = !filtering;
 }
 
+// Select / unselect an icon in the filter: from the legend, or from an icon of a node
+function toggleLegendFilter(key) {
+    const button = document.querySelector(`.lk-legend-item[data-key="${key}"]`);
+    if (!button || button.disabled) return;
+    if (active_filters.has(key)) active_filters.delete(key);
+    else active_filters.add(key);
+    button.setAttribute('aria-pressed', active_filters.has(key) ? 'true' : 'false');
+    // Show the legend, so the filter can be seen and cleared
+    document.getElementById('legend').open = true;
+    applyLegendFilter();
+}
+
 function setupLegendFilter(root) {
     const present = document.getElementById('legend-present');
     if (!present) return;
@@ -228,12 +277,7 @@ function setupLegendFilter(root) {
             return;
         }
         button.title = `${button.title}: ${count} of ${nodes.length} nodes`;
-        button.addEventListener('click', () => {
-            if (active_filters.has(key)) active_filters.delete(key);
-            else active_filters.add(key);
-            button.setAttribute('aria-pressed', active_filters.has(key) ? 'true' : 'false');
-            applyLegendFilter();
-        });
+        button.addEventListener('click', () => toggleLegendFilter(key));
     });
     // Most frequent first
     [...present.children]
@@ -376,12 +420,14 @@ function icon_list(relative_x_pos, relative_y_pos, d) {
               .attr("width", icon_size)
               .attr("height", icon_size)
               .attr("xlink:href", icon_details.path)
+              .attr('cursor', 'pointer')
+              .on('click', () => toggleLegendFilter(key))
               .on('mouseover', (event, d) => {
                   d3.select('#tooltip')
                       .style('opacity', 1)
                       .style('left', `${event.pageX + 10}px`)
                       .style('top', `${event.pageY + 10}px`)
-                      .text(counter? `${counter} ${icon_details.tooltip}`:icon_details.tooltip);
+                      .text(`${counter ? `${counter} ${icon_details.tooltip}` : icon_details.tooltip}. Click to filter the nodes.`);
               })
               .on('mouseout', (event, d) => d3.select('#tooltip').style('opacity', 0));
           if (counter > 0) {
@@ -690,6 +736,8 @@ function update(root, computed_node_width=0) {
                         .attr('x', selected_node_bbox.width - 40)
                         .attr('y', selected_node_bbox.height - http_icon_size - 6)
                         .attr('id', 'insecure_image')
+                        .attr('cursor', 'pointer')
+                        .on('click', () => toggleLegendFilter('http_content'))
                         .attr("width", http_icon_size)
                         .attr("height", http_icon_size)
                         .attr("xlink:href", '/static/images/icons/insecure.svg')
@@ -717,6 +765,8 @@ function update(root, computed_node_width=0) {
                         .attr('x', selected_node_bbox.width - 40 - http_icon_size - 4)
                         .attr('y', selected_node_bbox.height - http_icon_size - 6)
                         .attr('id', 'malicious_image')
+                        .attr('cursor', 'pointer')
+                        .on('click', () => toggleLegendFilter('malicious'))
                         .attr("width", context_icon_size)
                         .attr("height", context_icon_size)
                         .attr("xlink:href", '/static/images/icons/bomb.svg')
@@ -742,6 +792,8 @@ function update(root, computed_node_width=0) {
                         .attr('x', selected_node_bbox.width - 40 - http_icon_size - 4)
                         .attr('y', selected_node_bbox.height - http_icon_size - 6)
                         .attr('id', 'known_image')
+                        .attr('cursor', 'pointer')
+                        .on('click', () => toggleLegendFilter('legitimate'))
                         .attr("width", context_icon_size)
                         .attr("height", context_icon_size)
                         .attr("xlink:href", '/static/images/icons/check.svg')
@@ -767,6 +819,8 @@ function update(root, computed_node_width=0) {
                     .attr('x', selected_node_bbox.width - 40 - http_icon_size - 4)
                     .attr('y', selected_node_bbox.height - http_icon_size - 6)
                     .attr('id', 'empty_image')
+                        .attr('cursor', 'pointer')
+                        .on('click', () => toggleLegendFilter('empty'))
                     .attr("width", context_icon_size)
                     .attr("height", context_icon_size)
                     .attr("xlink:href", '/static/images/icons/empty.svg')
@@ -826,9 +880,10 @@ function update(root, computed_node_width=0) {
               .style('fill-opacity', 1e-6)
               .remove()
     ).call(node => {
+      // After the entry animation, expanding / collapsing moves the nodes smoothly
+      (tree_entry_done && !reduce_motion ? node.transition().duration(300).ease(d3.easeCubicOut) : node)
+        .attr("transform", node => `translate(${node.y}, ${node.x})`);
       node
-        // Transition to the proper position for the node
-        .attr("transform", node => `translate(${node.y}, ${node.x})`)
         // Update the node attributes and style
         .select('circle.node')
           .attr('r', 9)
@@ -865,7 +920,8 @@ function update(root, computed_node_width=0) {
         .attr('d', diagonal),
     update => update,
     exit => exit.call(exit => exit.attr('d', diagonal).remove())
-  ).call(link => link.attr('d', diagonal));
+  ).call(link => (tree_entry_done && !reduce_motion ? link.transition().duration(300).ease(d3.easeCubicOut) : link)
+                    .attr('d', diagonal));
 
   if (computed_node_width === 0) {
     update(root, node_width)

@@ -289,13 +289,19 @@
 {% endif %}
 {% endwith %}
 
-<main class="lk-tree-viewport" id="tree_viewport" tabindex="-1" aria-label="Capture tree">
-  <div id="tree_svg">
-    <div id="tree-loading">{{ loader('Tree loading, please wait', size='lg') }}</div>
-  </div>
-</main>
+{# The tree area: the scrolling viewport, and the legend over its bottom right corner #}
+<div class="lk-tree-area">
+  <main class="lk-tree-viewport" id="tree_viewport" tabindex="-1" aria-label="Capture tree">
+    <div id="tree_svg">
+      <div id="tree-loading">{{ loader('Tree loading, please wait', size='lg') }}</div>
+    </div>
+  </main>
 
-{% include 'tree/legend.html' %}
+  {% include 'tree/legend.html' %}
+</div>
+
+{# Site footer, compact on this page (css/tree.css) #}
+{% include 'partials/footer.html' %}
 
 {% block content %}
 <!-- Modals - Not in the main div. -->

@@ -194,15 +194,33 @@ body.lk-capture-page .lk-header { position: static; flex: none; }
 }
 .lk-capture-flashes .alert .btn-close { padding-block: var(--lk-space-3); }
 
-/* ---------- Tree viewport ---------- */
+/* ---------- Tree area: viewport + legend ---------- */
+
+.lk-tree-area {
+  flex: 1 1 auto;
+  min-height: 0;
+  position: relative;
+  display: flex;
+}
 
 .lk-tree-viewport {
   flex: 1 1 auto;
-  min-height: 0;
+  min-width: 0;
   overflow: auto;
   position: relative;
   outline: none;
 }
+
+/* ---------- Footer, compact: one line under the tree ---------- */
+
+body.lk-capture-page .lk-footer { flex: none; font-size: var(--lk-font-size-xs); }
+body.lk-capture-page .lk-footer-inner {
+  max-width: none;
+  padding: var(--lk-space-2) var(--lk-space-5);
+}
+body.lk-capture-page .lk-footer-about br,
+body.lk-capture-page .lk-footer-tagline { display: none; }
+body.lk-capture-page .lk-footer-links { margin-right: 0; gap: var(--lk-space-1) var(--lk-space-4); }
 
 #tree_svg { position: relative; }
 
@@ -218,12 +236,12 @@ body.lk-capture-page .lk-header { position: static; flex: none; }
 /* ---------- Legend & icon filter (tree/legend.html, js/tree.js) ---------- */
 
 .lk-tree-legend {
-  position: fixed;
+  position: absolute;
   right: var(--lk-space-4);
   bottom: var(--lk-space-4);
   z-index: 1020;
   width: 19rem;
-  max-height: calc(100vh - 12rem);
+  max-height: calc(100% - 2 * var(--lk-space-4));
   overflow: auto;
   background: var(--lk-color-surface);
   border: 1px solid var(--lk-color-rule);

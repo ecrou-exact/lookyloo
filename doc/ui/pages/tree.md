@@ -11,8 +11,10 @@ The page fills the window and does not scroll as a whole (`body.lk-capture-page`
 site header (partials/header.html)
 capture bar  (.lk-capture-bar)       what was captured + actions
 messages     (.lk-capture-flashes)   flash messages, dismissible
-tree         (#tree_viewport)        scrolls in both directions, holds #tree_svg
-legend       (tree/legend.html)      legend & icon filter, <details> at the bottom right, closed
+tree area    (.lk-tree-area)
+  tree       (#tree_viewport)        scrolls in both directions, holds #tree_svg
+  legend     (tree/legend.html)      legend & icon filter, over the bottom right corner, closed
+footer       (partials/footer.html)  compact: one line (version + links)
 modals       (block content)
 ```
 
@@ -87,7 +89,8 @@ Once the tree is loaded, `setupLegendFilter()` in `js/tree.js`:
   (`nodeHas()`, same test as the icons of a node) and shows the count;
 - keeps the icons of this capture at the top, most frequent first, and moves
   the others (count 0, disabled) to a collapsed **Not in this capture** section;
-- clicking entries toggles them: the nodes having **at least one** of the
+- clicking entries, **or an icon / badge in a node card**, toggles them
+  (`toggleLegendFilter(key)`, which also opens the legend): the nodes having **at least one** of the
   selected icons are highlighted (`g.node.is-filter-match`), the others dimmed
   (`g.node.is-filter-dimmed`); the number of matching nodes shows in the
   panel header, **Clear the filter** resets it. Expanding a node keeps the
@@ -121,3 +124,12 @@ in `tree.html`.
 The modals with server-rendered content or forms (details, screenshot,
 visibility, push to another Lookyloo, monitoring, e-mail notification) are
 still written in `tree.html`.
+
+## Animations
+
+- **Entry**: once the tree is drawn, `animateTreeEntry()` puts every node on
+  the root and moves it to its place, one depth column after the other
+  (`ENTRY_STEP_MS`, `ENTRY_MOVE_MS`); links fade in behind their node. The
+  scroll to the rendered page (or to the located node) waits for the end.
+- **Expand / collapse**: nodes and links move to their new place in 300 ms.
+- Both are off with `prefers-reduced-motion`.

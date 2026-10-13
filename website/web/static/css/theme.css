@@ -7,8 +7,9 @@
  *
  * Light values sit on :root and [data-bs-theme="light"], dark values on
  * [data-bs-theme="dark"] (set on <html> by js/theme_toggle.js).
- * A future theme only has to redefine these tokens, e.g. under
- * [data-lk-theme="name"] / [data-lk-theme="name"][data-bs-theme="dark"].
+ * Named themes (chosen in the theme menu, js/theme_toggle.js) redefine some
+ * tokens on top of their light or dark base: [data-lk-theme="midnight"]
+ * (dark base) and [data-lk-theme="christmas"] (light base), at the end.
  *
  * Doc: doc/ui/theme.md
  */
@@ -209,4 +210,97 @@
 
   /* Motion */
   --lk-transition-fast: 120ms ease;
+}
+
+
+/* ---------- Named themes (js/theme_toggle.js sets data-lk-theme) ---------- */
+
+/* Midnight: a dark mode in deep navy blue */
+[data-lk-theme="midnight"][data-bs-theme="dark"] {
+  --lk-color-bg: #080D18;
+  --lk-color-bg-rgb: 8, 13, 24;
+  --lk-color-surface: #0F1729;
+  --lk-color-surface-2: #151F38;
+  --lk-color-surface-3: #1B2745;
+
+  --lk-color-ink: #D2DEF2;
+  --lk-color-ink-rgb: 210, 222, 242;
+  --lk-color-muted: #8DA3C9;
+  --lk-color-muted-rgb: 141, 163, 201;
+  --lk-color-emphasis: #EEF3FF;
+  --lk-color-emphasis-rgb: 238, 243, 255;
+
+  --lk-color-rule: #1C2A48;
+  --lk-color-rule-strong: #2A3C63;
+
+  --lk-color-accent: #6AA0F0;
+  --lk-color-accent-rgb: 106, 160, 240;
+  --lk-color-accent-hover: #8AB6F5;
+  --lk-color-accent-active: #5082DC;
+  --lk-color-on-accent: #080D18;
+  --lk-color-accent-soft: #14254A;
+  --lk-color-link: #7EB0F5;
+  --lk-color-link-rgb: 126, 176, 245;
+  --lk-color-link-hover: #A4C8FA;
+  --lk-color-link-hover-rgb: 164, 200, 250;
+
+  --lk-focus-ring: rgba(106, 160, 240, 0.32);
+  --lk-focus-border: #6AA0F0;
+  --lk-shadow-sm: 0 1px 2px rgba(0, 4, 16, 0.6);
+  --lk-shadow-md: 0 4px 14px rgba(0, 4, 16, 0.6);
+
+  --lk-color-tree-node: #6AA0F0;
+  --lk-color-tree-canvas: #0A1122;
+  --lk-color-tree-pattern: rgba(106, 160, 240, 0.10);
+  --lk-color-tree-link: #2A3C63;
+  --lk-color-tree-icon-bg: #DFE7F5;
+}
+
+/* Christmas: warm cream, Christmas red and fir green (decorations:
+   css/components/christmas.css, js/christmas.js) */
+[data-lk-theme="christmas"][data-bs-theme="light"] {
+  --lk-color-bg: #FAF7F3;
+  --lk-color-bg-rgb: 250, 247, 243;
+  --lk-color-surface: #FFFDF9;
+  --lk-color-surface-2: #F4EEE6;
+  --lk-color-surface-3: #ECE4D8;
+
+  --lk-color-ink: #2B2320;
+  --lk-color-ink-rgb: 43, 35, 32;
+  --lk-color-muted: #6E625A;
+  --lk-color-muted-rgb: 110, 98, 90;
+
+  --lk-color-rule: #E7DDCF;
+  --lk-color-rule-strong: #D3C4AF;
+
+  --lk-color-accent: #B3261E;
+  --lk-color-accent-rgb: 179, 38, 30;
+  --lk-color-accent-hover: #971F18;
+  --lk-color-accent-active: #7D1A14;
+  --lk-color-on-accent: #FFFFFF;
+  --lk-color-accent-soft: #FBE9E6;
+  --lk-color-link: #A3221B;
+  --lk-color-link-rgb: 163, 34, 27;
+  --lk-color-link-hover: #7D1A14;
+  --lk-color-link-hover-rgb: 125, 26, 20;
+
+  --lk-color-success: #1E6B3A;
+  --lk-color-success-rgb: 30, 107, 58;
+
+  --lk-focus-ring: rgba(179, 38, 30, 0.28);
+  --lk-focus-border: #D0544B;
+
+  --lk-color-tree-node: #1E6B3A;
+  --lk-color-tree-canvas: #F7F1E8;
+  --lk-color-tree-pattern: rgba(30, 107, 58, 0.10);
+  --lk-color-tree-link: #D6C7B2;
+
+  /* Decorations */
+  --lk-xmas-red: #D7263D;
+  --lk-xmas-gold: #F2B705;
+  --lk-xmas-green: #1E8A4C;
+  --lk-xmas-blue: #2F80ED;
+  --lk-xmas-wire: #2F4F2F;
+  --lk-xmas-snow: #FFFFFF;
+  --lk-xmas-snow-shadow: rgba(80, 100, 140, 0.35);
 }

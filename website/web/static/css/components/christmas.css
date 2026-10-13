@@ -1,0 +1,76 @@
+/*
+ * Decorations of the Christmas theme (js/christmas.js adds the elements only
+ * while <html data-lk-theme="christmas">): a garland under the site header,
+ * and a light snowfall over the page. Colours: --lk-xmas-* in css/theme.css.
+ * Doc: doc/ui/theme.md
+ */
+
+.lk-header.has-xmas-garland { position: relative; }
+
+.lk-xmas-garland {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -14px;
+  height: 22px;
+  pointer-events: none;
+  z-index: 2;
+}
+.lk-xmas-wire { position: absolute; inset: 0; width: 100%; height: 100%; }
+.lk-xmas-wire path { fill: none; stroke: var(--lk-xmas-wire); stroke-width: 1.4; opacity: 0.7; }
+
+.lk-xmas-bulb {
+  position: absolute;
+  top: 9px;
+  width: 8px;
+  height: 11px;
+  margin-left: -4px;
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  animation: lk-xmas-twinkle 2.6s ease-in-out infinite;
+}
+.lk-xmas-bulb::before {   /* the cap */
+  content: "";
+  position: absolute;
+  top: -3px;
+  left: 2px;
+  width: 4px;
+  height: 3px;
+  border-radius: 1px;
+  background: var(--lk-xmas-wire);
+}
+.lk-xmas-bulb-red { background: var(--lk-xmas-red); box-shadow: 0 0 8px 1px var(--lk-xmas-red); }
+.lk-xmas-bulb-gold { background: var(--lk-xmas-gold); box-shadow: 0 0 8px 1px var(--lk-xmas-gold); }
+.lk-xmas-bulb-green { background: var(--lk-xmas-green); box-shadow: 0 0 8px 1px var(--lk-xmas-green); }
+.lk-xmas-bulb-blue { background: var(--lk-xmas-blue); box-shadow: 0 0 8px 1px var(--lk-xmas-blue); }
+
+@keyframes lk-xmas-twinkle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; box-shadow: none; }
+}
+
+/* Snow: fixed over the page, never catches the pointer */
+.lk-xmas-snow {
+  position: fixed;
+  inset: 0;
+  z-index: 1040;
+  overflow: hidden;
+  pointer-events: none;
+}
+.lk-xmas-flake {
+  position: absolute;
+  top: -10px;
+  border-radius: 50%;
+  background: var(--lk-xmas-snow);
+  box-shadow: 0 0 2px var(--lk-xmas-snow-shadow);
+  animation-name: lk-xmas-fall, lk-xmas-sway;
+  animation-timing-function: linear, ease-in-out;
+  animation-iteration-count: infinite, infinite;
+  animation-direction: normal, alternate;
+}
+@keyframes lk-xmas-fall { to { transform: translateY(105vh); } }
+@keyframes lk-xmas-sway { from { margin-left: -12px; } to { margin-left: 12px; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .lk-xmas-bulb { animation: none; }
+  .lk-xmas-snow { display: none; }
+}

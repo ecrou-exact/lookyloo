@@ -114,3 +114,25 @@ A theme only redefines tokens, nothing else:
 
 The theme is then selected by setting `data-lk-theme` on `<html>`, next to
 `data-bs-theme`.
+
+## Named themes
+
+Besides Light, Dark and Auto, the theme menu of the site header offers named
+themes. `js/theme_toggle.js` stores the choice (`localStorage` key `theme`),
+sets their base on `data-bs-theme` and their name on `data-lk-theme`; the
+tokens they redefine are at the end of `css/theme.css`:
+
+| Theme | Base | What changes |
+|---|---|---|
+| **Midnight** (`midnight`) | dark | deep navy blue backgrounds, blue accent and links, navy tree |
+| **Christmas** (`christmas`) | light | warm cream backgrounds, Christmas red accent, fir green; decorations |
+
+The Christmas decorations (`js/christmas.js`, `css/components/christmas.css`,
+`--lk-xmas-*` colours) are added only while the theme is active: a garland of
+softly twinkling bulbs under the site header (it follows the width of the
+window) and a light snowfall over the page (`pointer-events: none`). With
+`prefers-reduced-motion` the bulbs don't twinkle and there is no snow.
+
+To add a theme: its tokens under `[data-lk-theme="name"][data-bs-theme="light|dark"]`
+in `css/theme.css`, its base in `NAMED_THEMES` (`js/theme_toggle.js`) and an
+entry in the theme menu of `partials/header.html`.

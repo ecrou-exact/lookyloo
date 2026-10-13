@@ -19,11 +19,22 @@
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
   }
 
+  // Named themes (css/theme.css): a light or dark base + data-lk-theme on <html>.
+  // Doc: doc/ui/theme.md
+  const NAMED_THEMES = { midnight: 'dark', christmas: 'light' }
+
   const setTheme = theme => {
+    const root = document.documentElement
+    if (theme in NAMED_THEMES) {
+      root.setAttribute('data-bs-theme', NAMED_THEMES[theme])
+      root.setAttribute('data-lk-theme', theme)
+      return
+    }
+    root.removeAttribute('data-lk-theme')
     if (theme === 'auto') {
-      document.documentElement.setAttribute('data-bs-theme', (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'))
+      root.setAttribute('data-bs-theme', (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'))
     } else {
-      document.documentElement.setAttribute('data-bs-theme', theme)
+      root.setAttribute('data-bs-theme', theme)
     }
   }
 
@@ -59,7 +70,7 @@
 
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
     const storedTheme = getStoredTheme()
-    if (storedTheme !== 'light' && storedTheme !== 'dark') {
+    if (storedTheme !== 'light' && storedTheme !== 'dark' && !(storedTheme in NAMED_THEMES)) {
       setTheme(getPreferredTheme())
     }
   })

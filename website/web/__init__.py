@@ -3014,6 +3014,17 @@ def ip_details(ip: str) -> str:
     return render_template('investigate/ip.html', ip=ip, from_popup=from_popup)
 
 
+@app.route('/admin/preview/bulk_captures', methods=['GET'])
+@flask_login.login_required  # type: ignore[untyped-decorator]
+def preview_bulk_captures() -> str:
+    '''Admin: the "Ongoing captures" page (capture/bulk_captures.html) is normally only
+    shown after submitting several URLs or importing captures; this shows it with the
+    latest captures of the instance as examples, to check the template.'''
+    examples = [(cache.uuid, cache.url, None)
+                for cache in lookyloo.sorted_capture_cache(public=False, cached_captures_only=True)[:5]]
+    return render_template('capture/bulk_captures.html', bulk_captures=examples, preview=True)
+
+
 @app.route('/stats', methods=['GET'])
 @flask_login.login_required  # type: ignore[untyped-decorator]
 def statsfull() -> str:

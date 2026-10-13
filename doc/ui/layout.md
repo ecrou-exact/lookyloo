@@ -150,3 +150,7 @@ Injected by the `inject_layout_context()` context processor in
 
 The footer is also on the capture page (`tree/tree.html`), the same as on
 every page, at the bottom of the page under the tree (scroll down to see it).
+
+The menu of the logged-in user (site header) holds *Hidden captures*,
+*Statistics*, then *Previews* (pages normally only shown after a form, e.g.
+the ongoing captures page: doc/ui/pages/bulk-captures.md), and *Log out*.

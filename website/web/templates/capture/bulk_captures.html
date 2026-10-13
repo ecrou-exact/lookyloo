@@ -54,6 +54,13 @@
 {% endblock %}
 
 {% block content %}
+  {% if preview %}
+  {# Admin preview of this page (preview_bulk_captures): the latest captures as examples #}
+  <div class="alert alert-info" role="status">
+    {{ icon('bi:eye') }} <strong>Preview.</strong> This page is normally shown after submitting several URLs
+    or importing captures. The rows below are the latest captures of this instance, as examples.
+  </div>
+  {% endif %}
   <div class="table-responsive">
   <table id="table" class="table" style="width:96%">
     <thead>

@@ -47,6 +47,35 @@
   height: auto;
 }
 
+/* Logo whose first two eyes follow the mouse (js/home.js) */
+.lk-hero-logo {
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+}
+
+.lk-hero-logo img {
+  display: block;
+}
+
+.lk-logo-pupil {
+  position: absolute;
+  /* 29px pupil on the 706px wide logo */
+  width: 4.1%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--lk-color-emphasis); /* black on light, white on dark like the logo */
+  transform: translate(-50%, -50%);
+  transition: left 90ms linear, top 90ms linear;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lk-logo-pupil {
+    transition: none;
+  }
+}
+
 .lk-hero-brand p {
   margin: 0;
   color: var(--lk-color-muted);

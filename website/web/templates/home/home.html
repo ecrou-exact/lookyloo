@@ -53,10 +53,16 @@
 <section class="lk-hero" aria-labelledby="quick-capture-title">
   <div class="lk-hero-main">
     <div class="lk-hero-brand">
-      <img class="lk-logo" src="{{ url_for('static', filename='images/brand/lookyloo.png') }}"
-           alt="" width="320"
-           {{get_sri('static', 'images/brand/lookyloo.png')}}
-           crossorigin="anonymous">
+      {# Logo without the pupils of the first two "o" (tools/make_brand_eyes.py): two real
+         pupils follow the mouse (js/home.js). Positions in pixels of the 706x316 logo. #}
+      <div class="lk-hero-logo" data-lk-eyes data-width="706" data-height="316">
+        <img class="lk-logo" src="{{ url_for('static', filename='images/brand/lookyloo-no-pupils.png') }}"
+             alt="Lookyloo" width="320"
+             {{get_sri('static', 'images/brand/lookyloo-no-pupils.png')}}
+             crossorigin="anonymous">
+        <span class="lk-logo-pupil" aria-hidden="true" data-ring-x="180" data-ring-y="85.6" data-x="191.9" data-y="94.3"></span>
+        <span class="lk-logo-pupil" aria-hidden="true" data-ring-x="281.2" data-ring-y="82.5" data-x="292.5" data-y="91.8"></span>
+      </div>
       <p>Web forensics tool</p>
     </div>
 

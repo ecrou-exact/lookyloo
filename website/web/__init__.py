@@ -499,7 +499,10 @@ def load_custom_local_ressource(ressource_type: str, filename: str) -> tuple[str
 def inject_layout_context() -> dict[str, Any]:
     '''Variables needed by the shared layout (partials/header.html, partials/footer.html).'''
     return {'lookyloo_version': pkg_version,
-            'enable_takedown_form': get_config('generic', 'enable_takedown_form')}
+            'enable_takedown_form': get_config('generic', 'enable_takedown_form'),
+            # True when the browser opens the URL as a page (not a fetch() from a modal):
+            # the pivot pages (investigate/*) then get the full layout. Doc: doc/ui/pivot-pages.md
+            'as_page': request.headers.get('Sec-Fetch-Dest') == 'document'}
 
 
 app.jinja_env.globals.update(

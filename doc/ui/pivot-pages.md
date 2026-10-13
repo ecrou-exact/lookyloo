@@ -7,10 +7,13 @@ TLD, IP, capture hash (domhash...), identifier. Templates in
 CSS `css/components/pivot.css` (loaded everywhere: the pages are also shown in
 the tree modals).
 
-Two rendering modes, decided by the `from_popup` query parameter:
+Three rendering modes:
 
 - `from_popup=True`: a standalone page (`layouts/base.html`, no site header),
   opened from the capture popups; a "Go back" button is shown.
+- opened directly by the browser (link, typed URL: `Sec-Fetch-Dest: document`,
+  exposed as `as_page` by `inject_layout_context()`): the full site layout
+  (`layouts/page.html`), without the "Open as a page" button;
 - otherwise: an HTML fragment injected in a modal of the capture tree
   (`js/tree_modals.js`); an "Open as a page" button opens the standalone page
   in a new tab.
@@ -18,7 +21,7 @@ Two rendering modes, decided by the `from_popup` query parameter:
 ## Building blocks
 
 ```jinja
-{% from 'macros/investigate.html' import pivot_header, captures_section, pivot_section %}
+{% from 'macros/investigate.html' import pivot_header, captures_section, pivot_section with context %}
 
 {{ pivot_header('Hostname', hostname, description='Captures that contacted this hostname.',
                 icon_name='misp:attributes/hostname',

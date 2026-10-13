@@ -44,10 +44,10 @@
     </h1>
     {% if description %}<p class="lk-pivot-description">{{ description }}</p>{% endif %}
   </div>
-  {% if caller or (share_url and not from_popup) %}
+  {% if caller or (share_url and not from_popup and not as_page) %}
   <div class="lk-pivot-actions">
     {% if caller %}{{ caller() }}{% endif %}
-    {% if share_url and not from_popup %}
+    {% if share_url and not from_popup and not as_page %}
     <a class="btn btn-outline-primary btn-sm" href="{{ share_url }}" target="_blank" rel="noopener">
       {{ icon('bi:box-arrow-up-right') }} Open as a page</a>
     {% endif %}

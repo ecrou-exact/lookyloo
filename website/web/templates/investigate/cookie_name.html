@@ -1,8 +1,9 @@
-{% from 'macros/investigate.html' import pivot_header, captures_section, pivot_section %}
+{% from 'macros/investigate.html' import pivot_header, captures_section, pivot_section with context %}
 
-{% if from_popup %}
+{% if from_popup or as_page %}
 
-{% extends "layouts/base.html" %}
+{# Popup: bare page; direct navigation: full site layout; otherwise an HTML fragment for the tree modals #}
+{% extends "layouts/base.html" if from_popup else "layouts/page.html" %}
 {% from 'bootstrap5/utils.html' import render_messages %}
 {% block title %}{{ cookie_name }}{% endblock %}
 

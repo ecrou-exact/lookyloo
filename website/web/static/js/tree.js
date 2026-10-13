@@ -751,9 +751,11 @@ function showHoverPath(d) {
 }
 
 
+// Chips of the points of attention, for the tree shown (whole capture, or the tree from a node)
 function setupAttention(root) {
     const container = document.getElementById('tree-alerts');
     if (!container) return;
+    container.textContent = '';
     const all = allNodes(root);
     ATTENTION.forEach(item => {
         const count = all.filter(d => nodeHas(d, item.key)).length;
@@ -763,7 +765,7 @@ function setupAttention(root) {
         chip.className = `lk-tree-alert lk-tree-alert-${item.level}`;
         chip.dataset.key = item.key;
         chip.title = `${item.title}. Click to filter the tree.`;
-        chip.setAttribute('aria-pressed', 'false');
+        chip.setAttribute('aria-pressed', active_filters.has(item.key) ? 'true' : 'false');
         const number = document.createElement('strong');
         number.textContent = count;
         chip.append(number, ` ${item.label}`);
@@ -947,6 +949,9 @@ function viewFrom(d) {
         document.getElementById('tree-view-from-name').textContent = d.data.idna || d.data.name;
     }
     redraw(view_root);
+    refreshLegend(view_root);
+    setupAttention(view_root);
+    applyTreeFilter();
 }
 
 function clearView() {
@@ -955,6 +960,9 @@ function clearView() {
     const pill = document.getElementById('tree-view-from');
     if (pill) pill.hidden = true;
     redraw(tree_root);
+    refreshLegend(tree_root);
+    setupAttention(tree_root);
+    applyTreeFilter();
 }
 
 // Click on a card: focus the node and its neighbours; again on it: show everything
@@ -1203,22 +1211,43 @@ function toggleLegendFilter(key) {
 function setupLegendFilter(root) {
     const present = document.getElementById('legend-present');
     if (!present) return;
+    document.querySelectorAll('.lk-legend-item').forEach(button => {
+        button.dataset.title = button.title;
+        button.addEventListener('click', () => toggleLegendFilter(button.dataset.key));
+    });
+    document.getElementById('legend-clear').addEventListener('click', () => {
+        active_filters.clear();
+        document.querySelectorAll('.lk-legend-item').forEach(b => b.setAttribute('aria-pressed', 'false'));
+        document.querySelectorAll('.lk-tree-alert').forEach(c => c.setAttribute('aria-pressed', 'false'));
+        applyTreeFilter();
+    });
+    refreshLegend(root);
+}
+
+// Counts of the legend for the tree shown (the whole capture, or the tree from a
+// node, viewFrom()): every node of it, collapsed branches included. Icons that are
+// not there go to the collapsed "Not in this capture"; a filter on one of them is
+// removed.
+function refreshLegend(root) {
+    const present = document.getElementById('legend-present');
+    if (!present) return;
     const absent = document.getElementById('legend-absent');
-    const nodes = root.descendants();
+    const nodes = allNodes(root);
     let absent_count = 0;
-    present.querySelectorAll('.lk-legend-item').forEach(button => {
+    document.querySelectorAll('.lk-legend-item').forEach(button => {
         const key = button.dataset.key;
         const count = nodes.filter(d => nodeHas(d, key)).length;
         button.querySelector('.lk-legend-count').textContent = count;
+        button.disabled = count === 0;
         if (count === 0) {
-            // Icons that are not in this capture: in the collapsed "Not in this capture"
-            button.disabled = true;
             absent.appendChild(button.closest('li'));
             absent_count++;
-            return;
+            if (active_filters.delete(key)) button.setAttribute('aria-pressed', 'false');
+            button.title = button.dataset.title;
+        } else {
+            present.appendChild(button.closest('li'));
+            button.title = `${button.dataset.title}: ${count} of ${nodes.length} nodes`;
         }
-        button.title = `${button.title}: ${count} of ${nodes.length} nodes`;
-        button.addEventListener('click', () => toggleLegendFilter(key));
     });
     // Most frequent first
     [...present.children]
@@ -1226,12 +1255,12 @@ function setupLegendFilter(root) {
         .forEach(li => present.appendChild(li));
     document.getElementById('legend-absent-count').textContent = absent_count;
     document.getElementById('legend-absent-panel').hidden = absent_count === 0;
-    document.getElementById('legend-clear').addEventListener('click', () => {
-        active_filters.clear();
-        present.querySelectorAll('.lk-legend-item').forEach(b => b.setAttribute('aria-pressed', 'false'));
-        document.querySelectorAll('.lk-tree-alert').forEach(c => c.setAttribute('aria-pressed', 'false'));
-        applyTreeFilter();
-    });
+    const hint = document.querySelector('.lk-legend-hint');
+    if (hint) {
+        hint.textContent = view_root
+            ? `Counts of the tree from ${view_root.data.idna || view_root.data.name}. Click an icon to highlight the nodes that have it.`
+            : 'Click an icon to highlight the nodes that have it.';
+    }
 }
 
 function open_hostnode_popup(hostnode_uuid) {

@@ -346,8 +346,11 @@ with its own collapsed / expanded branches as they were.
 The view is a fresh d3 hierarchy of the node's data (`view_root`);
 `currentRoot()` is what the tree controls work on (orientation, collapse /
 expand all), and the other filters (search, icons, neighbours, compare) apply
-to the nodes of the view. The points of attention and the legend counts stay
-those of the whole capture.
+to the nodes of the view. The legend (`refreshLegend()`) and the points of
+attention (`setupAttention()`) are counted again on the view: icons absent
+from it move to the collapsed "Not in this capture" list, and an icon filter
+on one of them is removed; the legend hint names the host the counts are
+from. ✕ counts them on the whole capture again.
 
 ## Size of the cards
 

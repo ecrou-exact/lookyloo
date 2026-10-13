@@ -22,7 +22,9 @@ modals       (block content)
 ```
 
 The page scrolls normally: the tree fills the screen when it opens, the
-footer is below it. `js/capture_page.js` keeps `--lk-capture-top-height`
+footer is below it. With the wheel over the tree, going down scrolls the tree
+then the page (the footer comes into view); going up scrolls the page back
+first (the footer leaves the screen), then the tree (`js/capture_page.js`). `js/capture_page.js` keeps `--lk-capture-top-height`
 equal to the height of the top block (ResizeObserver), and `.lk-tree-area`
 is `100dvh` minus that height.
 
@@ -202,6 +204,11 @@ The buttons at the top right of the tree (`setupTreeControls()` in `js/tree.js`)
   of the rendered node move aside (`placeNodeParts()`). The button shows the current orientation (⇄ / ⇅).
 - **Collapse all**: every node but the root is collapsed (the first level stays
   visible).
+- **Background** (palette): plain, dots, grid or depth columns (one band out
+  of two per depth, rows in the vertical layout), drawn by `css/tree.css` on
+  the whole tree area (`#tree_viewport.lk-tree-bg-*`, scrolling with the tree)
+  with `--lk-color-tree-canvas` / `--lk-color-tree-pattern`; remembered in
+  `localStorage` (`lk-tree-background`). Default: plain (a light accent tint).
 - **Full screen** (next to Notes): only the tree area, full screen
   (`setupFullscreen()`, Fullscreen API on `.lk-tree-area`): the tree, its
   controls, the legend filter, the chips and the panels stay; Esc or the same

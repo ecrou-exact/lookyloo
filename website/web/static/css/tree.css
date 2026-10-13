@@ -234,6 +234,54 @@ body.lk-capture-page .lk-header { position: static; }
 }
 .lk-capture-flashes .alert .btn-close { padding-block: var(--lk-space-3); }
 
+/* ---------- Background of the tree area (js/tree.js, setupBackground) ----------
+ * On the viewport (the whole area), scrolling with the tree (attachment local).
+ * Columns: one band out of two per depth; --lk-tree-band / --lk-tree-band-offset
+ * come from the layout (vertical: bands are rows). */
+.lk-tree-viewport.lk-tree-bg-dots {
+  background-image: radial-gradient(var(--lk-color-tree-pattern) 1.4px, transparent 1.6px);
+  background-size: 22px 22px;
+  background-attachment: local;
+}
+.lk-tree-viewport.lk-tree-bg-grid {
+  background-image:
+    linear-gradient(var(--lk-color-tree-pattern) 1px, transparent 1px),
+    linear-gradient(90deg, var(--lk-color-tree-pattern) 1px, transparent 1px);
+  background-size: 32px 32px;
+  background-attachment: local;
+}
+.lk-tree-viewport.lk-tree-bg-columns {
+  background-image: repeating-linear-gradient(90deg,
+    var(--lk-color-tree-pattern) 0 var(--lk-tree-band, 300px),
+    transparent var(--lk-tree-band, 300px) calc(2 * var(--lk-tree-band, 300px)));
+  background-position: var(--lk-tree-band-offset, 0px) 0;
+  background-attachment: local;
+}
+.lk-tree-viewport.lk-tree-bg-columns.is-vertical {
+  background-image: repeating-linear-gradient(180deg,
+    var(--lk-color-tree-pattern) 0 var(--lk-tree-band, 190px),
+    transparent var(--lk-tree-band, 190px) calc(2 * var(--lk-tree-band, 190px)));
+  background-position: 0 var(--lk-tree-band-offset, 0px);
+}
+
+/* Background menu: a swatch per choice */
+.lk-tree-bg-menu { min-width: 12rem; }
+.lk-tree-bg-menu .dropdown-item { display: flex; align-items: center; gap: var(--lk-space-2); }
+.lk-tree-bg-swatch {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--lk-color-rule);
+  border-radius: var(--lk-radius-sm);
+  background-color: var(--lk-color-tree-canvas);
+}
+.lk-tree-bg-dots.lk-tree-bg-swatch { background-image: radial-gradient(var(--lk-color-accent) 1px, transparent 1.3px); background-size: 6px 6px; }
+.lk-tree-bg-grid.lk-tree-bg-swatch {
+  background-image: linear-gradient(var(--lk-color-tree-pattern) 1px, transparent 1px), linear-gradient(90deg, var(--lk-color-tree-pattern) 1px, transparent 1px);
+  background-size: 7px 7px;
+}
+.lk-tree-bg-columns.lk-tree-bg-swatch { background-image: repeating-linear-gradient(90deg, var(--lk-color-tree-pattern) 0 5px, transparent 5px 10px); }
+
 /* ---------- Footer: always under the tree area, full width ---------- */
 
 body.lk-capture-page > .lk-footer { flex: none; display: block; width: 100%; }
@@ -242,8 +290,9 @@ body.lk-capture-page > .lk-footer { flex: none; display: block; width: 100%; }
 
 .lk-tree-area {
   /* The rest of the screen under the top block; the footer comes after */
-  height: calc(100vh - var(--lk-capture-top-height, 200px));
-  height: calc(100dvh - var(--lk-capture-top-height, 200px));
+  /* + 1px: sub-pixel rounding of the top block left a line of the footer on screen */
+  height: calc(100vh - var(--lk-capture-top-height, 200px) + 1px);
+  height: calc(100dvh - var(--lk-capture-top-height, 200px) + 1px);
   min-height: 320px;
   position: relative;
   display: flex;
@@ -356,7 +405,9 @@ body.lk-capture-page > .lk-footer { flex: none; display: block; width: 100%; }
   border-radius: var(--lk-radius-md);
   box-shadow: var(--lk-shadow-md);
 }
-.lk-tree-controls button {
+/* The buttons of the bar only (not the items of its dropdown menus) */
+.lk-tree-controls > button,
+.lk-tree-controls > .dropdown > button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -368,7 +419,9 @@ body.lk-capture-page > .lk-footer { flex: none; display: block; width: 100%; }
   background: none;
   color: var(--lk-color-ink);
 }
-.lk-tree-controls button:hover { background: var(--lk-color-surface-2); }
+.lk-tree-controls > button:hover,
+.lk-tree-controls > .dropdown > button:hover,
+.lk-tree-controls > .dropdown > button.show { background: var(--lk-color-surface-2); }
 /* Full screen button: enter / exit icon */
 #tree-fullscreen .lk-fullscreen-exit,
 #tree-fullscreen.is-fullscreen .lk-fullscreen-enter { display: none; }

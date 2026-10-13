@@ -194,6 +194,7 @@ try {
   setupNotes();
   setupCompare();
   setupFullscreen();
+  setupBackground();
   node_container.selectAll('g.node').classed('has-note', d => Boolean(notes[d.data.uuid]));
   // Scroll once the nodes are in place
   await animateTreeEntry(root);
@@ -955,6 +956,7 @@ function setupTreeControls() {
         try { localStorage.setItem('lk-tree-orientation', orientation); } catch (e) { /* not remembered */ }
         showOrientation();
         relayout();
+        applyBackground();
     });
 
     // Collapse every node but the root: the first level stays visible
@@ -1005,6 +1007,44 @@ function setupTreeControls() {
 // full screen (the tooltip is then fixed, inside the full screen element)
 function tipX(event) { return document.fullscreenElement ? event.clientX : event.pageX; }
 function tipY(event) { return document.fullscreenElement ? event.clientY : event.pageY; }
+
+// ****************** Background of the tree area ******************
+
+// plain, dots, grid or columns (one band per depth, following the orientation);
+// drawn by css/tree.css on #tree_viewport, remembered in localStorage
+const BACKGROUNDS = ['plain', 'dots', 'grid', 'columns'];
+let background_choice = 'plain';
+try {
+    const saved = localStorage.getItem('lk-tree-background');
+    if (BACKGROUNDS.includes(saved)) background_choice = saved;
+} catch (e) { /* storage unavailable */ }
+
+function applyBackground() {
+    BACKGROUNDS.forEach(name => tree_viewport.classList.toggle(`lk-tree-bg-${name}`, name === background_choice));
+    tree_viewport.classList.toggle('is-vertical', orientation === 'vertical');
+    document.querySelectorAll('[data-tree-background]').forEach(item => {
+        const on = item.dataset.treeBackground === background_choice;
+        item.setAttribute('aria-pressed', on ? 'true' : 'false');
+        item.classList.toggle('active', on);
+    });
+}
+
+// Size and offset of the depth columns / rows, from the layout (update())
+function setColumnsGeometry(size, offset) {
+    tree_viewport.style.setProperty('--lk-tree-band', `${size}px`);
+    tree_viewport.style.setProperty('--lk-tree-band-offset', `${offset}px`);
+}
+
+function setupBackground() {
+    document.querySelectorAll('[data-tree-background]').forEach(item => {
+        item.addEventListener('click', () => {
+            background_choice = item.dataset.treeBackground;
+            try { localStorage.setItem('lk-tree-background', background_choice); } catch (e) { /* not kept */ }
+            applyBackground();
+        });
+    });
+    applyBackground();
+}
 
 // ****************** Full screen: only the tree area ******************
 
@@ -1361,6 +1401,7 @@ function update(root, computed_node_width=0) {
       pageHeight = svgHeight + margin.top + margin.bottom;
       pattern.attr('width', computed_node_width * 2).attr('height', pageHeight);
       pattern.select('rect').attr('width', computed_node_width).attr('height', pageHeight);
+      setColumnsGeometry(computed_node_width, margin.left);
     } else {
       // One row per depth, one column (the widest card) per leaf
       svgWidth = Math.max(root.leaves().length * computed_node_width, min_width);
@@ -1370,6 +1411,7 @@ function update(root, computed_node_width=0) {
       pageHeight = svgHeight + margin.top + margin.bottom + VERTICAL_ROW;
       pattern.attr('width', pageWidth).attr('height', VERTICAL_ROW * 2);
       pattern.select('rect').attr('width', pageWidth).attr('height', VERTICAL_ROW);
+      setColumnsGeometry(svgHeight / Math.max(max_depth, 1), margin.top - 40);
     }
 
     // Transparent background rect (css/tree.css), reused by every update: it only

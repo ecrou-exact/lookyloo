@@ -104,3 +104,20 @@
         }
     }, true);
 })();
+
+// Wheel over the tree: going down scrolls the tree, then the page (the footer
+// comes into view); going up scrolls the page back first (the footer leaves the
+// screen), then the tree. Without it, the footer stayed on screen while the
+// tree scrolled up.
+(() => {
+    const viewport = document.getElementById('tree_viewport');
+    if (!viewport) {
+        return;
+    }
+    viewport.addEventListener('wheel', (event) => {
+        if (event.deltaY < 0 && window.scrollY > 0 && !document.fullscreenElement) {
+            event.preventDefault();
+            window.scrollBy({ top: event.deltaY, behavior: 'auto' });
+        }
+    }, { passive: false });
+})();

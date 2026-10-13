@@ -12,3 +12,13 @@ users open **Previews > Ongoing captures page (bulk / import)** in their menu of
 the site header: `GET /admin/preview/bulk_captures` (`preview_bulk_captures`,
 login required) renders it with the latest five captures of the instance as
 examples, under a *Preview* banner (`preview=True`).
+
+## Delete from the preview
+
+In the admin preview (`/admin/preview/bulk_captures`), each row has a
+**Delete** button: a `POST` to `/admin/preview/bulk_captures/remove`
+(`preview_bulk_captures_remove`, login required) with the `capture_uuid`,
+which removes the capture and comes back to the preview. The browser asks for
+confirmation first (`js/confirm_delete.js`: any `form.lk-confirm-delete`, the
+question in `data-lk-confirm`). The column is not shown on the real page,
+after a submission.

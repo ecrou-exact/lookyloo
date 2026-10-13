@@ -28,7 +28,7 @@ from typing import Any, TypedDict, Literal
 from collections.abc import Sequence
 from collections.abc import Iterable
 from urllib.parse import unquote_plus, urlparse, urlencode
-from uuid import uuid4
+from uuid import UUID, uuid4
 from zipfile import ZipFile
 from zoneinfo import ZoneInfo
 
@@ -3088,6 +3088,21 @@ def preview_bulk_captures() -> str:
                 for cache in lookyloo.sorted_capture_cache(public=False, cached_captures_only=True)[:5]]
     return render_template('capture/bulk_captures.html', bulk_captures=examples, preview=True)
 
+
+
+@app.route('/admin/preview/bulk_captures/remove', methods=['POST'])
+@flask_login.login_required  # type: ignore[untyped-decorator]
+def preview_bulk_captures_remove() -> WerkzeugResponse:
+    '''Admin: delete a capture listed on the preview of the "Ongoing captures" page.'''
+    capture_uuid = request.form.get('capture_uuid', '')
+    try:
+        UUID(capture_uuid)
+    except ValueError:
+        flash('Invalid capture UUID.', 'error')
+        return redirect(url_for('preview_bulk_captures'))
+    lookyloo.remove_capture(capture_uuid)
+    flash(f'{capture_uuid} successfully removed.', 'success')
+    return redirect(url_for('preview_bulk_captures'))
 
 @app.route('/stats', methods=['GET'])
 @flask_login.login_required  # type: ignore[untyped-decorator]

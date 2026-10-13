@@ -65,6 +65,7 @@
     "js/capture_components.js": "jAG687x9L3a/CEofKSWa/gOjcRBjSqZ6o6iqmhHXPKmG43DzqcZ5y86V7LekG0rOUYbx3UOYSyBhwZ6+dak4yA==",
     "js/capture_page.js": "JpRVfvo4Pxqn3OfmfFpi/lI64PSrWp3H+xlWi6vbZizTQDDwTqtHQ8FoJq/ZDIMXDw2j6LUi0ICVqZprSnpQZw==",
     "js/christmas.js": "prLv2tOjEi22S8hNuXDj3kZyrFwpZJoW6NbplM8nV+YrRPeyUn0ygvWURHWugPgyifsUEiJdcn39aE42IDIofQ==",
+    "js/confirm_delete.js": "MmxVwXqn2JmKcOwnjQPUioIAJE3pJKxnSMdfVJah/sJQc19LatLZ4rWTG8dqpPgfr/CHoL4Dj0pLbWoRlSFqgw==",
     "js/generic.js": "Kpp9CxSO58UyAnO0mQSpAQKlsQL4Ci4F4ayZjvHhPlzEmCQH0tYl5CObnILG78mFL+4VM4Zzfhy8JVCQoU1dfA==",
     "js/home.js": "sUgWmY4r0jnjtjWMjtdDdHZ7A+grpyyjYV68Duk5496X3QGIBJWjJ56KY9oKtPNveuUy8JZl6jcnxlC0KMZZog==",
     "js/hostnode_modals.js": "w6Aqv3lmsXbpquhagh/TNbVHMBfwD/BI5mv/QT3CrFFwVKWj23r1Css2LDIM7Gr4OrL8RBfDjw0LHZpq+OJwaA==",

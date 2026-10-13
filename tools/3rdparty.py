@@ -7,7 +7,11 @@
 - the Geist fonts (npm package "geist", integrity checked) in vendor/fonts/geist/;
 - the icon sprite vendor/icons/sprite.svg, built by tools/build_icons.py from
   Bootstrap Icons (bootstrap-flask) and misp-iconify (fetched from GitHub at a
-  pinned commit, cached in vendor/icons/misp/).
+  pinned commit, cached in vendor/icons/misp/);
+- Vitrine (https://github.com/ecrou-exact/vitrine, web components: the Markdown
+  editor of the notes of the capture page) in vendor/vitrine/: source of a
+  pinned commit, SHA-256 checked, built with Node >= 20 (`npm ci --ignore-scripts`
+  + `node scripts/build.js`). Without Node, install it from an export (below).
 
 By default everything is downloaded. To install without any network
 access (air-gapped instance, no CDN allowed), export them once from an
@@ -34,6 +38,7 @@ import shutil
 import subprocess
 import sys
 import tarfile
+import tempfile
 
 from pathlib import Path
 
@@ -73,8 +78,15 @@ GEIST_INTEGRITY = 'sha512-Gu5lDFa3pLRyoBlBPf0QIFHVdWAnpco7fS1bJm41jyLPFoguBgiubs
 GEIST_FILES = {'package/dist/fonts/geist-sans/Geist-Variable.woff2': 'Geist-Variable.woff2',
                'package/dist/fonts/geist-mono/GeistMono-Variable.woff2': 'GeistMono-Variable.woff2',
                'package/LICENSE.txt': 'OFL.txt'}
+# Vitrine: source tarball of a pinned commit, built with Node
+VITRINE_COMMIT = '7c379edba7ffb89abcae01b0806f20ed43dbc627'
+VITRINE_TARBALL = f'https://codeload.github.com/ecrou-exact/vitrine/tar.gz/{VITRINE_COMMIT}'
+VITRINE_SHA256 = 'baad470e885837d27e8f820b3df9f936047003ac864be4542c4d48ed90ba550a'
+# What the website needs from vitrine's dist/
+VITRINE_KEEP = ('esm', 'languages', 'syntax-themes', 'vendor', 'vitrine.css')
+
 # Sub-directories of vendor/ handled as a whole by --export / --from-dir
-VENDOR_DIRS = ('fonts', 'icons/misp')
+VENDOR_DIRS = ('fonts', 'icons/misp', 'vitrine')
 
 
 def download_fonts(dest_dir: Path) -> None:
@@ -94,6 +106,35 @@ def download_fonts(dest_dir: Path) -> None:
     print(f'Downloaded the Geist fonts v{geist_version}.')
 
 
+def install_vitrine(dest_dir: Path) -> None:
+    '''Build vitrine at VITRINE_COMMIT and keep its ES modules in vendor/vitrine/.'''
+    if not shutil.which('node') or not shutil.which('npm'):
+        raise SystemExit('Vitrine is built with Node >= 20 (node and npm not found). Install Node, '
+                         'or install the vendor files from an export (--from-dir, see doc/ui/offline.md).')
+    response = requests.get(VITRINE_TARBALL, timeout=120)
+    response.raise_for_status()
+    if hashlib.sha256(response.content).hexdigest() != VITRINE_SHA256:
+        raise SystemExit(f'Vitrine {VITRINE_COMMIT[:10]}: SHA-256 mismatch, refusing to build it.')
+    with tempfile.TemporaryDirectory() as tmp:
+        with tarfile.open(fileobj=io.BytesIO(response.content), mode='r:gz') as tar:
+            tar.extractall(tmp, filter='data')
+        source = Path(tmp) / f'vitrine-{VITRINE_COMMIT}'
+        subprocess.run(['npm', 'ci', '--ignore-scripts', '--no-audit', '--no-fund'], cwd=source, check=True)
+        subprocess.run(['node', 'scripts/build.js'], cwd=source, check=True)
+        target = dest_dir / 'vitrine'
+        if target.exists():
+            shutil.rmtree(target)
+        target.mkdir(parents=True)
+        for name in VITRINE_KEEP:
+            built = source / 'dist' / name
+            if built.is_dir():
+                shutil.copytree(built, target / name, ignore=shutil.ignore_patterns('*.map'))
+            elif built.exists():
+                shutil.copy2(built, target / name)
+        (target / 'COMMIT').write_text(VITRINE_COMMIT + '\n')
+    print(f'Built vitrine {VITRINE_COMMIT[:10]}.')
+
+
 def build_icon_sprite() -> None:
     '''Icon sprite of the icons used by the templates (tools/build_icons.py).'''
     subprocess.run([sys.executable, str(Path(__file__).parent / 'build_icons.py')], check=True)
@@ -110,6 +151,7 @@ def download(dest_dir: Path) -> None:
         (dest_dir / name).write_bytes(response.content)
         print(f'Downloaded {description} v{version}.')
     download_fonts(dest_dir)
+    install_vitrine(dest_dir)
     build_icon_sprite()
     print('All 3rd party modules for the website were downloaded.')
 
@@ -159,7 +201,7 @@ def install_from_dir(dest_dir: Path, source_dir: Path) -> None:
             raise SystemExit(f'{rel}: missing or SHA-256 mismatch with {MANIFEST}, refusing to install it.')
         (dest_dir / rel).parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source, dest_dir / rel)
-    print('Installed the fonts and MISP icons from the local directory.')
+    print('Installed the fonts, MISP icons and vitrine from the local directory.')
     # Built from the local copies: no network needed (unless a template uses a new MISP icon)
     build_icon_sprite()
     print('All 3rd party modules for the website were installed from the local directory (no network).')

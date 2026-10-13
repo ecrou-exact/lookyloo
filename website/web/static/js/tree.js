@@ -354,23 +354,36 @@ function saveNotes() {
     node_container.selectAll('g.node').classed('has-note', d => Boolean(notes[d.data.uuid]));
 }
 
-let note_node = null;
-function editNote(d, anchor) {
-    note_node = d;
-    const editor = document.getElementById('tree-note-editor');
-    document.getElementById('tree-note-label').textContent = `Note on ${d.data.idna || d.data.name}`;
-    const text = document.getElementById('tree-note-text');
-    text.value = notes[d.data.uuid]?.text || '';
-    document.getElementById('tree-note-delete').hidden = !notes[d.data.uuid];
+// The note being edited in #noteModal: {uuid, host}, and its current text
+let note_target = null;
+let note_text = '';
+
+function editNote(uuid, host) {
+    note_target = {uuid, host};
+    note_text = notes[uuid]?.text || '';
     hideNodeInfo();
-    editor.hidden = false;
-    placeNextTo(editor, anchor);
-    text.focus();
+    document.getElementById('note-modal-host').textContent = host;
+    document.getElementById('note-modal-delete').hidden = !notes[uuid];
+    const editor = document.getElementById('note-markdown');
+    customElements.whenDefined('vt-markdown').then(() => { editor.content = note_text; });
+    bootstrap.Modal.getOrCreateInstance('#noteModal').show();
 }
 
-function closeNoteEditor() {
-    document.getElementById('tree-note-editor').hidden = true;
-    note_node = null;
+function saveNote() {
+    if (!note_target) return;
+    const text = note_text.trim();
+    if (text) {
+        notes[note_target.uuid] = {host: note_target.host, text, updated: new Date().toISOString()};
+    } else {
+        delete notes[note_target.uuid];
+    }
+    saveNotes();
+    bootstrap.Modal.getOrCreateInstance('#noteModal').hide();
+}
+
+function deleteNote(uuid) {
+    delete notes[uuid];
+    saveNotes();
 }
 
 // Markdown export: the capture, then one section per noted node
@@ -402,9 +415,32 @@ function renderNotes() {
             const node = document.getElementById(`node_${uuid}`);
             if (node) centerInViewport(node.querySelector('.node-card') || node);
         });
-        const text = document.createElement('p');
-        text.textContent = note.text;
-        item.append(host, text);
+        const actions = document.createElement('span');
+        actions.className = 'lk-notes-actions';
+        [['Edit', 'bi:pencil', () => editNote(uuid, note.host)],
+         ['Delete', 'bi:trash', () => deleteNote(uuid)]].forEach(([label, name, action]) => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.title = `${label} this note`;
+            button.setAttribute('aria-label', `${label} the note on ${note.host}`);
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('class', 'lk-icon');
+            svg.setAttribute('aria-hidden', 'true');
+            const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+            use.setAttribute('href', iconHref(name));
+            svg.appendChild(use);
+            button.appendChild(svg);
+            button.addEventListener('click', action);
+            actions.appendChild(button);
+        });
+        const head = document.createElement('div');
+        head.className = 'lk-notes-head';
+        head.append(host, actions);
+        // The note, rendered from its Markdown (vitrine sanitizes it)
+        const text = document.createElement('vt-markdown');
+        text.className = 'lk-vitrine lk-notes-text';
+        customElements.whenDefined('vt-markdown').then(() => { text.content = note.text; });
+        item.append(head, text);
         list.appendChild(item);
     });
     const count = document.getElementById('tree-notes-count');
@@ -415,30 +451,19 @@ function renderNotes() {
 }
 
 function setupNotes() {
-    const editor = document.getElementById('tree-note-editor');
-    if (!editor) return;
-    editor.addEventListener('submit', (event) => {
-        event.preventDefault();
-        if (!note_node) return;
-        const text = document.getElementById('tree-note-text').value.trim();
-        if (text) {
-            notes[note_node.data.uuid] = {host: note_node.data.idna || note_node.data.name, text, updated: new Date().toISOString()};
-        } else {
-            delete notes[note_node.data.uuid];
-        }
-        saveNotes();
-        closeNoteEditor();
+    const modal = document.getElementById('noteModal');
+    if (!modal) return;
+    const editor = document.getElementById('note-markdown');
+    editor.addEventListener('vt-input', (event) => { note_text = event.detail.value; });
+    document.getElementById('note-modal-save').addEventListener('click', saveNote);
+    document.getElementById('note-modal-delete').addEventListener('click', () => {
+        if (note_target) deleteNote(note_target.uuid);
+        bootstrap.Modal.getOrCreateInstance('#noteModal').hide();
     });
-    document.getElementById('tree-note-cancel').addEventListener('click', closeNoteEditor);
-    document.getElementById('tree-note-delete').addEventListener('click', () => {
-        if (note_node) delete notes[note_node.data.uuid];
-        saveNotes();
-        closeNoteEditor();
+    modal.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) { event.preventDefault(); saveNote(); }
     });
-    document.getElementById('tree-note-text').addEventListener('keydown', (event) => {
-        if (event.key === 'Escape') { event.stopPropagation(); closeNoteEditor(); }
-        if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) editor.requestSubmit();
-    });
+    modal.addEventListener('hidden.bs.modal', () => { note_target = null; });
 
     const panel = document.getElementById('tree-notes');
     const toggle = document.getElementById('tree-notes-toggle');
@@ -670,8 +695,7 @@ function showNodeInfo(event, d) {
             note.textContent = notes[d.data.uuid].text;
             panel.appendChild(note);
         }
-        // Next to the card, inside the tree area (not while a note is being written)
-        if (!document.getElementById('tree-note-editor').hidden) return;
+        // Next to the card, inside the tree area
         panel.hidden = false;
         placeNextTo(panel, card || event.currentTarget);
     }, 500);
@@ -1482,7 +1506,7 @@ function update(root, computed_node_width=0) {
                     .attr('transform', `translate(${selected_node_bbox.width - (enable_bookmark ? 50 : 30) - 26}, 5)`)
                     .attr('cursor', 'pointer')
                     .attr('role', 'button')
-                    .on('click', (event, d) => { event.stopPropagation(); editNote(d, this.querySelector('.node-card')); })
+                    .on('click', (event, d) => { event.stopPropagation(); editNote(d.data.uuid, d.data.idna || d.data.name); })
                     .on('mouseover', (event, d) => {
                         d3.select('#tooltip')
                             .style('opacity', 1)

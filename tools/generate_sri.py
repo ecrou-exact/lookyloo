@@ -19,6 +19,11 @@ if __name__ == '__main__':
             continue
         if resource.name[0] == '.':
             continue
+        rel = resource.relative_to(static_dir).as_posix()
+        if rel.startswith('vendor/vitrine/') and rel != 'vendor/vitrine/vitrine.css':
+            # Vitrine modules, languages and themes are imported / fetched by
+            # js/vitrine_setup.js (which has its own SRI), never by a <script> tag
+            continue
         if resource.stem == 'overrides':
             # Instance specific overrides (css/overrides.css, js/overrides.js), SRI computed on the fly
             continue

@@ -197,7 +197,8 @@ Filters: `markdown`, `b64encode`. Some HTML is also built in Python
 - **CSP**: Talisman enforces `default_csp.py`. No external CDNs (everything is
   served locally), inline `<script>` must carry `nonce="{{ csp_nonce() }}"`.
   Prefer adding JS in static files over inline handlers.
-- **Third-party libs** (jQuery, DataTables BS5, D3, json-viewer) are downloaded
+- **Third-party libs** (jQuery, DataTables BS5, D3, json-viewer; vitrine, built
+  with Node) are downloaded
   by `tools/3rdparty.py` into `static/vendor/` and are git-ignored; Bootstrap is served by
   bootstrap-flask (`BOOTSTRAP_SERVE_LOCAL`). Adding a lib = add it to
   `3rdparty.py` + regenerate SRI. Offline install (no CDN):

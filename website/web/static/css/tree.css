@@ -504,32 +504,6 @@ body.lk-capture-page .lk-header { position: static; }
 
 /* ---------- Notes of the analyst (editor + panel) ---------- */
 
-.lk-note-editor {
-  position: absolute;
-  z-index: 1030;
-  width: 20rem;
-  padding: var(--lk-space-3);
-  border: 1px solid var(--lk-color-rule);
-  border-radius: var(--lk-radius-md);
-  background: var(--lk-color-surface);
-  box-shadow: var(--lk-shadow-md);
-}
-.lk-note-editor[hidden] { display: none; }
-.lk-note-editor label { display: block; margin-bottom: var(--lk-space-1); font-weight: var(--lk-font-weight-semibold); font-size: var(--lk-font-size-sm); overflow-wrap: anywhere; }
-.lk-note-editor textarea {
-  width: 100%;
-  padding: var(--lk-space-2);
-  border: 1px solid var(--lk-color-rule-strong);
-  border-radius: var(--lk-radius-sm);
-  background: var(--lk-color-bg);
-  color: var(--lk-color-ink);
-  font-size: var(--lk-font-size-sm);
-  resize: vertical;
-}
-.lk-note-editor textarea:focus { outline: 0; border-color: var(--lk-color-accent); box-shadow: 0 0 0 3px var(--lk-focus-ring); }
-.lk-note-editor-actions { display: flex; justify-content: flex-end; gap: var(--lk-space-2); margin-top: var(--lk-space-2); }
-.lk-note-editor-actions #tree-note-delete { margin-right: auto; }
-
 .lk-notes-panel {
   position: absolute;
   top: calc(var(--lk-space-3) + 52px);
@@ -555,7 +529,45 @@ body.lk-capture-page .lk-header { position: static; }
 .lk-notes-list li:last-child { border-bottom: 0; }
 .lk-notes-host { padding: 0; border: 0; background: none; color: var(--lk-color-link); font-weight: var(--lk-font-weight-semibold); text-align: left; overflow-wrap: anywhere; }
 .lk-notes-host:hover { text-decoration: underline; }
-.lk-notes-list p { margin: var(--lk-space-1) 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.lk-notes-head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--lk-space-2); }
+.lk-notes-actions { display: inline-flex; gap: 2px; flex: none; }
+.lk-notes-actions button {
+  display: inline-flex;
+  padding: var(--lk-space-1);
+  border: 0;
+  border-radius: var(--lk-radius-sm);
+  background: none;
+  color: var(--lk-color-muted);
+}
+.lk-notes-actions button:hover { background: var(--lk-color-surface-2); color: var(--lk-color-ink); }
+.lk-notes-actions button[aria-label^="Delete"]:hover { color: var(--lk-color-danger); }
+.lk-notes-text { margin-top: var(--lk-space-1); font-size: var(--lk-font-size-sm); --vt-font-size-body: var(--lk-font-size-sm); }
+
+/* Vitrine components (vendor/vitrine/) themed with the Lookyloo tokens */
+.lk-vitrine {
+  --vt-bg: var(--lk-color-bg);
+  --vt-surface: var(--lk-color-surface);
+  --vt-surface-sunken: var(--lk-color-surface-2);
+  --vt-surface-raised: var(--lk-color-surface);
+  --vt-border: var(--lk-color-rule);
+  --vt-border-strong: var(--lk-color-rule-strong);
+  --vt-fg: var(--lk-color-ink);
+  --vt-fg-muted: var(--lk-color-muted);
+  --vt-accent: var(--lk-color-accent);
+  --vt-accent-fg: var(--lk-color-link);
+  --vt-on-accent: var(--lk-color-on-accent);
+  --vt-accent-soft: var(--lk-color-accent-soft);
+  --vt-success: var(--lk-color-success);
+  --vt-warning: var(--lk-color-warning);
+  --vt-danger: var(--lk-color-danger);
+  --vt-info: var(--lk-color-info);
+  --vt-font-ui: var(--lk-font-sans);
+  --vt-font-body: var(--lk-font-sans);
+  --vt-font-mono: var(--lk-font-mono);
+  --vt-radius: var(--lk-radius-md);
+}
+/* The note editor fills the modal */
+.lk-note-markdown { display: block; height: min(60vh, 34rem); }
 .lk-notes-panel footer { display: flex; flex-wrap: wrap; gap: var(--lk-space-2); padding: var(--lk-space-2) var(--lk-space-3); border-top: 1px solid var(--lk-color-rule); }
 .lk-notes-panel footer .btn { display: inline-flex; align-items: center; gap: var(--lk-space-1); }
 

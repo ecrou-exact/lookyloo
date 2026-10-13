@@ -41,6 +41,11 @@
           id="tree_js" data-remote="{{url_for('GenericAPI_tree_dump', capture_uuid=tree_uuid, seed=seed)}}"
                        {% if urlnode_uuid %}data-urlnode="{{urlnode_uuid}}" {%endif%}>
   </script>
+  {# Vitrine (Markdown editor of the notes), installed in static/vendor/ by tools/3rdparty.py #}
+  <script src='{{ url_for('static', filename='js/vitrine_setup.js') }}'
+          {{get_sri('static', 'js/vitrine_setup.js')}}
+          nonce="{{ csp_nonce() }}"
+          crossorigin="anonymous" type="module"></script>
   <script src='{{ url_for('static', filename='js/capture_page.js') }}'
           {{get_sri('static', 'js/capture_page.js')}}
           nonce="{{ csp_nonce() }}"
@@ -89,6 +94,9 @@
   <link rel="stylesheet"
         {{get_sri('static', 'css/tree.css')}}
         href="{{ url_for('static', filename='css/tree.css') }}">
+  <link rel="stylesheet"
+        {{get_sri('static', 'vendor/vitrine/vitrine.css')}}
+        href="{{ url_for('static', filename='vendor/vitrine/vitrine.css') }}">
 {% endblock %}
 
 
@@ -342,18 +350,8 @@
     <span class="lk-tree-controls-status" id="tree-controls-status" role="status" hidden></span>
   </div>
 
-  {# Notes of the analyst on the nodes (js/tree.js, notes section): editor of one note,
-     and the panel listing them with the Markdown export. Stored in this browser. #}
-  <form class="lk-note-editor" id="tree-note-editor" hidden>
-    <label for="tree-note-text" id="tree-note-label">Note</label>
-    <textarea id="tree-note-text" rows="4" placeholder="What did you notice on this node?"></textarea>
-    <div class="lk-note-editor-actions">
-      <button type="button" class="btn btn-sm btn-link text-danger" id="tree-note-delete">Delete</button>
-      <button type="button" class="btn btn-sm btn-outline-secondary" id="tree-note-cancel">Cancel</button>
-      <button type="submit" class="btn btn-sm btn-primary">Save</button>
-    </div>
-  </form>
-
+  {# Notes of the analyst on the nodes (js/tree.js, notes section): the panel listing
+     them (edit, delete, Markdown export); the editor is #noteModal. Stored in this browser. #}
   <section class="lk-notes-panel" id="tree-notes" aria-labelledby="tree-notes-title" hidden>
     <header>
       <h2 id="tree-notes-title">{{ icon('bi:journal-text') }} Notes</h2>
@@ -419,6 +417,32 @@
 {% include 'partials/footer.html' %}
 
 {% block content %}
+{# Note of the analyst on a node (js/tree.js, editNote): Markdown editor with a
+   live preview (vitrine <vt-markdown>) #}
+<div class="modal fade lk-modal" id="noteModal" tabindex="-1" role="dialog" aria-labelledby="noteModalLabel">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <h5 class="modal-title" id="noteModalLabel">{{ icon('bi:pencil') }} Note on <span id="note-modal-host"></span></h5>
+          <p class="lk-modal-note">Markdown: headings, lists, links, code… Kept in this browser only. Ctrl+Enter saves.</p>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <vt-markdown id="note-markdown" class="lk-vitrine lk-note-markdown" mode="edit" default-tab="split"
+                     tabs="source,split,preview" label="note.md"
+                     placeholder="What did you notice on this node?"></vt-markdown>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-danger me-auto" id="note-modal-delete">{{ icon('bi:trash') }} Delete the note</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" id="note-modal-save">{{ icon('bi:check-lg') }} Save</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Modals - Not in the main div. -->
 
 <div class="modal fade" id="detailsModal" tabindex="-1" role="dialog">

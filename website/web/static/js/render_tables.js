@@ -38,7 +38,7 @@ function renderTables() {
         searching: true,
         drawCallback: function (settings) { newTabClickListener(); add_event_js_copy(); },
         order: [[ 2, "desc" ]],
-        pageLength: 25,
+        pageLength: 10,
         ajax: {
             url: `/tables/categoriesTable/${window.location.search}`,
             type: 'POST',

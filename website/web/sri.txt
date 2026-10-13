@@ -64,7 +64,7 @@
     "js/home.js": "Ruj7BHqKx0+80fz4SoMGllmvRn7tnM7t9IQC8gFxEC5ccg/icJXEbKPjoWJZQEWjHFDi6ofeurTwL5+b/QQGCg==",
     "js/hostnode_modals.js": "w6Aqv3lmsXbpquhagh/TNbVHMBfwD/BI5mv/QT3CrFFwVKWj23r1Css2LDIM7Gr4OrL8RBfDjw0LHZpq+OJwaA==",
     "js/loader.js": "JvMpk0oSjIgVdGCacQ6+Isbby9n7O44KZQBhoohoD6xZeWpLkU6P/YNhr8Cv4r3hkVW+kMOrQXz/nEsq9VRK9Q==",
-    "js/render_tables.js": "inAOKbBT9tMSa6blrjBbJtL4SObmQI6hsC25AsH+0/YVaeUgXEm6HwfoAwLVKRd82roPXrSUrLw//zrKTJdjww==",
+    "js/render_tables.js": "PG8xoqNfc8ugSgh/v1qHN9LoAX2xU0fS9nLQ4Ox3TH9FVOyevts2qpKvP/Uglrqjn6MPTf4rM8hNrdy48uHTUA==",
     "js/stats_graph.js": "S/sMNQK1UMMLD0xQeEa7sq3ce8o6oPxwxGlyKVtaHOODjair86dbBDm7cu6pa/elMRDJT1j09jEFjWp+5GbhTw==",
     "js/theme_toggle.js": "UNUBD2svV32byB8JZryHhmFcm3aWhN0QzXQ5kOUfCUYyRsQTPcQoup5hA0n1ivFDDe2tj1suKQl4+8+USZKmcg==",
     "js/tree.js": "4icM3tQDgQRCabRxbKcOMK83S1nHEkXIFv0X+GzgSw4Hr8TlxLIpIXwgssJTONF8Mwh2BRCiUO7MJwEgOFSkjQ==",

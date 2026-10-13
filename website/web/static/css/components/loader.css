@@ -104,3 +104,20 @@
   color: var(--lk-color-muted);
   margin: 0;
 }
+
+/* DataTables "processing" indicator: the eyes (set in js/render_tables.js)
+   replace the default text and animated dots */
+div.dt-processing {
+  width: auto;
+  margin: 0;
+  transform: translate(-50%, -50%);
+  padding: var(--lk-space-3) var(--lk-space-5);
+  background: var(--lk-color-surface);
+  border: 1px solid var(--lk-color-rule);
+  border-radius: var(--lk-radius-lg);
+  box-shadow: var(--lk-shadow-md);
+}
+
+div.dt-processing > div:last-child {
+  display: none;
+}

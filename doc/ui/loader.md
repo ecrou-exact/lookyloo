@@ -35,3 +35,4 @@ animations are disabled and the eyes stay still.
 |-------|-------|
 | Capture tree, while the tree loads (`tree/tree.html`) | Wrapper `#tree-loading` (hidden by `js/tree.js` when the tree is drawn); its `alt="Tree loading spinner"` is used by the Playwright tests |
 | Ongoing capture page (`tree/tree_wait.html`) | Shown while a capture is queued or running; the page refreshes every 10 seconds |
+| Every DataTable while it loads data | `js/render_tables.js` sets `DataTable.defaults.language.processing` to the same markup (constant `LK_LOADER_MARKUP`, keep it in sync with the macro); `loader.css` hides DataTables' default dots and styles the box |

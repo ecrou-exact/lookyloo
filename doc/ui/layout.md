@@ -87,7 +87,7 @@ From left to right:
 - **Logo**: link to the landing page (`landing_page`: home or capture form,
   depending on `index_is_capture`).
 - **Main links**: Recent captures (`index`, also active on `index_hidden`),
-  Search, **Explore** menu (categories; resources, cookies, favicons and HTTP
+  Search, Categories, **Explore** menu (resources, cookies, favicons and HTTP
   headers hashes seen in recent captures), **Help** menu (documentation, API,
   changelog, project page).
 - **Theme selector**: light / dark / auto, driven by `js/theme_toggle.js`. Its ids
@@ -95,7 +95,7 @@ From left to right:
   `data-bs-theme-value`) are the script's API.
 - **User menu** when logged in (hidden captures, statistics, log out), or a
   **Log in** link.
-- **New capture** button, with a menu for uploading an existing capture and, for
+- **New capture** button, with a menu for submitting an existing capture and, for
   logged-in users when `enable_takedown_form` is set, the takedown form.
 
 The current section is highlighted by comparing `request.endpoint` with the

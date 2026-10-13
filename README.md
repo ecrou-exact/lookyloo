@@ -37,11 +37,11 @@ You give Lookyloo a URL (or a document). It opens it in a real headless browser
 hostname, IP, cookie, hash or favicon can be pivoted on to find the other captures
 that share it.
 
-- 🌳 **The tree** — follow the journey of a page: redirects, third parties, data sent (POST), mixed content.
-- 🔎 **Analyse** — search and filter the tree by icon or text, view it from any node, highlight a node's neighbours, compare with another capture.
-- 🔗 **Pivot** — hostnames, IPs, cookies, body hashes, favicons, HTTP headers hashes shared between captures.
-- 📤 **Share** — MISP export, permalinks, private captures with a seed, report a suspicious capture.
-- 🤖 **Automate** — everything the interface does is in the REST API and [PyLookyloo](https://github.com/Lookyloo/PyLookyloo).
+- **The tree** — follow the journey of a page: redirects, third parties, data sent (POST), mixed content.
+- **Analyse** — search and filter the tree by icon or text, view it from any node, highlight a node's neighbours, compare with another capture.
+- **Pivot** — hostnames, IPs, cookies, body hashes, favicons, HTTP headers hashes shared between captures.
+- **Share** — MISP export, permalinks, private captures with a seed, report a suspicious capture.
+- **Automate** — everything the interface does is in the REST API and [PyLookyloo](https://github.com/Lookyloo/PyLookyloo).
 
 Find all you need to know on the [documentation website](https://www.lookyloo.eu/docs/main/index.html).
 

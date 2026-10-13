@@ -348,6 +348,32 @@ function focusMatch(step) {
     if (count && nodes.length > 1) count.textContent = `${search_index + 1} / ${nodes.length}`;
 }
 
+// New capture of the host of a node, with the settings of this capture (POST
+// /bulk_captures: same browser, user agent, cookies; this capture is its parent).
+// The list of the new captures opens in a new tab.
+function captureHost(d) {
+    const scheme = d.data.https_content || !d.data.http_content ? 'https' : 'http';
+    const form = document.createElement('form');
+    form.method = 'post';
+    form.action = `/bulk_captures/${treeUUID}${document.location.search}`;
+    form.target = '_blank';
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'user_urls';
+    input.value = `${scheme}://${d.data.name}/`;
+    form.appendChild(input);
+    document.body.appendChild(form);
+    form.submit();
+    form.remove();
+}
+
+// Sprite of the site icons (tools/build_icons.py), to draw them in the tree
+function iconHref(name) {
+    const any = document.querySelector('svg.lk-icon use');
+    const sprite = any ? any.getAttribute('href').split('#')[0] : '';
+    return `${sprite}#${name}`;
+}
+
 // Click on a card: focus the node and its neighbours; again on it: show everything
 function toggleNeighbours(d) {
     focus_uuid = focus_uuid === d.data.uuid ? null : d.data.uuid;
@@ -929,6 +955,26 @@ function update(root, computed_node_width=0) {
                         })
                         .on('mouseout', (event, d) => d3.select('#tooltip').style('opacity', 0));
                 };
+
+                // New capture of the host: camera at the top right of the card, shown on hover
+                const capture_button = d3.select(this).append('g')
+                    .attr('class', 'node-capture')
+                    .attr('transform', `translate(${selected_node_bbox.width - (enable_bookmark ? 50 : 30)}, 5)`)
+                    .attr('cursor', 'pointer')
+                    .attr('role', 'button')
+                    .on('click', (event, d) => { event.stopPropagation(); captureHost(d); })
+                    .on('mouseover', (event, d) => {
+                        d3.select('#tooltip')
+                            .style('opacity', 1)
+                            .style('left', `${event.pageX + 10}px`)
+                            .style('top', `${event.pageY + 10}px`)
+                            .text(`New capture of ${d.data.name}, with the settings of this capture`);
+                    })
+                    .on('mouseout', () => d3.select('#tooltip').style('opacity', 0));
+                capture_button.append('rect').attr('width', 22).attr('height', 22).attr('rx', 5);
+                capture_button.append('use')
+                    .attr('href', iconHref('bi-camera'))
+                    .attr('x', 4).attr('y', 4).attr('width', 14).attr('height', 14);
 
                 const thumbnail_size = 64;
                 if (d.data.contains_rendered_urlnode) {

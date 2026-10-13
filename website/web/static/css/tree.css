@@ -555,6 +555,16 @@ path.link {
 }
 .node-bookmark { font-size: 15px; }
 
+/* New capture of the host (camera, top right of the card): on hover */
+.node-capture { opacity: 0; transition: opacity var(--lk-transition-fast); }
+.node_data:hover .node-capture,
+.node-capture:focus { opacity: 1; }
+.node-capture rect { fill: var(--lk-color-surface-2); stroke: var(--lk-color-rule); }
+.node-capture use { color: var(--lk-color-muted); fill: currentColor; }
+.node-capture:hover rect { fill: var(--lk-color-accent-soft); stroke: var(--lk-color-accent); }
+.node-capture:hover use { color: var(--lk-color-accent); }
+@media (hover: none) { .node-capture { opacity: 1; } }
+
 /* Bookmarked node (Extras > bookmarks) */
 .node_data.is-bookmarked .node-card { fill: var(--lk-color-accent-soft); stroke: var(--lk-color-accent); stroke-width: 2px; }
 .node_data.is-bookmarked .node-host { fill: var(--lk-color-accent); }

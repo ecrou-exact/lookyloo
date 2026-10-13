@@ -185,6 +185,16 @@
         <div class="col-1 g-0 text-end">..&nbsp;/</div>
         <div class="col-8 g-0">{{ shorten_string(url['url_path'], with_copy_button=True,
                                                  copy_content=url['url_object'].name)}}</div>
+        {# New capture of this URL, with the settings of this capture (bulk_captures:
+           same browser, user agent, cookies / storage state; this capture is its parent) #}
+        <div class="col-2 text-end">
+          <form method="post" action="{{ url_for('bulk_captures', tree_uuid=tree_uuid, seed=seed) }}" target="_blank" class="d-inline">
+            <input type="hidden" name="user_urls" value="{{ url['url_object'].name }}">
+            <button type="submit" class="btn btn-sm btn-outline-primary fs-6"
+                    title="Capture this URL, with the settings of this capture (opens in a new tab)">
+              {{ icon('bi:camera') }} Capture</button>
+          </form>
+        </div>
       </div>
       {% if last_url_in_address_bar %}
         {# This is the node of the rendered page #}

@@ -197,3 +197,16 @@ The buttons at the top right of the tree (`setupTreeControls()` in `js/tree.js`)
   left collapsed, a message says how many nodes are shown out of the total.
 
 After a change the root is centred once the nodes have moved.
+
+## New capture from a node
+
+Both send `POST /bulk_captures/<uuid>` (`user_urls`): the new capture uses the
+settings of this capture (browser, user agent, cookies / storage state,
+referer) and has this capture as parent. The page listing the new captures
+opens in a new tab.
+
+- **Tree**: a camera at the top right of a card, shown on hover (always on
+  touch screens), captures `https://<host>/` (`http://` when the node only has
+  plain HTTP content) — `captureHost()` in `js/tree.js`.
+- **Hostname pop-up** (`tree/hostname_popup.html`): a *Capture* button on each
+  URL of the node captures that exact URL.

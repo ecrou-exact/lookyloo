@@ -1,4 +1,5 @@
 {% extends "layouts/page.html" %}
+{% from 'macros/page.html' import page_header %}
 
 {% from 'bootstrap5/utils.html' import render_messages %}
 
@@ -48,12 +49,11 @@
 {% endblock %}
 
 
+{% block page_header %}
+{{ page_header('Ongoing captures', description='The captures below are queued: it takes a few minutes before the links work.', icon_name='bi:collection-play', crumbs=[('New capture', url_for('capture_web'))]) }}
+{% endblock %}
+
 {% block content %}
-  <center>
-      <h4>Ongoing captures</h4>
-      <button class="btn btn-primary goBack" type="button">Go Back</button>
-  </center>
-  <div>The captures below are queued, it will take a few minutes before the links are working</div>
   <div class="table-responsive">
   <table id="table" class="table" style="width:96%">
     <thead>

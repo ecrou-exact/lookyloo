@@ -1,4 +1,5 @@
 {% extends "layouts/page.html" %}
+{% from 'macros/page.html' import page_header %}
 {#
   Recent captures (route index, hidden captures: index_hidden). The capture
   form lives on the home page (home/home.html).
@@ -15,33 +16,41 @@
       crossorigin="anonymous">
 {% endblock %}
 
+{% block page_header %}
+{% if show_hidden %}
+  {% call page_header('Hidden captures', description='Captures not listed on the public index, only visible to administrators.',
+                      icon_name='bi:eye-slash', crumbs=[('Recent captures', url_for('index'))]) %}
+    {{ public_hidden_switch() }}
+  {% endcall %}
+{% else %}
+  {% call page_header('Recent captures', description='Public captures made on this instance, most recent first. Screenshots are blurred: click one to reveal it.',
+                      icon_name='bi:collection') %}
+    {{ public_hidden_switch() }}
+  {% endcall %}
+{% endif %}
+{% endblock %}
+
+{% macro public_hidden_switch() %}
+{% if current_user.is_authenticated %}
+<nav class="lk-segmented" aria-label="Captures to show">
+  <a href="{{ url_for('index', category=category if category else None) }}"
+     {% if not show_hidden %}aria-current="page"{% endif %}>Public</a>
+  <a href="{{ url_for('index_hidden', category=category if category else None) }}"
+     {% if show_hidden %}aria-current="page"{% endif %}>Hidden</a>
+</nav>
+{% endif %}
+{% endmacro %}
+
 {% block main %}
-<section class="lk-recent" aria-labelledby="recent-captures-title">
-  <div class="lk-recent-head">
-    <div>
-      <h1 class="lk-recent-title" id="recent-captures-title">
-        {% if show_hidden %}Hidden captures{% else %}Recent captures{% endif %}
-      </h1>
-      <p class="lk-recent-lead">
-        {% if show_hidden %}Captures not listed on the public index, only visible to administrators.
-        {% else %}Public captures made on this instance, most recent first. Screenshots are blurred: click one to reveal it.{% endif %}
-      </p>
-    </div>
-    {% if category %}
+<section class="lk-recent" aria-label="{% if show_hidden %}Hidden captures{% else %}Recent captures{% endif %}">
+  {% if category %}
+  <div class="lk-recent-filters">
     <span class="lk-filter-chip">
       Category: <strong>{{ category }}</strong>
       <a href="{{ url_for('index_hidden' if show_hidden else 'index') }}" aria-label="Remove the category filter">{{ icon('bi:x-lg') }}</a>
     </span>
-    {% endif %}
-    {% if current_user.is_authenticated %}
-    <nav class="lk-segmented" aria-label="Captures to show">
-      <a href="{{ url_for('index', category=category if category else None) }}"
-         {% if not show_hidden %}aria-current="page"{% endif %}>Public</a>
-      <a href="{{ url_for('index_hidden', category=category if category else None) }}"
-         {% if show_hidden %}aria-current="page"{% endif %}>Hidden</a>
-    </nav>
-    {% endif %}
   </div>
+  {% endif %}
 
   <table id="IndexTable" class="table lk-capture-table"
          data-indextype="{%if show_hidden%}hidden{%else%}index{%endif%}">

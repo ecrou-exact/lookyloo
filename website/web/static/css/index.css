@@ -6,22 +6,8 @@
 
 /* ---- Recent captures ---- */
 
-.lk-recent-head {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-end;
-  gap: var(--lk-space-3) var(--lk-space-4);
-  margin-bottom: var(--lk-space-4);
-}
-
-.lk-recent-title {
-  font-size: 1.5rem;
-  margin: 0;
-}
-
-.lk-recent-lead {
-  color: var(--lk-color-muted);
-  margin: var(--lk-space-1) 0 0;
+.lk-recent-filters {
+  margin-bottom: var(--lk-space-3);
 }
 
 .lk-filter-chip {
@@ -50,7 +36,6 @@
 /* Segmented control (Public / Hidden) */
 .lk-segmented {
   display: inline-flex;
-  margin-left: auto;
   padding: 2px;
   background: var(--lk-color-surface-2);
   border-radius: var(--lk-radius-md);

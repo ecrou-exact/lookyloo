@@ -10,7 +10,8 @@ Icon names:
     misp:<set>/<name>  MISP icons, from the misp-iconify submodule (tools/misp-iconify),
                        <set> is a folder of src/svg/ (attributes, objects, galaxies, ...)
 
-Used icons are found by scanning templates and Python files for icon('...') calls,
+Used icons are found by scanning templates and Python files for quoted icon names
+('bi:...' / 'misp:<set>/...', in icon() calls or macro parameters such as icon_name),
 plus the names listed in tools/icons_extra.txt (icons built dynamically).
 
 Every SVG is sanitised against a whitelist (elements, attributes, local url(#id)
@@ -43,7 +44,9 @@ SVG_NS = 'http://www.w3.org/2000/svg'
 ET.register_namespace('', SVG_NS)
 
 ICON_NAME = re.compile(r'^(bi:[a-z0-9-]+|misp:[a-z0-9-]+/[a-z0-9_-]+)$')
-ICON_CALL = re.compile(r'''\bicon\(\s*['"]((?:bi|misp):[^'"]+)['"]''')
+# Any quoted icon name: icon('bi:x') calls, but also names passed to macros
+# (page_header(..., icon_name='misp:attributes/cookie'))
+ICON_CALL = re.compile(r'''['"]((?:bi|misp):[a-z0-9][a-z0-9/_-]*)['"]''')
 
 ALLOWED_TAGS = {'g', 'path', 'rect', 'circle', 'ellipse', 'line', 'polyline', 'polygon',
                 'defs', 'mask', 'clipPath', 'linearGradient', 'radialGradient', 'stop'}

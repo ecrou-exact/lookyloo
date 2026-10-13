@@ -81,7 +81,9 @@ parent's `color`.
 3. Commit the template, `sprite.svg` and `sri.txt` together.
 
 `build_icons.py` finds the icons by scanning `website/web/templates/**/*.html`
-and `website/web/*.py` for `icon('…')` calls with a literal name. If a name is
+and `website/web/*.py` for quoted icon names (`'bi:…'`, `'misp:<set>/…'`): in
+`icon('…')` calls, but also in macro parameters such as
+`page_header(..., icon_name='bi:search')`. If a name is
 built at runtime (`icon('bi:' ~ name)`), list every possible value in
 `tools/icons_extra.txt`.
 

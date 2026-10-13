@@ -1,4 +1,5 @@
 {% extends "layouts/page.html" %}
+{% from 'macros/page.html' import page_header %}
 
 {% from 'bootstrap5/utils.html' import render_messages %}
 {% from 'macros/macros.html' import context_form %}
@@ -14,6 +15,10 @@
     });
 </script>
 
+{% endblock %}
+
+{% block page_header %}
+{{ page_header('Resources', description='Files (scripts, images, styles...) loaded by the recent captures, identified by their hash.', icon_name='misp:attributes/sha256', crumbs=[('Explore', None)]) }}
 {% endblock %}
 
 {% block content %}

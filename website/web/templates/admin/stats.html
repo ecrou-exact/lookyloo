@@ -1,6 +1,11 @@
 {% extends "layouts/page.html" %}
+{% from 'macros/page.html' import page_header %}
 
 {% block title %}Statistics{% endblock %}
+
+{% block page_header %}
+{{ page_header('Statistics', description='Captures, redirects, URLs and domains per week and per month on this instance.', icon_name='bi:graph-up', crumbs=[('Admin', None)]) }}
+{% endblock %}
 
 {% block main %}
 <div>

@@ -1,26 +1,49 @@
 {#
   Page building blocks for templates extending layouts/page.html.
-  Doc: doc/ui/layout.md
+  Doc: doc/ui/page-header.md
 
-  page_header(title, lead=None): page title + optional lead text; anything
-  passed with {% call %} is rendered as actions on the right.
+  page_header(title, description=None, icon_name=None, crumbs=())
+    Breadcrumb (Home / parents... / title) + a card with an icon, the title (h1)
+    and a short description. Anything passed with {% call %} is rendered as
+    actions on the right of the card.
+
+    title        page title (h1, and last item of the breadcrumb)
+    description  one sentence explaining what the page is for
+    icon_name    icon of the page: 'bi:<name>' or 'misp:<set>/<name>' (see icons.md)
+    crumbs       parent pages between Home and the current page:
+                 list of (label, url) tuples; url=None for a non-clickable level
 
     {% from 'macros/page.html' import page_header %}
     {% block page_header %}
-      {% call page_header('Search', lead='Find captures by URL, hostname or hash.') %}
-        <a class="btn btn-outline-primary" href="...">Export</a>
-      {% endcall %}
+      {{ page_header('Cookies', description='Cookie names seen in the recent captures.',
+                     icon_name='misp:attributes/cookie', crumbs=[('Explore', None)]) }}
     {% endblock %}
+
+    {% call page_header('Recent captures', icon_name='bi:collection') %}
+      <a class="btn btn-outline-primary" href="...">Export</a>
+    {% endcall %}
 #}
 
-{% macro page_header(title, lead=None) -%}
-<div class="lk-page-header">
-  <div>
-    <h1>{{ title }}</h1>
-    {% if lead %}<p class="lk-page-header-lead">{{ lead }}</p>{% endif %}
+{% macro page_header(title, description=None, icon_name=None, crumbs=()) -%}
+<header class="lk-page-head">
+  <nav class="lk-breadcrumb" aria-label="Breadcrumb">
+    <ol>
+      <li><a href="{{ url_for('landing_page') }}">{{ icon('bi:house') }} Home</a></li>
+      {% for label, url in crumbs %}
+      <li>{% if url %}<a href="{{ url }}">{{ label }}</a>{% else %}<span>{{ label }}</span>{% endif %}</li>
+      {% endfor %}
+      <li><span aria-current="page">{{ title }}</span></li>
+    </ol>
+  </nav>
+  <div class="lk-page-head-card">
+    {% if icon_name %}<span class="lk-page-head-icon">{{ icon(icon_name) }}</span>{% endif %}
+    <div class="lk-page-head-text">
+      <h1>{{ title }}</h1>
+      {% if description %}<p>{{ description }}</p>{% endif %}
+    </div>
+    {% if caller %}
+    <div class="lk-page-head-actions">{{ caller() }}</div>
+    {% endif %}
   </div>
-  {% if caller %}
-  <div class="lk-page-header-actions">{{ caller() }}</div>
-  {% endif %}
-</div>
+</header>
 {%- endmacro %}

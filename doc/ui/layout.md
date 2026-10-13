@@ -38,7 +38,8 @@ base.html
 {% endblock %}
 
 {% block page_header %}
-  {% call page_header('My page', lead='One sentence explaining what this page is for.') %}
+  {% call page_header('My page', description='One sentence explaining what this page is for.',
+                      icon_name='bi:star', crumbs=[('Parent page', url_for('parent'))]) %}
     <a class="btn btn-outline-primary" href="...">{{ icon('bi:download') }} Export</a>
   {% endcall %}
 {% endblock %}
@@ -56,7 +57,7 @@ Then in Python: `return render_template('feature/mypage.html', ...)`.
 |-------|---------|
 | `title` | `<title>` text (Playwright tests check some titles) |
 | `page_styles` | Page CSS, loaded before the instance `overrides.css` |
-| `page_header` | Title area; use the `page_header()` macro |
+| `page_header` | Breadcrumb + title card; use the `page_header()` macro ([page-header.md](page-header.md)) |
 | `main` | The page content |
 | `main_class` | Extra classes on the content column, e.g. `lk-container-narrow` (960px) |
 | `scripts` | Page JS: `{{ super() }}` then your `<script nonce="{{ csp_nonce() }}">` |
@@ -73,7 +74,7 @@ twice.
 
 | Name | Where | Use |
 |------|-------|-----|
-| `page_header(title, lead=None)` + `{% call %}` for actions | `macros/page.html` | Page title, lead, action buttons |
+| `page_header(title, description, icon_name, crumbs)` + `{% call %}` for actions | `macros/page.html` | Breadcrumb + title card ([page-header.md](page-header.md)) |
 | `.lk-container`, `.lk-container-narrow` | `css/components/layout.css` | Content width (1440px wide layout, 960px narrow) |
 | `.lk-card` | `css/components/layout.css` | Bordered surface box |
 | `.lk-section-title` | `css/components/layout.css` | Title of a section inside a page |

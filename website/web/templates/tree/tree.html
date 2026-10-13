@@ -152,7 +152,7 @@
         <span>{{ page_title or 'Untitled page' }}</span>
       </h1>
       <p class="lk-capture-url">
-        <span>{{ info.url }}</span>
+        <span title="{{ info.url }}">{{ info.url }}</span>
         <button type="button" class="lk-copy js-copy" data-bs-toggle="tooltip" data-copy="{{ info.url }}"
                 title="Copy the URL" data-bs-original-title="Copy the URL" aria-label="Copy the URL">{{ icon('bi:copy') }}</button>
       </p>
@@ -335,6 +335,10 @@
     <button type="button" id="tree-expand-all" title="Expand every node" aria-label="Expand every node">{{ icon('bi:arrows-expand') }}</button>
     <span class="lk-tree-controls-status" id="tree-controls-status" role="status" hidden></span>
   </div>
+
+  {# Points of attention of the capture: one chip per kind found, a click filters
+     the tree on it (js/tree.js, setupAttention). Hidden when there are none. #}
+  <div class="lk-tree-alerts" id="tree-alerts" aria-label="Points of attention" hidden></div>
 
   {# Shown while a node and its neighbours are focused (click on a card, js/tree.js) #}
   <div class="lk-tree-focus" id="tree-focus" role="status" hidden>

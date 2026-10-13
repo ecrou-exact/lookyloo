@@ -42,6 +42,31 @@ try {
 const VERTICAL_ROW = 190;
 let tree_root = null;
 
+// ---- Analysis state (declared before the first await: used while the tree loads)
+const TWO_LEVEL_SUFFIXES = new Set([
+    'co.uk', 'org.uk', 'ac.uk', 'gov.uk', 'me.uk', 'net.uk', 'ltd.uk', 'plc.uk',
+    'com.au', 'net.au', 'org.au', 'edu.au', 'gov.au', 'co.nz', 'org.nz', 'govt.nz',
+    'co.jp', 'ne.jp', 'or.jp', 'ac.jp', 'go.jp', 'co.kr', 'or.kr', 'co.in', 'net.in', 'org.in', 'gov.in',
+    'com.br', 'net.br', 'org.br', 'gov.br', 'com.cn', 'net.cn', 'org.cn', 'gov.cn', 'com.tw', 'com.hk',
+    'com.mx', 'com.ar', 'com.tr', 'com.sg', 'com.my', 'co.za', 'co.il', 'co.id', 'co.th', 'com.ua',
+    'com.pl', 'com.ru', 'com.es', 'com.pt', 'gouv.fr', 'asso.fr', 'co.at', 'or.at', 'gv.at']);
+
+// Path from the root to the node of the rendered page (the "main path")
+let main_path = new Set();
+
+// Points of attention: kinds of nodes an analyst checks first. Each one is a key
+// of the legend filter (tree/legend.html), so a chip toggles the same filter.
+const ATTENTION = [
+    {key: 'malicious', label: 'malicious', level: 'danger', title: 'Nodes with known malicious content'},
+    {key: 'posted_data', label: 'sending data (POST)', level: 'warning', title: 'Nodes that POST content: forms, tracking, exfiltration'},
+    {key: 'downloaded_filename', label: 'download', level: 'warning', title: 'Nodes containing a downloaded file'},
+    {key: 'http_content', label: 'unencrypted', level: 'warning', title: 'Nodes with plain HTTP requests'},
+    {key: 'mixed_content', label: 'mixed content', level: 'warning', title: 'HTTPS nodes loading plain HTTP content'},
+    {key: 'redirect_to_nothing', label: 'redirect to nowhere', level: 'info', title: 'Redirects to URLs missing in the capture'},
+    {key: 'third_party_cookies_received', label: 'third-party cookies', level: 'info', title: 'Nodes receiving cookies from a third party'},
+    {key: 'third_party', label: 'third-party hosts', level: 'neutral', title: 'Hosts outside the domain of the rendered page'},
+];
+
 // Centre an element of the tree in #tree_viewport, scrolling only the viewport
 // (scrollIntoView would also scroll the page).
 function centerInViewport(element, smooth=true) {
@@ -150,8 +175,10 @@ try {
 
   document.getElementById("tree-loading").style.display = "none";
   tree_root = root;
+  prepareAnalysis(root);
   update(root);
   setupLegendFilter(root);
+  setupAttention(root);
   setupTreeSearch();
   setupTreeControls();
   // Scroll once the nodes are in place
@@ -254,6 +281,65 @@ try {
   console.error(error.message);
 }
 
+
+// ****************** Analysis helpers: main path, third parties, points of attention ******************
+
+// Registrable domain of a hostname, without the Public Suffix List: the last
+// two labels, three when the last two are a known two-level suffix (co.uk…).
+function registrableDomain(hostname) {
+    const host = (hostname || '').toLowerCase().replace(/\.$/, '');
+    if (/^[\d.]+$/.test(host) || host.includes(':')) return host;   // IP address
+    const labels = host.split('.');
+    if (labels.length <= 2) return host;
+    const last_two = labels.slice(-2).join('.');
+    return TWO_LEVEL_SUFFIXES.has(last_two) ? labels.slice(-3).join('.') : last_two;
+}
+
+
+// Marks computed once on the data: third_party (host outside the domain of the
+// rendered page) and the main path.
+function prepareAnalysis(root) {
+    const all = allNodes(root);
+    const rendered = all.find(d => d.data.contains_rendered_urlnode) || root;
+    const page_domain = registrableDomain(rendered.data.name);
+    all.forEach(d => {
+        d.data.third_party = registrableDomain(d.data.name) !== page_domain;
+    });
+    main_path = new Set(rendered.ancestors().map(d => d.data.uuid));
+}
+
+// Links and nodes of the main path, and of the path to the hovered node
+function markPaths() {
+    node_container.selectAll('g.node').classed('is-main-path', d => main_path.has(d.data.uuid));
+    node_container.selectAll('path.link').classed('is-main-path', l => main_path.has(l.data.uuid));
+}
+function showHoverPath(d) {
+    const path = new Set(d ? d.ancestors().map(a => a.data.uuid) : []);
+    node_container.selectAll('path.link').classed('is-hover-path', l => path.has(l.data.uuid));
+}
+
+
+function setupAttention(root) {
+    const container = document.getElementById('tree-alerts');
+    if (!container) return;
+    const all = allNodes(root);
+    ATTENTION.forEach(item => {
+        const count = all.filter(d => nodeHas(d, item.key)).length;
+        if (!count) return;
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = `lk-tree-alert lk-tree-alert-${item.level}`;
+        chip.dataset.key = item.key;
+        chip.title = `${item.title}. Click to filter the tree.`;
+        chip.setAttribute('aria-pressed', 'false');
+        const number = document.createElement('strong');
+        number.textContent = count;
+        chip.append(number, ` ${item.label}`);
+        chip.addEventListener('click', () => toggleLegendFilter(item.key));
+        container.appendChild(chip);
+    });
+    container.hidden = !container.children.length;
+}
 
 // ****************** Entry animation ******************
 
@@ -566,6 +652,8 @@ function toggleLegendFilter(key) {
     if (active_filters.has(key)) active_filters.delete(key);
     else active_filters.add(key);
     button.setAttribute('aria-pressed', active_filters.has(key) ? 'true' : 'false');
+    document.querySelectorAll(`.lk-tree-alert[data-key="${key}"]`)
+        .forEach(chip => chip.setAttribute('aria-pressed', active_filters.has(key) ? 'true' : 'false'));
     // Show the legend, so the filter can be seen and cleared
     document.getElementById('legend').open = true;
     applyTreeFilter();
@@ -600,6 +688,7 @@ function setupLegendFilter(root) {
     document.getElementById('legend-clear').addEventListener('click', () => {
         active_filters.clear();
         present.querySelectorAll('.lk-legend-item').forEach(b => b.setAttribute('aria-pressed', 'false'));
+        document.querySelectorAll('.lk-tree-alert').forEach(c => c.setAttribute('aria-pressed', 'false'));
         applyTreeFilter();
     });
 }
@@ -894,7 +983,9 @@ function update(root, computed_node_width=0) {
         // Enter any new modes at the parent's previous position.
         enter => {
             let node_group = enter.append('g')
-                .attr('class', 'node')
+                .attr('class', d => d.data.third_party ? 'node is-third-party' : 'node')
+                .on('mouseenter', (event, d) => showHoverPath(d))
+                .on('mouseleave', () => showHoverPath(null))
                 .attr("id", d => `node_${d.data.uuid}`)
                 .attr("transform", nodeTransform(root, true));
 
@@ -938,6 +1029,15 @@ function update(root, computed_node_width=0) {
                 // Note: removing .select('rect') breaks rendering on firefox but not on chrome.
                 let selected_node_bbox = d3.select(this).select('rect').node().getBBox();
                 d.node_width = selected_node_bbox.width;
+
+                // Third-party host: a coloured bar on the left edge of the card
+                if (d.data.third_party) {
+                    d3.select(this).insert('rect', '.node-card + *')
+                        .attr('class', 'node-third-party-bar')
+                        .attr('x', 0).attr('y', 0)
+                        .attr('width', 4).attr('height', node_height + 5)
+                        .attr('rx', 2);
+                }
                 node_width = node_width > selected_node_bbox.width ? node_width : selected_node_bbox.width;
 
                 // Set number of URLs after the hostname
@@ -1272,6 +1372,8 @@ function update(root, computed_node_width=0) {
   if (computed_node_width === 0) {
     update(root, node_width)
   }
+  // Main path to the rendered page (nodes and links of this update included)
+  markPaths();
   // Nodes shown again after an expand keep the filters
   if (active_filters.size > 0 || search_text || focus_uuid) applyTreeFilter();
 }

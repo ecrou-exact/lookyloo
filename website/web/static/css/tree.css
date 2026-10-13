@@ -127,7 +127,16 @@ body.lk-capture-page .lk-header { position: static; }
   /* A long URL wraps (anywhere: URLs have no spaces) */
   overflow-wrap: anywhere;
 }
-.lk-capture-url .lk-copy { vertical-align: middle; }
+/* At most 3 lines: the full URL is in the title and the copy button */
+.lk-capture-url > span {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+}
+.lk-capture-url { display: flex; align-items: flex-start; gap: var(--lk-space-1); }
+.lk-capture-url .lk-copy { flex: none; }
 
 .lk-capture-meta {
   display: flex;
@@ -377,7 +386,7 @@ body.lk-capture-page .lk-header { position: static; }
 /* Pill shown while a node and its neighbours are focused */
 .lk-tree-focus {
   position: absolute;
-  top: var(--lk-space-3);
+  top: calc(var(--lk-space-3) + 40px);
   left: var(--lk-space-4);
   z-index: 1020;
   display: inline-flex;
@@ -403,6 +412,52 @@ body.lk-capture-page .lk-header { position: static; }
   color: var(--lk-color-muted);
 }
 .lk-tree-focus button:hover { background: var(--lk-color-surface); color: var(--lk-color-ink); }
+
+/* ---------- Points of attention (chips, top left of the tree area) ---------- */
+
+.lk-tree-alerts {
+  position: absolute;
+  top: var(--lk-space-3);
+  left: var(--lk-space-4);
+  right: 9rem;   /* clear of the tree controls */
+  z-index: 1020;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--lk-space-2);
+  pointer-events: none;
+}
+.lk-tree-alerts[hidden] { display: none; }
+.lk-tree-alert {
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  padding: 3px var(--lk-space-3);
+  border: 1px solid var(--lk-color-rule);
+  border-radius: var(--lk-radius-pill);
+  background: var(--lk-color-surface);
+  color: var(--lk-color-ink);
+  font-size: var(--lk-font-size-xs);
+  box-shadow: var(--lk-shadow-sm);
+}
+.lk-tree-alert strong { font-family: var(--lk-font-mono); }
+.lk-tree-alert::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--lk-color-muted);
+}
+.lk-tree-alert-danger::before { background: var(--lk-color-danger); }
+.lk-tree-alert-warning::before { background: var(--lk-color-warning); }
+.lk-tree-alert-info::before { background: var(--lk-color-info); }
+.lk-tree-alert-neutral::before { background: var(--lk-tag-violet); }
+.lk-tree-alert-danger { border-color: var(--lk-color-danger-border); }
+.lk-tree-alert:hover { border-color: var(--lk-color-accent); }
+.lk-tree-alert[aria-pressed="true"] { border-color: var(--lk-color-accent); background: var(--lk-color-accent-soft); }
+
+/* Swatch in the legend for the keys without an icon (third-party host) */
+.lk-legend-swatch { flex: none; width: 20px; height: 20px; border-radius: 3px; background: var(--lk-color-surface-2); border-left: 4px solid var(--lk-tag-violet); }
 
 /* ---------- Legend & icon filter (tree/legend.html, js/tree.js) ---------- */
 
@@ -562,6 +617,15 @@ path.link {
   stroke-width: 1px;
 }
 .node-bookmark { font-size: 15px; }
+
+/* Main path: root -> redirects -> node of the rendered page (always shown) */
+path.link.is-main-path { stroke: var(--lk-color-accent); stroke-width: 2.5px; stroke-opacity: 0.75; }
+g.node.is-main-path .node-card { stroke: color-mix(in srgb, var(--lk-color-accent) 55%, var(--lk-color-rule-strong)); }
+/* Path from the root to the hovered node */
+path.link.is-hover-path { stroke: var(--lk-color-ink); stroke-width: 2.5px; stroke-opacity: 0.9; }
+
+/* Third-party host (outside the domain of the rendered page): bar on the left edge */
+.node-third-party-bar { fill: var(--lk-tag-violet); }
 
 /* New capture of the host (camera, top right of the card): on hover */
 .node-capture { opacity: 0; transition: opacity var(--lk-transition-fast); }

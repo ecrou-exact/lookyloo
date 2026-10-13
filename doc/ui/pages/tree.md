@@ -12,6 +12,7 @@ top block    (#capture_top, sticky)  stays visible while the page scrolls:
   messages    (.lk-capture-flashes)  flash messages, dismissible
 tree area    (.lk-tree-area)         exactly the rest of the screen:
   tree       (#tree_viewport)        scrolls in both directions, holds #tree_svg
+  alerts     (#tree-alerts)          points of attention (chips), top left corner
   controls   (.lk-tree-controls)     orientation, collapse all, expand all, top right corner
   focus pill (#tree-focus)           "Neighbours of …", top left corner, while a node is focused
   loader     (#tree-loading)         centred in the tree area while the tree loads
@@ -33,8 +34,8 @@ remembered in `localStorage` (`lk-capture-bar-folded`).
 
 - **Identity** (keeps at least 30rem; the toolbar goes to the next line
   first): thumbnail of the screenshot (opens `#screenshotModal`),
-  favicon and title of the page, captured URL (wraps when it is long, copy
-  button), capture time
+  favicon and title of the page, captured URL (wraps, 3 lines at most, full
+  URL in the title and the copy button), capture time
   (relative, absolute on hover), number of redirects, *Private* flag,
   *Malicious* flag (`capture_verdict()` on the categories) and the category
   tags (`category_tag()`).
@@ -224,3 +225,24 @@ opens in a new tab.
   plain HTTP content) — `captureHost()` in `js/tree.js`.
 - **Hostname pop-up** (`tree/hostname_popup.html`): a *Capture* button on each
   URL of the node captures that exact URL.
+
+## Analysis aids
+
+Computed once on the tree data (`prepareAnalysis()` in `js/tree.js`):
+
+- **Main path**: the nodes and links from the root to the node of the rendered
+  page (`contains_rendered_urlnode`) — the redirect chain — are always drawn in
+  the accent colour (`.is-main-path`). Hovering a node draws the path from the
+  root to it (`path.link.is-hover-path`).
+- **Third-party hosts**: a host whose registrable domain differs from the one
+  of the rendered page gets `d.data.third_party`, a violet bar on the left of
+  its card (`.node-third-party-bar`) and a *Third-party host* entry in the
+  legend filter. The registrable domain is approximated without the Public
+  Suffix List: the last two labels, three after a known two-level suffix
+  (`co.uk`, `com.au`… `TWO_LEVEL_SUFFIXES`).
+- **Points of attention** (`#tree-alerts`, `setupAttention()`): one chip per
+  kind found in the capture, with the number of nodes — malicious, sending data
+  (POST), download, unencrypted, mixed content, redirect to nowhere, third-party
+  cookies, third-party hosts (`ATTENTION`, coloured by level). A chip toggles
+  the same filter as the legend (each kind is a legend key). No chip when the
+  capture has none of them.

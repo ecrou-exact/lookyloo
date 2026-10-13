@@ -7,7 +7,10 @@
   clicking entries highlights the nodes that have them. Doc: doc/ui/pages/tree.md
 #}
 {% set legend = [
+  ('third_party', None, 'Third-party host', 'Hosts outside the domain of the rendered page'),
   ('http_content', 'insecure.svg', 'Unencrypted requests', 'Nodes with at least one insecure (not HTTPS) request'),
+  ('mixed_content', 'insecure.svg', 'Mixed content', 'HTTPS nodes that also load plain HTTP content'),
+  ('third_party_cookies_received', 'cookie_received.png', 'Third-party cookies', 'Nodes receiving cookies from a third party'),
   ('malicious', 'bomb.svg', 'Known malicious', 'Nodes with known malicious content'),
   ('legitimate', 'check.svg', 'Known content only', 'Nodes with only known content'),
   ('empty', 'empty.svg', 'Empty responses', 'Nodes with URLs returning no content'),
@@ -38,7 +41,11 @@
       {% for key, file, label, title in legend %}
       <li>
         <button type="button" class="lk-legend-item" data-key="{{ key }}" title="{{ title }}" aria-pressed="false">
+          {% if file %}
           <img src="{{ url_for('static', filename='images/icons/' ~ file) }}" alt="" width="18" height="18">
+          {% else %}
+          <span class="lk-legend-swatch lk-legend-swatch-{{ key }}" aria-hidden="true"></span>
+          {% endif %}
           <span class="lk-legend-label">{{ label }}</span>
           <span class="lk-legend-count" aria-label="nodes"></span>
         </button>

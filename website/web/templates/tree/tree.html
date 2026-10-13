@@ -314,8 +314,9 @@
       {% endif %}
 
       {% if enable_mail_notification %}
-      <button type="button" class="btn btn-sm btn-outline-danger lk-tool-btn" data-bs-toggle="modal" data-bs-target="#emailModal"
-              title="Notify the owners of this Lookyloo instance">{{ icon('bi:flag') }}<span>Report</span></button>
+      {# Shown when enable_mail_notification is on (config/generic.json) #}
+      <button type="button" class="btn btn-sm btn-outline-danger lk-tool-btn" id="report-capture-btn" data-bs-toggle="modal" data-bs-target="#emailModal"
+              title="Notify the owners of this Lookyloo instance about this capture">{{ icon('bi:flag') }}<span>Report suspicious capture</span></button>
       {% endif %}
 
       <a id="help" class="btn btn-sm lk-tool-btn lk-tool-icon" href="https://www.lookyloo.eu/docs/main/usage.html#_investigate_a_capture"
@@ -840,6 +841,7 @@
   ("#admin-menu a[href*=\"rebuild\"]", "Rebuild capture", "Build the tree of the capture again, from the recorded data.", "#admin-menu-btn"),
   ("#admin-menu a[data-bs-target=\"#ollamaModal\"]", "Ollama report", "Ask a local language model to summarise the capture.", "#admin-menu-btn"),
   ("#removeCapture", "Remove capture", "Delete the capture from this instance (a confirmation is asked).", "#admin-menu-btn"),
+  ("#report-capture-btn", "Report a suspicious capture", "Send this capture to the team behind this Lookyloo instance, with your e-mail and a comment: they may look at it."),
   ("#capture_fold", "Fold the bar", "Too much space taken? Fold this bar to one line, the tree gets the room."),
   ("#tree-alerts", "Points of attention", "What an analyst checks first: data sent (POST), downloads, plain HTTP, third-party hosts… Click a chip to light up the hosts concerned."),
   ("g.node .node-card", "A host", "Each card is a host. Click its name for its details (URLs, IPs, certificates); click the card itself to light up its neighbours; hover it for its network information."),

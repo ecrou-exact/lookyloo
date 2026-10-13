@@ -55,7 +55,10 @@ remembered in `localStorage` (`lk-capture-bar-folded`).
     Lookyloo);
   - **Extras** (when enabled): categories, unbookmark all nodes, mark as known;
   - **Admin** (logged in): rebuild, Ollama report, remove capture;
-  - **Report** button (when mail notifications are enabled), help link.
+  - **Report suspicious capture** button (`#report-capture-btn`, red), shown
+    when `enable_mail_notification` is on in `config/generic.json`: it opens
+    the e-mail notification form (`#emailModal`) sent to the owners of the
+    instance; then the help link.
   On small screens the toolbar keeps only the icons.
 
 The menu ids (`#capture-menu`, `#tools-menu`, `#actions-menu`, `#extra-menu`,

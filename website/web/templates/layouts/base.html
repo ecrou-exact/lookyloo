@@ -28,7 +28,8 @@
           crossorigin="anonymous">
     {% for stylesheet in ['css/fonts.css', 'css/theme.css', 'css/bootstrap-bridge.css', 'css/base.css', 'css/utilities.css',
                           'css/components/icon.css', 'css/components/layout.css', 'css/components/header.css',
-                          'css/components/footer.css', 'css/components/loader.css'] %}
+                          'css/components/footer.css', 'css/components/loader.css',
+                          'css/components/capture-list.css'] %}
     <link rel="stylesheet" href="{{ url_for('static', filename=stylesheet) }}"
           {{get_sri('static', stylesheet)}}
           crossorigin="anonymous">

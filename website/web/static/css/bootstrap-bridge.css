@@ -57,8 +57,8 @@
 
   --bs-primary: var(--lk-color-accent);
   --bs-primary-rgb: var(--lk-color-accent-rgb);
-  --bs-primary-text-emphasis: var(--lk-color-ink);
-  --bs-primary-bg-subtle: var(--lk-color-surface-2);
+  --bs-primary-text-emphasis: var(--lk-color-accent);
+  --bs-primary-bg-subtle: var(--lk-color-accent-soft);
   --bs-primary-border-subtle: var(--lk-color-rule-strong);
 
   --bs-danger: var(--lk-color-danger);

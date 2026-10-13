@@ -84,8 +84,8 @@ twice.
 
 From left to right:
 
-- **Logo**: link to the landing page (`landing_page`: home or capture form,
-  depending on `index_is_capture`).
+- **Logo**: link to the home page (`landing_page`, `/`; the full capture form
+  instead when `index_is_capture` is set).
 - **Main links**: Recent captures (`index`, also active on `index_hidden`),
   Search, Categories, **Explore** menu (resources, cookies, favicons and HTTP
   headers hashes seen in recent captures), **Help** menu (documentation, API,

@@ -4,9 +4,9 @@
 as a CSS custom property prefixed `--lk-`. The rest of the CSS only reads these
 tokens, so changing the look (or adding a theme) means editing one file.
 
-The current values follow the "F / Report" direction chosen for the redesign:
-neutral greys, ink-black primary buttons, blue links, red/amber/green status
-colours.
+The current values follow the "F / Report" direction chosen for the redesign
+(neutral greys, red/amber/green status colours) with a **cobalt blue accent**
+for primary buttons, links, active states and the final hop of a redirect chain.
 
 ## How it works
 
@@ -44,14 +44,15 @@ Bootstrap, base.css, utilities.css, page CSS, components
 | `--lk-color-emphasis` | `#000000` | `#FFFFFF` | `--bs-emphasis-color` |
 | `--lk-color-rule` | `#E6E6E6` | `#2A2A2E` | Borders (`--bs-border-color`) |
 | `--lk-color-rule-strong` | `#C9C9C9` | `#3F3F45` | Hovered / emphasised borders, outline buttons |
-| `--lk-color-accent` | `#171717` | `#EDEDED` | Primary action (`--bs-primary`, `.btn-primary`, active items) |
-| `--lk-color-accent-hover` / `-active` | `#333333` / `#000000` | `#FFFFFF` / `#D4D4D4` | Primary hover / pressed |
-| `--lk-color-on-accent` | `#FFFFFF` | `#171717` | Text on the accent colour |
-| `--lk-color-link` / `-hover` | `#1D4ED8` / `#1E3A8A` | `#8AB4FF` / `#B5CEFF` | Links (`--bs-link-color`) |
+| `--lk-color-accent` | `#2B4BEE` | `#7C93FF` | Accent, cobalt blue: primary action (`--bs-primary`, `.btn-primary`), active menu entry, final hop, hero icons |
+| `--lk-color-accent-hover` / `-active` | `#2340D0` / `#1C34AD` | `#9AACFF` / `#6A82F5` | Primary hover / pressed |
+| `--lk-color-on-accent` | `#FFFFFF` | `#0E0E10` | Text on the accent colour |
+| `--lk-color-accent-soft` | `#EBEFFE` | `#1B2142` | Light accent background (`--bs-primary-bg-subtle`) |
+| `--lk-color-link` / `-hover` | `#2B4BEE` / `#1C34AD` | `#8EA3FF` / `#B3C1FF` | Links (`--bs-link-color`) |
 | `--lk-color-danger` | `#C8102E` | `#FF6B7D` | Malicious / error |
 | `--lk-color-warning` | `#A15C00` | `#F2B661` | Suspicious / warning |
 | `--lk-color-success` | `#1E7F4F` | `#4CC38A` | Safe / OK |
-| `--lk-color-info` | `#1D4ED8` | `#8AB4FF` | Informational, help bubbles |
+| `--lk-color-info` | `#2B4BEE` | `#8EA3FF` | Informational, help bubbles |
 | `--lk-color-tree-node` | `#4682B4` | `#6FA8DC` | Node circles of the D3 tree |
 
 Each status colour (`danger`, `warning`, `success`, `info`) also has `-soft`
@@ -66,7 +67,7 @@ for its utilities. Keep both in sync when changing a colour.
 
 | Token | Use |
 |-------|-----|
-| `--lk-focus-ring`, `--lk-focus-border` | Keyboard focus ring and focused input border |
+| `--lk-focus-ring`, `--lk-focus-border` | Keyboard focus ring and focused input border (accent) |
 | `--lk-shadow-sm`, `--lk-shadow-md` | Shadows (`--bs-box-shadow-sm`, `--bs-box-shadow`) |
 | `--lk-logo-filter` | `none` in light, `invert(1)` in dark (black PNG logo) |
 

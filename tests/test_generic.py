@@ -29,6 +29,7 @@ def test_has_title(page: Page) -> None:
 def test_capture_page(page: Page) -> None:
     domain = 'google.be'
     capture_url = f'https://{domain}'
+    page.goto("http://127.0.0.1:5100/")
     page.get_by_role("link", name="All capture options").click()
     page.get_by_role("button", name="Lacus Selection").click()
     expect(page.get_by_role("button", name="Browser Configuration")).to_be_visible()

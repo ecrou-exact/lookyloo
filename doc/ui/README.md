@@ -7,7 +7,8 @@ same commit as the code.
 | Page | Content |
 |------|---------|
 | [layout.md](layout.md) | Layouts (`base.html`, `page.html`), header, footer, how to create a page |
-| [pages/index.md](pages/index.md) | Landing page: quick capture, recent captures list and its data |
+| [pages/home.md](pages/home.md) | Home page: logo, quick capture form, key points, latest captures |
+| [pages/index.md](pages/index.md) | Recent captures page: the list and the data it uses |
 | [loader.md](loader.md) | Loading indicator with the Lookyloo eyes (`loader()` macro) |
 | [css.md](css.md) | How the stylesheets are organised: files, load order, where to put new CSS, rules |
 | [icons.md](icons.md) | Icons: `icon()` helper, Bootstrap Icons + misp-iconify sprite, adding an icon, the submodule |

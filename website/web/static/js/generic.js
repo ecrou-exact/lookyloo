@@ -229,3 +229,14 @@ document.addEventListener('click', event => {
     thumb.setAttribute('aria-label', label);
     thumb.title = label;
 });
+
+// Server-rendered capture rows (home page): <span data-lk-time="ISO date"> becomes
+// the same relative time as in the DataTables (render_relative_time).
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('[data-lk-time]').forEach(el => {
+        const rendered = render_relative_time(el.dataset.lkTime);
+        if (rendered) {
+            el.outerHTML = rendered;
+        }
+    });
+});

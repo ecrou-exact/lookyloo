@@ -16,8 +16,8 @@ win, so the order matters.
 | 4 | `css/bootstrap-bridge.css` | Bootstrap theming | Maps `--lk-*` onto `--bs-*`, and overrides the components where Bootstrap compiles literal colours (buttons, form focus, checkboxes, pagination, nav pills, dropdown and list-group active items, progress bars, accordion) |
 | 5 | `css/base.css` | Element defaults | Rules on HTML elements shared by every page: headings, links, focus ring, tables, logo inversion in dark mode |
 | 6 | `css/utilities.css` | Shared helpers | Small classes used by templates, Python-generated HTML and JS: `.new-capture-button`, `.help-tip`, `.blur`, `.middleEllipsis*`, `.tooltip` (D3), `.timeline`/`.tl-*`, arrows, collapse toggles, honeypot field |
-| 7 | `css/components/*.css` | Components | One file per `lk-` component: `icon.css` ([icons.md](icons.md)), `layout.css`, `header.css`, `footer.css` ([layout.md](layout.md)), `loader.css` ([loader.md](loader.md)) |
-| 8 | Page CSS (`css/index.css`, `css/tree.css`, `css/stats.css`) | One page | Loaded only by its page through the `page_styles` block |
+| 7 | `css/components/*.css` | Components | One file per `lk-` component: `icon.css` ([icons.md](icons.md)), `layout.css`, `header.css`, `footer.css` ([layout.md](layout.md)), `loader.css` ([loader.md](loader.md)), `capture-list.css` (capture rows, [pages/index.md](pages/index.md)) |
+| 8 | Page CSS (`css/home.css`, `css/index.css`, `css/tree.css`, `css/stats.css`) | One page | Loaded only by its page through the `page_styles` block |
 | 9 | `css/overrides.css` | Instance hook | Optional, not in git, loaded last so an instance can override anything |
 
 ## Adding CSS

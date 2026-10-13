@@ -1,36 +1,13 @@
 {% extends "layouts/page.html" %}
 {#
-  Landing page: quick capture + list of recent captures.
+  Recent captures (route index, hidden captures: index_hidden). The capture
+  form lives on the home page (home/home.html).
   The list is a server-side DataTable (#IndexTable, js/render_tables.js), its rows
   are rendered by index_capture_template in website/web/__init__.py and only use
   data from the capture cache (doc/ui/pages/index.md).
 #}
 
-{% block title %}Lookyloo{% endblock %}
-
-{% block card %}
-<meta property="og:title" content="Lookyloo" />
-<meta property="og:type" content="website"/>
-<meta
-  property="og:description"
-  content="Lookyloo captures websites and let you investigate them."
-/>
-<meta
-  property="og:image"
-  content="https://{{public_domain}}{{ url_for('static', filename='images/brand/lookyloo.jpeg') }}"
-/>
-<meta
-  property="og:url"
-  content="https://{{public_domain}}"
-/>
-<meta name="twitter:card" content="summary_large_image">
-{% endblock %}
-
-{% block identity %}
-  {% if mastobot_enabled %}
-    <link rel="me" href="https://{{mastodon_domain}}/@{{mastodon_botname}}">
-  {% endif %}
-{% endblock %}
+{% block title %}Recent captures · Lookyloo{% endblock %}
 
 {% block page_styles %}
 <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}"
@@ -39,82 +16,17 @@
 {% endblock %}
 
 {% block main %}
-<section class="lk-hero" aria-labelledby="quick-capture-title">
-  <div class="lk-hero-main">
-    <div class="lk-hero-brand">
-      <img class="lk-logo" src="{{ url_for('static', filename='images/brand/lookyloo.png') }}"
-           alt="" width="320"
-           {{get_sri('static', 'images/brand/lookyloo.png')}}
-           crossorigin="anonymous">
-      <p>Web forensics tool</p>
-    </div>
-
-    <form class="lk-hero-form" method="post" action="{{ url_for('capture_web') }}">
-      <h1 id="quick-capture-title">See where a link really goes.</h1>
-      <p class="lk-hero-lead">Paste a URL: Lookyloo opens it in a real browser and records every redirect, request and resource it loads.</p>
-
-      {# Honeypot: bots fill it, the capture route rejects them #}
-      <input class="boatymcboat" type="text" name="name" tabindex="-1" autocomplete="off" aria-hidden="true">
-      <input type="hidden" name="java_script_enabled" value="1">
-
-      <div class="lk-capture-bar">
-        {{ icon('bi:globe2', classes='lk-capture-bar-icon') }}
-        <label for="quick-capture-url" class="visually-hidden">URL to capture</label>
-        <input type="text" id="quick-capture-url" name="url"
-               placeholder="https://suspicious-link.example/login" required
-               autocomplete="off" autocapitalize="off" spellcheck="false">
-        <button type="submit" class="btn btn-primary btn-lg">{{ icon('bi:camera') }} Capture</button>
-      </div>
-
-      <div class="lk-capture-options">
-        <label class="lk-pill-select">
-          {{ icon('bi:laptop') }}
-          <span class="visually-hidden">Device</span>
-          <select name="device_name">
-            <option value="{{ default_device }}" selected>{{ default_device }}</option>
-            {% if default_mobile_device %}
-            <option value="{{ default_mobile_device }}">{{ default_mobile_device }}</option>
-            {% endif %}
-          </select>
-        </label>
-        <label class="lk-pill-select">
-          {{ icon('bi:eye') }}
-          <span class="visually-hidden">Visibility</span>
-          <select name="visibility">
-            <option value="public" {% if default_public and not default_private %}selected{% endif %}>Public</option>
-            <option value="unlisted" {% if not default_public and not default_private %}selected{% endif %}>Unlisted</option>
-            <option value="private" {% if default_private %}selected{% endif %}>Private</option>
-          </select>
-        </label>
-        <span class="lk-capture-options-links">
-          <a href="{{ url_for('capture_web') }}">{{ icon('bi:sliders') }} All capture options</a>
-          <a href="{{ url_for('submit_capture') }}">{{ icon('bi:upload') }} Upload a capture</a>
-        </span>
-      </div>
-    </form>
-  </div>
-
-  <ul class="lk-hero-features">
-    <li>
-      {{ icon('bi:browser-chrome', classes='lk-icon-lg') }}
-      <div><strong>A real browser</strong><span>The page is rendered like a visitor would see it, scripts included.</span></div>
-    </li>
-    <li>
-      {{ icon('bi:diagram-3', classes='lk-icon-lg') }}
-      <div><strong>Every hop and resource</strong><span>Redirects, requests, cookies and third parties, drawn as a tree.</span></div>
-    </li>
-    <li>
-      {{ icon('bi:link-45deg', classes='lk-icon-lg') }}
-      <div><strong>A link to share</strong><span>Each capture keeps its own page to investigate or send to a colleague.</span></div>
-    </li>
-  </ul>
-</section>
-
 <section class="lk-recent" aria-labelledby="recent-captures-title">
   <div class="lk-recent-head">
-    <h2 class="lk-section-title" id="recent-captures-title">
-      {% if show_hidden %}Hidden captures{% else %}Recent captures{% endif %}
-    </h2>
+    <div>
+      <h1 class="lk-recent-title" id="recent-captures-title">
+        {% if show_hidden %}Hidden captures{% else %}Recent captures{% endif %}
+      </h1>
+      <p class="lk-recent-lead">
+        {% if show_hidden %}Captures not listed on the public index, only visible to administrators.
+        {% else %}Public captures made on this instance, most recent first. Screenshots are blurred: click one to reveal it.{% endif %}
+      </p>
+    </div>
     {% if category %}
     <span class="lk-filter-chip">
       Category: <strong>{{ category }}</strong>

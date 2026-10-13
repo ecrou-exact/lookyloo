@@ -59,7 +59,7 @@
 
   /* Underline marker for the current section */
   .lk-header-nav .nav-link.active {
-    box-shadow: inset 0 -2px 0 var(--lk-color-ink);
+    box-shadow: inset 0 -2px 0 var(--lk-color-accent);
   }
 
   .lk-header-actions {

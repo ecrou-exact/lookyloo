@@ -1,37 +1,12 @@
-# Landing page (recent captures)
+# Recent captures (index)
 
-Route `index` (`/index`, also `/` unless `index_is_capture` is set), hidden
-captures on `index_hidden` (`/hidden`, logged-in users). Template
-`home/index.html`, CSS `css/index.css`. Design direction: mockup F ("report"),
-see the redesign notes.
+Route `index` (`/index`, "Recent captures" in the header), hidden captures on
+`index_hidden` (`/hidden`, logged-in users). Template `home/index.html`, CSS
+`css/index.css`. This page only lists captures: the capture form is on the
+home page ([home.md](home.md)).
 
-## Hero: quick capture
-
-The top block (`.lk-hero`) has three parts:
-
-- **Brand** (left, on top on small screens): the logo (`.lk-logo`, inverted in
-  dark mode) and "Web forensics tool".
-- **Form**: headline "See where a link really goes.", one-sentence explanation,
-  the **capture bar** (`.lk-capture-bar`: globe icon + URL field + Capture
-  button in one box, with the focus ring on the whole bar), then the **options**
-  as pill selects (`.lk-pill-select`: icon + native `<select>` without its
-  arrow, caret drawn in CSS) and links to all capture options / upload.
-- **Three points** (`.lk-hero-features`): real browser, every hop and resource,
-  a link to share. Descriptions are hidden on phones.
-
-The form posts to `/capture` (same handler as the full form, `capture_web`)
-with:
-
-| Field | Value |
-|-------|-------|
-| `url` | The URL typed by the user (scheme optional, like the full form) |
-| `device_name` | Default desktop device, or default mobile device (`UserAgents.default['default_device_name']` / `['default_mobile_device_name']`) |
-| `visibility` | `public` / `unlisted` / `private`, preselected from `default_public` / `default_private` |
-| `java_script_enabled` | Always on (default of the full form) |
-| `name` | Honeypot (`.boatymcboat`), must stay empty |
-
-"All capture options" links to the full form (`capture_web`), "Upload a
-capture" to `submit_capture`.
+Title "Recent captures" (or "Hidden captures") with a one-line explanation,
+then the list.
 
 ## Recent captures list
 
@@ -66,7 +41,9 @@ JSON row shape (the contract between `post_table()` and `render_tables.js`):
     (hollow dots, filled dot for the final page), labelled Start / Redirect n /
     Final page, with "new host" and "HTTP" badges, host in bold, rest of the URL
     muted, a copy button per step, and a link to download the redirects.
-  The hops are prepared by `redirect_hops()` in `website/web/__init__.py`.
+  The hops are prepared by `redirect_hops()` and each row by `index_row()` in
+  `website/web/__init__.py` (also used for the latest captures on the home
+  page); row styles are in `css/components/capture-list.css`.
 - `capture_time` is displayed by `DataTable.render.relative_time()`
   (`js/generic.js`): "5 days ago" + the exact date (tooltip and second line).
 

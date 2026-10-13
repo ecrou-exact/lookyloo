@@ -148,7 +148,7 @@ else:
         if request.method == 'HEAD':
             # Just returns ack if the webserver is running
             return 'Ack'
-        return redirect(url_for('index'))
+        return home_page()
 
 
 @login_manager.user_loader  # type: ignore[untyped-decorator]
@@ -2221,11 +2221,31 @@ def index_generic(show_hidden: bool=False, show_error: bool=True, category: str 
                            mastobot_enabled=get_config('mastobot', 'enable'),
                            mastodon_domain=mastodon_domain,
                            mastodon_botname=mastodon_botname,
+                           version=pkg_version)
+
+
+HOME_LATEST_CAPTURES = 10
+
+
+def home_page() -> str:
+    '''Home page: logo + quick capture form + the latest public captures
+    (template home/home.html). The full list is on the index page.'''
+    show_error, _ = get_index_params(request)
+    _, _, latest = get_index(offset=0, limit=HOME_LATEST_CAPTURES, show_error=show_error)
+    mastodon_domain = None
+    mastodon_botname = None
+    if get_config('mastobot', 'enable'):
+        mastodon_domain = get_config('mastobot', 'domain')
+        mastodon_botname = get_config('mastobot', 'botname')
+    return render_template('home/home.html', public_domain=lookyloo.public_domain,
+                           mastobot_enabled=get_config('mastobot', 'enable'),
+                           mastodon_domain=mastodon_domain,
+                           mastodon_botname=mastodon_botname,
                            default_device=user_agents.default['default_device_name'],
                            default_mobile_device=user_agents.default.get('default_mobile_device_name'),
                            default_public=lookyloo.default_public,
                            default_private=lookyloo.default_private,
-                           version=pkg_version)
+                           latest_captures=[index_row(cache) for cache in latest])
 
 
 def get_index_params(request: Request) -> tuple[bool, str]:
@@ -3262,6 +3282,27 @@ def redirect_hops(redirects: list[str]) -> list[dict[str, Any]]:
     return hops
 
 
+def index_row(cache: CaptureCache) -> dict[str, Any]:
+    '''One capture row of the capture lists (index page DataTable and latest captures on
+    the home page). Only uses the capture cache (doc/ui/pages/index.md).'''
+    title = cache.title if hasattr(cache, 'title') else ''
+    initial_url = cache.redirects[0] if cache.redirects else cache.url
+    hops = redirect_hops(cache.redirects)
+    return {
+        # Markup: index_capture_template is autoescaped, its output is safe HTML
+        'page': {'display': Markup(render_template(index_capture_template,
+                                            capture_uuid=cache.uuid,
+                                            title=title,
+                                            url=initial_url,
+                                            hops=hops,
+                                            trail=[hop['host'] for i, hop in enumerate(hops)
+                                                   if i == 0 or hop['host'] != hops[i - 1]['host']],
+                                            error=cache.error)),
+                 'filter': escape(f'{title} {" ".join(cache.redirects) if cache.redirects else cache.url}')},
+        'capture_time': cache.timestamp.isoformat(),
+    }
+
+
 def get_index(offset: int, limit: int, public: bool=True, show_error: bool=False, category: str | None=None,
               search: str | None=None) -> tuple[int, int | None, list[CaptureCache]]:
     '''Returns the index.'''
@@ -3321,24 +3362,7 @@ def post_table(table_name: str, value: str='') -> Response:
             return jsonify({'error': f'Missing start {start} or length {length}.'})
 
         total, total_filtered, index_captures = get_index(public=show_hidden is False, category=category, offset=start, limit=length, search=search)
-        prepared_captures = []
-        for cache in index_captures:
-            title = cache.title if hasattr(cache, 'title') else ''
-            initial_url = cache.redirects[0] if cache.redirects else cache.url
-            hops = redirect_hops(cache.redirects)
-            to_append = {
-                'page': {'display': render_template(index_capture_template,
-                                                    capture_uuid=cache.uuid,
-                                                    title=title,
-                                                    url=initial_url,
-                                                    hops=hops,
-                                                    trail=[hop['host'] for i, hop in enumerate(hops)
-                                                           if i == 0 or hop['host'] != hops[i - 1]['host']],
-                                                    error=cache.error),
-                         'filter': escape(f'{title} {" ".join(cache.redirects) if cache.redirects else cache.url}')},
-                'capture_time': cache.timestamp.isoformat(),
-            }
-            prepared_captures.append(to_append)
+        prepared_captures = [index_row(cache) for cache in index_captures]
         return jsonify({'draw': draw, 'recordsTotal': total, 'recordsFiltered': total if not search else total_filtered, 'data': prepared_captures})
 
     if table_name == 'categoriesTable':

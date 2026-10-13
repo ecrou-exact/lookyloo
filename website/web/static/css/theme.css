@@ -34,18 +34,19 @@
   --lk-color-rule: #E6E6E6;
   --lk-color-rule-strong: #C9C9C9;
 
-  /* Primary action (ink-black buttons, mockup F) */
-  --lk-color-accent: #171717;
-  --lk-color-accent-rgb: 23, 23, 23;
-  --lk-color-accent-hover: #333333;
-  --lk-color-accent-active: #000000;
+  /* Accent: cobalt blue (primary buttons, links, active states, final hop) */
+  --lk-color-accent: #2B4BEE;
+  --lk-color-accent-rgb: 43, 75, 238;
+  --lk-color-accent-hover: #2340D0;
+  --lk-color-accent-active: #1C34AD;
   --lk-color-on-accent: #FFFFFF;
+  --lk-color-accent-soft: #EBEFFE;
 
-  /* Links: kept blue so they stay recognisable in dense tables */
-  --lk-color-link: #1D4ED8;
-  --lk-color-link-rgb: 29, 78, 216;
-  --lk-color-link-hover: #1E3A8A;
-  --lk-color-link-hover-rgb: 30, 58, 138;
+  /* Links use the accent */
+  --lk-color-link: #2B4BEE;
+  --lk-color-link-rgb: 43, 75, 238;
+  --lk-color-link-hover: #1C34AD;
+  --lk-color-link-hover-rgb: 28, 52, 173;
 
   /* Status: strong (text/icon) + soft (background) + border */
   --lk-color-danger: #C8102E;
@@ -65,14 +66,14 @@
   --lk-color-success-soft: #E6F4EC;
   --lk-color-success-border: #A9D9BF;
 
-  --lk-color-info: #1D4ED8;
-  --lk-color-info-rgb: 29, 78, 216;
-  --lk-color-info-soft: #E8EEFC;
-  --lk-color-info-border: #B4C6F4;
+  --lk-color-info: #2B4BEE;
+  --lk-color-info-rgb: 43, 75, 238;
+  --lk-color-info-soft: #EBEFFE;
+  --lk-color-info-border: #B9C5FA;
 
   /* Focus ring */
-  --lk-focus-ring: rgba(23, 23, 23, 0.18);
-  --lk-focus-border: #171717;
+  --lk-focus-ring: rgba(43, 75, 238, 0.22);
+  --lk-focus-border: #2B4BEE;
 
   /* Shadows */
   --lk-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
@@ -102,16 +103,17 @@
   --lk-color-rule: #2A2A2E;
   --lk-color-rule-strong: #3F3F45;
 
-  --lk-color-accent: #EDEDED;
-  --lk-color-accent-rgb: 237, 237, 237;
-  --lk-color-accent-hover: #FFFFFF;
-  --lk-color-accent-active: #D4D4D4;
-  --lk-color-on-accent: #171717;
+  --lk-color-accent: #7C93FF;
+  --lk-color-accent-rgb: 124, 147, 255;
+  --lk-color-accent-hover: #9AACFF;
+  --lk-color-accent-active: #6A82F5;
+  --lk-color-on-accent: #0E0E10;
+  --lk-color-accent-soft: #1B2142;
 
-  --lk-color-link: #8AB4FF;
-  --lk-color-link-rgb: 138, 180, 255;
-  --lk-color-link-hover: #B5CEFF;
-  --lk-color-link-hover-rgb: 181, 206, 255;
+  --lk-color-link: #8EA3FF;
+  --lk-color-link-rgb: 142, 163, 255;
+  --lk-color-link-hover: #B3C1FF;
+  --lk-color-link-hover-rgb: 179, 193, 255;
 
   --lk-color-danger: #FF6B7D;
   --lk-color-danger-rgb: 255, 107, 125;
@@ -130,13 +132,13 @@
   --lk-color-success-soft: #13291E;
   --lk-color-success-border: #24573D;
 
-  --lk-color-info: #8AB4FF;
-  --lk-color-info-rgb: 138, 180, 255;
-  --lk-color-info-soft: #18233A;
-  --lk-color-info-border: #2E4470;
+  --lk-color-info: #8EA3FF;
+  --lk-color-info-rgb: 142, 163, 255;
+  --lk-color-info-soft: #1B2142;
+  --lk-color-info-border: #34407A;
 
-  --lk-focus-ring: rgba(237, 237, 237, 0.22);
-  --lk-focus-border: #EDEDED;
+  --lk-focus-ring: rgba(124, 147, 255, 0.3);
+  --lk-focus-border: #7C93FF;
 
   --lk-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
   --lk-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);

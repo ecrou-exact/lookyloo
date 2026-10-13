@@ -71,8 +71,11 @@ let compare_only_new = false;
 
 // Notes of the analyst: {hostnode uuid: {host, text, updated}}, in this browser
 const NOTES_KEY = `lk-notes:${treeUUID}`;
+// Logged-in users (admins) only: notes_enabled comes from tree/tree.html
 let notes = {};
-try { notes = JSON.parse(localStorage.getItem(NOTES_KEY) || '{}') || {}; } catch (e) { notes = {}; }
+if (notes_enabled) {
+    try { notes = JSON.parse(localStorage.getItem(NOTES_KEY) || '{}') || {}; } catch (e) { notes = {}; }
+}
 const TWO_LEVEL_SUFFIXES = new Set([
     'co.uk', 'org.uk', 'ac.uk', 'gov.uk', 'me.uk', 'net.uk', 'ltd.uk', 'plc.uk',
     'com.au', 'net.au', 'org.au', 'edu.au', 'gov.au', 'co.nz', 'org.nz', 'govt.nz',
@@ -422,6 +425,7 @@ function notesMarkdown() {
 }
 
 function renderNotes() {
+    if (!notes_enabled) return;
     const list = document.getElementById('tree-notes-list');
     if (!list) return;
     list.textContent = '';
@@ -474,7 +478,7 @@ function renderNotes() {
 
 function setupNotes() {
     const modal = document.getElementById('noteModal');
-    if (!modal) return;
+    if (!notes_enabled || !modal) return;
     const editor = document.getElementById('note-markdown');
     editor.addEventListener('vt-input', (event) => { note_text = event.detail.value; });
     document.getElementById('note-modal-save').addEventListener('click', saveNote);
@@ -665,7 +669,7 @@ function setupCompare() {
         applyTreeFilter();
     });
     // Opening the notes closes this panel
-    document.getElementById('tree-notes-toggle').addEventListener('click', () => {
+    document.getElementById('tree-notes-toggle')?.addEventListener('click', () => {
         if (!panel.hidden) show(false);
     });
 }
@@ -1586,8 +1590,9 @@ function update(root, computed_node_width=0) {
                     })
                     .on('mouseout', () => d3.select('#tooltip').style('opacity', 0));
                 capture_button.append('rect').attr('width', 22).attr('height', 22).attr('rx', 5);
-                // Note of the analyst: pencil next to the camera (shown on hover, kept when there is a note)
-                const note_button = d3.select(this).append('g')
+                // Note of the analyst: pencil next to the camera (shown on hover, kept when
+                // there is a note), for logged-in users only
+                const note_button = !notes_enabled ? null : d3.select(this).append('g')
                     .attr('class', 'node-capture node-note')
                     .attr('transform', `translate(${selected_node_bbox.width - (enable_bookmark ? 50 : 30) - 26}, 5)`)
                     .attr('cursor', 'pointer')
@@ -1601,10 +1606,12 @@ function update(root, computed_node_width=0) {
                             .text(notes[d.data.uuid] ? 'Edit your note on this node' : 'Write a note on this node');
                     })
                     .on('mouseout', () => d3.select('#tooltip').style('opacity', 0));
-                note_button.append('rect').attr('width', 22).attr('height', 22).attr('rx', 5);
-                note_button.append('use')
-                    .attr('href', iconHref('bi:pencil'))
-                    .attr('x', 4).attr('y', 4).attr('width', 14).attr('height', 14);
+                if (note_button) {
+                    note_button.append('rect').attr('width', 22).attr('height', 22).attr('rx', 5);
+                    note_button.append('use')
+                        .attr('href', iconHref('bi:pencil'))
+                        .attr('x', 4).attr('y', 4).attr('width', 14).attr('height', 14);
+                }
                 capture_button.append('use')
                     .attr('href', iconHref('bi:camera'))
                     .attr('x', 4).attr('y', 4).attr('width', 14).attr('height', 14);

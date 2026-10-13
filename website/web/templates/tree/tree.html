@@ -119,6 +119,8 @@
   var favicon = "{{ favicon }}";
   var mime_favicon = "{{ mime_favicon }}";
   var enable_bookmark = {{ enable_bookmark|tojson }};
+  // Notes of the analyst: logged-in users (admins) only
+  var notes_enabled = {{ current_user.is_authenticated|tojson }};
   // For the export of the notes (js/tree.js)
   var capture_info = {{ {'url': info.url, 'title': page_title or '', 'time': info.timestamp.isoformat() if info.timestamp else ''}|tojson }};
 
@@ -347,8 +349,10 @@
     <button type="button" id="tree-expand-all" title="Expand every node" aria-label="Expand every node">{{ icon('bi:arrows-expand') }}</button>
     <button type="button" id="tree-compare-toggle" title="Compare with another capture" aria-label="Compare with another capture"
             aria-expanded="false" aria-controls="tree-compare">{{ icon('bi:intersect') }}</button>
+    {% if current_user.is_authenticated %}
     <button type="button" id="tree-notes-toggle" title="Your notes on this capture" aria-label="Your notes on this capture"
             aria-expanded="false" aria-controls="tree-notes">{{ icon('bi:journal-text') }}<span class="lk-notes-count" id="tree-notes-count" hidden></span></button>
+    {% endif %}
     {# Background of the tree (js/tree.js, setupBackground): plain, dots, grid or depth columns #}
     <div class="dropdown">
       <button type="button" id="tree-background-btn" data-bs-toggle="dropdown" aria-expanded="false"
@@ -369,6 +373,7 @@
     <span class="lk-tree-controls-status" id="tree-controls-status" role="status" hidden></span>
   </div>
 
+  {% if current_user.is_authenticated %}
   {# Notes of the analyst on the nodes (js/tree.js, notes section): the panel listing
      them (edit, delete, Markdown export); the editor is #noteModal. Stored in this browser. #}
   <section class="lk-notes-panel" id="tree-notes" aria-labelledby="tree-notes-title" hidden>
@@ -383,6 +388,7 @@
       <button type="button" class="btn btn-sm btn-outline-primary" id="tree-notes-download">{{ icon('bi:download') }} Download .md</button>
     </footer>
   </section>
+  {% endif %}
 
   {# Comparison with another capture (js/tree.js, compare section): new hosts are
      marked in the tree, the hosts gone are listed here #}
@@ -461,6 +467,7 @@
   </div>
 </div>
 
+{% if current_user.is_authenticated %}
 {# Note of the analyst on a node (js/tree.js, editNote): Markdown editor with a
    live preview (vitrine <vt-markdown>) #}
 <div class="modal fade lk-modal" id="noteModal" tabindex="-1" role="dialog" aria-labelledby="noteModalLabel">
@@ -486,6 +493,7 @@
     </div>
   </div>
 </div>
+{% endif %}
 
 <!-- Modals - Not in the main div. -->
 

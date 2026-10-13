@@ -268,6 +268,11 @@ Computed once on the tree data (`prepareAnalysis()` in `js/tree.js`):
 
 ## Notes of the analyst
 
+**Logged-in users (admins) only**: the Notes button, its panel, the note modal
+and the pencil on the cards are only rendered when `current_user.is_authenticated`
+(`notes_enabled` in `tree/tree.html`, read by `js/tree.js`); anonymous visitors
+don't load the stored notes.
+
 - Hover a card and click the **pencil** (next to the camera) to write a note on
   the node, in **Markdown**: the `#noteModal` modal holds a vitrine
   `<vt-markdown mode="edit">` editor with Source / Split / Preview tabs (split

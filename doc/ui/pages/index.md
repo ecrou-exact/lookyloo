@@ -59,3 +59,10 @@ Search filters titles and URLs (DataTables search box, server-side).
 Logged-in users switch between public and hidden captures with the
 Public / Hidden control; a category filter (`?category=`) shows as a removable
 chip.
+
+## Number of captures
+
+The header shows the number of captures of the list (`#capture-total`,
+`total_captures` from `index_generic()`): the recent captures, not archived,
+counted in Valkey without loading them (`ZCARD recent_captures_public` for
+the public list, `recent_captures` minus the public ones for the hidden list).

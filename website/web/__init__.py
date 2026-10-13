@@ -2288,8 +2288,12 @@ def index_generic(show_hidden: bool=False, show_error: bool=True, category: str 
     if get_config('mastobot', 'enable'):
         mastodon_domain = get_config('mastobot', 'domain')
         mastodon_botname = get_config('mastobot', 'botname')
+    # Captures of the list (the recent ones, not archived): public, or hidden ones
+    public_count = lookyloo.redis.zcard('recent_captures_public')
+    total_captures = lookyloo.redis.zcard('recent_captures') - public_count if show_hidden else public_count
     return render_template('home/index.html', public_domain=lookyloo.public_domain,
                            show_hidden=show_hidden,
+                           total_captures=total_captures,
                            category=category,
                            show_project_page=get_config('generic', 'show_project_page'),
                            enable_takedown_form=get_config('generic', 'enable_takedown_form'),

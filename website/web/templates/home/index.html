@@ -21,15 +21,24 @@
 {% if show_hidden %}
   {% call page_header('Hidden captures', description='Captures not listed on the public index, only visible to administrators.',
                       icon_name='bi:eye-slash', crumbs=[('Recent captures', url_for('index'))]) %}
+    {{ total_count() }}
     {{ public_hidden_switch() }}
   {% endcall %}
 {% else %}
   {% call page_header('Recent captures', description='Public captures made on this instance, most recent first. Screenshots are blurred: click one to reveal it.',
                       icon_name='bi:collection') %}
+    {{ total_count() }}
     {{ public_hidden_switch() }}
   {% endcall %}
 {% endif %}
 {% endblock %}
+
+{% macro total_count() %}
+<span class="badge rounded-pill text-bg-secondary lk-capture-total" id="capture-total"
+      title="Number of captures in this list (not archived)">
+  {{ icon('bi:collection') }} {{ '{:,}'.format(total_captures) }} capture{{ 's' if total_captures != 1 }}
+</span>
+{% endmacro %}
 
 {% macro public_hidden_switch() %}
 {% if current_user.is_authenticated %}

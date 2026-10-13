@@ -12,7 +12,7 @@ site header (partials/header.html)
 capture bar  (.lk-capture-bar)       what was captured + actions
 messages     (.lk-capture-flashes)   flash messages, dismissible
 tree         (#tree_viewport)        scrolls in both directions, holds #tree_svg
-legend       (tree/legend.html)      <details> at the bottom right, closed
+legend       (tree/legend.html)      legend & icon filter, <details> at the bottom right, closed
 modals       (block content)
 ```
 
@@ -75,3 +75,29 @@ into the exported SVG (`inlineSvgStyles` in `js/tree_modals.js`) and paints
 the page background colour behind it, so the image matches the screen. Web
 fonts are not embedded in the image (the browser falls back to a system font).
 The "node located" arrow uses the `--lk-color-ink` / `--lk-color-danger` colours.
+
+## Legend & icon filter (`tree/legend.html`)
+
+A panel at the bottom right (`<details>`, closed by default). Each entry is a
+button with the data key of the node icon it explains (`data-key`: `js`,
+`image`, `http_content`, `malicious`… the keys `js/tree.js` reads on a node).
+Once the tree is loaded, `setupLegendFilter()` in `js/tree.js`:
+
+- counts, for each key, the nodes of the capture that have the icon
+  (`nodeHas()`, same test as the icons of a node) and shows the count;
+- keeps the icons of this capture at the top, most frequent first, and moves
+  the others (count 0, disabled) to a collapsed **Not in this capture** section;
+- clicking entries toggles them: the nodes having **at least one** of the
+  selected icons are highlighted (`g.node.is-filter-match`), the others dimmed
+  (`g.node.is-filter-dimmed`); the number of matching nodes shows in the
+  panel header, **Clear the filter** resets it. Expanding a node keeps the
+  filter.
+
+To add an icon: add it to the `legend` list of `tree/legend.html` with the
+same key as in `icon_list()` (or the badge) in `js/tree.js`.
+
+## Messages
+
+Flash messages (capture not indexed, downloads, errors…) are shown under the
+capture bar (`.lk-capture-flashes`), dismissible, instead of floating over the
+tree.

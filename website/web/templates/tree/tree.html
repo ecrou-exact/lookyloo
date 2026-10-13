@@ -41,9 +41,9 @@
           id="tree_js" data-remote="{{url_for('GenericAPI_tree_dump', capture_uuid=tree_uuid, seed=seed)}}"
                        {% if urlnode_uuid %}data-urlnode="{{urlnode_uuid}}" {%endif%}>
   </script>
-  {# Vitrine (Markdown editor of the notes), installed in static/vendor/ by tools/3rdparty.py #}
-  <script src='{{ url_for('static', filename='js/vitrine_setup.js') }}'
-          {{get_sri('static', 'js/vitrine_setup.js')}}
+  {# Vitrine (notes editor, MISP export viewer), installed in static/vendor/ by tools/3rdparty.py #}
+  <script src='{{ url_for('static', filename='js/capture_components.js') }}'
+          {{get_sri('static', 'js/capture_components.js')}}
           nonce="{{ csp_nonce() }}"
           crossorigin="anonymous" type="module"></script>
   <script src='{{ url_for('static', filename='js/capture_page.js') }}'
@@ -215,7 +215,9 @@
           {% endif %}
           {{ menu_item('screenshotModal', 'Page screenshot', 'bi:image', title='Contains the URL rendered in the browser') }}
           <li><hr class="dropdown-divider"></li>
-          {{ menu_link(url_for('GenericAPI_misp_export', capture_uuid=tree_uuid, seed=seed), 'MISP export', 'bi:box-arrow-up-right') }}
+          <li><a href="#mispExportModal" class="dropdown-item" role="button" data-bs-toggle="modal" data-bs-target="#mispExportModal"
+                 data-export="{{ url_for('GenericAPI_misp_export', capture_uuid=tree_uuid, seed=seed) }}"
+                 title="Show the capture as a MISP event, and download it">{{ icon('bi:box-arrow-up-right') }}<span>MISP export</span></a></li>
         </ul>
       </div>
 
@@ -417,6 +419,31 @@
 {% include 'partials/footer.html' %}
 
 {% block content %}
+{# MISP export of the capture (js/capture_components.js): downloaded, and shown in vitrine <vt-json> #}
+<div class="modal fade lk-modal" id="mispExportModal" tabindex="-1" role="dialog" aria-labelledby="mispExportModalLabel">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <h5 class="modal-title" id="mispExportModalLabel">MISP export</h5>
+          <p class="lk-modal-note">The capture as a MISP event (JSON), ready to import in MISP.</p>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p class="lk-misp-export-status" id="misp-export-status" role="status"></p>
+        <vt-json id="misp-export-json" class="lk-vitrine lk-misp-export-json" variant="full" view="tree" depth="2"
+                 label="MISP event" hidden></vt-json>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-primary" id="misp-export-copy">{{ icon('bi:clipboard') }} Copy</button>
+        <button type="button" class="btn btn-outline-primary" id="misp-export-download">{{ icon('bi:download') }} Download again</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 {# Note of the analyst on a node (js/tree.js, editNote): Markdown editor with a
    live preview (vitrine <vt-markdown>) #}
 <div class="modal fade lk-modal" id="noteModal" tabindex="-1" role="dialog" aria-labelledby="noteModalLabel">

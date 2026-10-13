@@ -18,3 +18,6 @@ configure({
 
 new MutationObserver(() => configure({ theme: lookylooTheme() }))
     .observe(document.documentElement, { attributes: true, attributeFilter: ['data-bs-theme'] });
+
+// For the page modules that need other settings (js/capture_components.js)
+export { configure };

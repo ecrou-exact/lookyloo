@@ -43,7 +43,7 @@ remembered in `localStorage` (`lk-capture-bar-folded`).
   (see *Search*), the *Details* button, then menus with an
   icon per entry (macros `menu_item` / `menu_link` at the top of `tree.html`):
   - **Capture**: details, statistics, storage state, console messages,
-    downloads, video, screenshot, MISP export;
+    downloads, video, screenshot, MISP export (see *MISP export*);
   - **Analysis**: index capture (when not indexed), *Third parties*
     (third party reports, MISP lookup, historical lookups, Hashlookup) and
     *In this capture* (resources, IPs, hostnames, URLs, favicons, hashes types,
@@ -287,3 +287,16 @@ The **Compare** button of the tree controls opens a panel (`setupCompare()` in
   capture;
 - **Only the new hosts** dims every other node (a fourth filter in
   `nodeMatches()`); **Stop comparing** removes it all.
+
+## MISP export
+
+*Capture > MISP export* opens `#mispExportModal` (`js/capture_components.js`):
+the export (`GenericAPI_misp_export`, `data-export` of the link) is fetched,
+**downloaded** as `lookyloo-<uuid>.misp.json`, and shown in vitrine `<vt-json>`
+(tree / raw views, search, copy path or value). *Copy* and *Download again* in
+the footer. The exports embed the resources of the capture (often several MiB):
+the vitrine size limit is raised to its maximum (50 MiB) on this page; a
+bigger export is only downloaded, with a message.
+
+`js/capture_components.js` is the vitrine module of the page: it imports
+`js/vitrine_setup.js` (and so `<vt-markdown>` for the notes) and `<vt-json>`.

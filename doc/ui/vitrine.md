@@ -16,9 +16,10 @@ languages, syntax themes and `vitrine.css` in `static/vendor/vitrine/`
 
 1. Load `vendor/vitrine/vitrine.css` in `page_styles` (with `get_sri`).
 2. A page module (`type="module"`, nonce, SRI) imports `js/vitrine_setup.js`
-   — it defines `<vt-markdown>`, points vitrine at its files and follows the
-   Lookyloo light / dark theme (`data-bs-theme`) — then the other components
-   it needs, e.g. `js/api_reference.js`:
+   — it defines `<vt-markdown>`, points vitrine at its files, follows the
+   Lookyloo light / dark theme (`data-bs-theme`) and re-exports `configure` —
+   then the other components it needs, e.g. `js/api_reference.js`
+   (`js/capture_components.js` for the capture page):
 
    ```js
    import './vitrine_setup.js';
@@ -35,4 +36,5 @@ own modules (CSP `script-src-elem 'self'`), `tools/generate_sri.py` skips them.
 | Page | Component |
 |---|---|
 | Capture page: notes of the analyst (doc/ui/pages/tree.md) | `<vt-markdown>` (editor with preview, rendering) |
+| Capture page: MISP export (doc/ui/pages/tree.md) | `<vt-json>` |
 | API reference `/api` (doc/ui/pages/api.md) | `<vt-openapi>`, `<vt-http>` |

@@ -34,14 +34,13 @@ body {
 
 /* ---- Decorative background (layouts/page.html) ----
    Faint capture tree (images/ui/backdrop-tree.svg, used as a mask so it takes
-   the accent colour), dot grid and accent glow at the top of every standard
-   page, fading out. Strength set with the variables below (stronger on the
-   home page, css/home.css). */
+   the accent colour) and accent glow, centred in the window and
+   fading out towards the edges. Fixed: it stays in place while scrolling.
+   Strength set with the variables below (stronger on the home page, css/home.css). */
 
 body {
   --lk-backdrop-tree-opacity: 0.08;
-  --lk-backdrop-glow: 0.10;
-  --lk-backdrop-height: 560px;
+  --lk-backdrop-glow: 0.09;
 }
 
 [data-bs-theme="dark"] body {
@@ -54,16 +53,13 @@ body {
 }
 
 .lk-backdrop {
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: var(--lk-backdrop-height);
+  position: fixed;
+  inset: 0;
   z-index: -1;
   pointer-events: none;
-  background:
-    radial-gradient(ellipse 70% 55% at 60% 0%, rgba(var(--lk-color-accent-rgb), var(--lk-backdrop-glow)), transparent 70%),
-    radial-gradient(circle at 1px 1px, rgba(var(--lk-color-ink-rgb), 0.13) 1px, transparent 1.5px) 0 0 / 22px 22px;
-  -webkit-mask-image: linear-gradient(to bottom, #000 50%, transparent);
-  mask-image: linear-gradient(to bottom, #000 50%, transparent);
+  background: radial-gradient(ellipse 45% 40% at 50% 55%, rgba(var(--lk-color-accent-rgb), var(--lk-backdrop-glow)), transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse 60% 55% at 50% 55%, #000 35%, transparent 80%);
+  mask-image: radial-gradient(ellipse 60% 55% at 50% 55%, #000 35%, transparent 80%);
 }
 
 .lk-backdrop::after {
@@ -72,10 +68,9 @@ body {
   inset: 0;
   background-color: var(--lk-color-accent);
   opacity: var(--lk-backdrop-tree-opacity);
-  -webkit-mask: url("../../images/ui/backdrop-tree.svg") center 40px / 1600px auto no-repeat;
-  mask: url("../../images/ui/backdrop-tree.svg") center 40px / 1600px auto no-repeat;
+  -webkit-mask: url("../../images/ui/backdrop-tree.svg") center 55% / min(1600px, 120vw) auto no-repeat;
+  mask: url("../../images/ui/backdrop-tree.svg") center 55% / min(1600px, 120vw) auto no-repeat;
 }
-
 
 .lk-skip-link {
   position: absolute;

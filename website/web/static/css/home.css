@@ -6,8 +6,7 @@
 /* Stronger decorative background on the home page (see components/layout.css) */
 .lk-page-home {
   --lk-backdrop-tree-opacity: 0.15;
-  --lk-backdrop-glow: 0.16;
-  --lk-backdrop-height: 820px;
+  --lk-backdrop-glow: 0.15;
 }
 
 [data-bs-theme="dark"] .lk-page-home {

@@ -82,13 +82,13 @@ twice.
 
 ## Decorative background
 
-Every page using `page.html` has a decorative background at the top of
-`<main>` (`<div class="lk-backdrop">`, styles in `css/components/layout.css`):
-an accent glow, a dot grid and a faint capture tree
-(`static/images/ui/backdrop-tree.svg`, generated once, used as a CSS mask so it
-takes the accent colour of the theme), fading out towards the bottom. Its
-strength comes from CSS variables: `--lk-backdrop-tree-opacity`,
-`--lk-backdrop-glow`, `--lk-backdrop-height`. The home page sets stronger values
+Every page using `page.html` has a decorative background
+(`<div class="lk-backdrop">` in `<main>`, styles in `css/components/layout.css`):
+an accent glow and a faint capture tree (`static/images/ui/backdrop-tree.svg`,
+generated once, used as a CSS mask so it takes the accent colour of the theme),
+centred in the window, fading out towards the edges, fixed while scrolling. Its
+strength comes from CSS variables: `--lk-backdrop-tree-opacity` and
+`--lk-backdrop-glow`. The home page sets stronger values
 (`css/home.css`, `body.lk-page-home`). Pages that should not have it can set
 `--lk-backdrop-tree-opacity: 0; --lk-backdrop-glow: 0` through `body_attrs`
 (block on `<body>` in `base.html`: `{% block body_attrs %} class="..."{% endblock %}`).

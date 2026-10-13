@@ -111,6 +111,8 @@
   var favicon = "{{ favicon }}";
   var mime_favicon = "{{ mime_favicon }}";
   var enable_bookmark = {{ enable_bookmark|tojson }};
+  // For the export of the notes (js/tree.js)
+  var capture_info = {{ {'url': info.url, 'title': page_title or '', 'time': info.timestamp.isoformat() if info.timestamp else ''}|tojson }};
 
   var parent_uuid = {{ parent_uuid|tojson }};
   var capture_starttime = new Date(Date.parse("{{ info.timestamp.isoformat() if info.timestamp else 0 }}"));
@@ -333,8 +335,35 @@
     </button>
     <button type="button" id="tree-collapse-all" title="Collapse every node" aria-label="Collapse every node">{{ icon('bi:arrows-collapse') }}</button>
     <button type="button" id="tree-expand-all" title="Expand every node" aria-label="Expand every node">{{ icon('bi:arrows-expand') }}</button>
+    <button type="button" id="tree-notes-toggle" title="Your notes on this capture" aria-label="Your notes on this capture"
+            aria-expanded="false" aria-controls="tree-notes">{{ icon('bi:journal-text') }}<span class="lk-notes-count" id="tree-notes-count" hidden></span></button>
     <span class="lk-tree-controls-status" id="tree-controls-status" role="status" hidden></span>
   </div>
+
+  {# Notes of the analyst on the nodes (js/tree.js, notes section): editor of one note,
+     and the panel listing them with the Markdown export. Stored in this browser. #}
+  <form class="lk-note-editor" id="tree-note-editor" hidden>
+    <label for="tree-note-text" id="tree-note-label">Note</label>
+    <textarea id="tree-note-text" rows="4" placeholder="What did you notice on this node?"></textarea>
+    <div class="lk-note-editor-actions">
+      <button type="button" class="btn btn-sm btn-link text-danger" id="tree-note-delete">Delete</button>
+      <button type="button" class="btn btn-sm btn-outline-secondary" id="tree-note-cancel">Cancel</button>
+      <button type="submit" class="btn btn-sm btn-primary">Save</button>
+    </div>
+  </form>
+
+  <section class="lk-notes-panel" id="tree-notes" aria-labelledby="tree-notes-title" hidden>
+    <header>
+      <h2 id="tree-notes-title">{{ icon('bi:journal-text') }} Notes</h2>
+      <button type="button" class="btn-close" id="tree-notes-close" aria-label="Close the notes"></button>
+    </header>
+    <p class="lk-notes-hint">Hover a node and click the pencil to write a note. Notes are kept in this browser only.</p>
+    <ol class="lk-notes-list" id="tree-notes-list"></ol>
+    <footer>
+      <button type="button" class="btn btn-sm btn-outline-primary" id="tree-notes-copy">{{ icon('bi:clipboard') }} Copy as Markdown</button>
+      <button type="button" class="btn btn-sm btn-outline-primary" id="tree-notes-download">{{ icon('bi:download') }} Download .md</button>
+    </footer>
+  </section>
 
   {# Network info of the hovered node (js/tree.js, showNodeInfo) #}
   <div class="lk-node-info" id="tree-node-info" role="tooltip" hidden></div>

@@ -13,7 +13,7 @@ Icon names:
                        Fetched from GitHub at MISP_ICONIFY_COMMIT, only the icons in
                        use, cached in static/vendor/icons/misp/ (offline: see 3rdparty.py)
 
-Used icons are found by scanning templates and Python files for quoted icon names
+Used icons are found by scanning templates, Python files and static/js/*.js for quoted icon names
 ('bi:...' / 'misp:<set>/...', in icon() calls or macro parameters such as icon_name),
 plus the names listed in tools/icons_extra.txt (icons built dynamically).
 
@@ -82,7 +82,9 @@ def symbol_id(name: str) -> str:
 def find_used_icons() -> dict[str, set[str]]:
     '''Icon name -> files using it.'''
     used: dict[str, set[str]] = {}
-    files = list((WEB / 'templates').rglob('*.html')) + list(WEB.glob('*.py'))
+    # Templates, Python, and our scripts (js/tree.js draws icons of the sprite in the tree)
+    files = (list((WEB / 'templates').rglob('*.html')) + list(WEB.glob('*.py'))
+             + list((WEB / 'static' / 'js').glob('*.js')))
     for path in files:
         for name in ICON_CALL.findall(path.read_text()):
             used.setdefault(name, set()).add(str(path.relative_to(ROOT)))

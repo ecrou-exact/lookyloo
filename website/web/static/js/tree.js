@@ -43,6 +43,11 @@ const VERTICAL_ROW = 190;
 let tree_root = null;
 
 // ---- Analysis state (declared before the first await: used while the tree loads)
+
+// Notes of the analyst: {hostnode uuid: {host, text, updated}}, in this browser
+const NOTES_KEY = `lk-notes:${treeUUID}`;
+let notes = {};
+try { notes = JSON.parse(localStorage.getItem(NOTES_KEY) || '{}') || {}; } catch (e) { notes = {}; }
 const TWO_LEVEL_SUFFIXES = new Set([
     'co.uk', 'org.uk', 'ac.uk', 'gov.uk', 'me.uk', 'net.uk', 'ltd.uk', 'plc.uk',
     'com.au', 'net.au', 'org.au', 'edu.au', 'gov.au', 'co.nz', 'org.nz', 'govt.nz',
@@ -181,6 +186,8 @@ try {
   setupAttention(root);
   setupTreeSearch();
   setupTreeControls();
+  setupNotes();
+  node_container.selectAll('g.node').classed('has-note', d => Boolean(notes[d.data.uuid]));
   // Scroll once the nodes are in place
   await animateTreeEntry(root);
 
@@ -333,6 +340,138 @@ function networkLines(d) {
     return lines;
 }
 
+// ****************** Notes of the analyst ******************
+
+function saveNotes() {
+    try { localStorage.setItem(NOTES_KEY, JSON.stringify(notes)); } catch (e) { /* not kept */ }
+    renderNotes();
+    node_container.selectAll('g.node').classed('has-note', d => Boolean(notes[d.data.uuid]));
+}
+
+let note_node = null;
+function editNote(d, anchor) {
+    note_node = d;
+    const editor = document.getElementById('tree-note-editor');
+    document.getElementById('tree-note-label').textContent = `Note on ${d.data.idna || d.data.name}`;
+    const text = document.getElementById('tree-note-text');
+    text.value = notes[d.data.uuid]?.text || '';
+    document.getElementById('tree-note-delete').hidden = !notes[d.data.uuid];
+    hideNodeInfo();
+    editor.hidden = false;
+    placeNextTo(editor, anchor);
+    text.focus();
+}
+
+function closeNoteEditor() {
+    document.getElementById('tree-note-editor').hidden = true;
+    note_node = null;
+}
+
+// Markdown export: the capture, then one section per noted node
+function notesMarkdown() {
+    const lines = [`# Notes on the capture of ${capture_info.url}`, ''];
+    if (capture_info.title) lines.push(`- Page title: ${capture_info.title}`);
+    lines.push(`- Capture: ${document.location.origin}/tree/${treeUUID}`);
+    if (capture_info.time) lines.push(`- Captured: ${capture_info.time}`);
+    lines.push('');
+    Object.entries(notes).forEach(([uuid, note]) => {
+        lines.push(`## ${note.host}`, '', note.text, '', `<${document.location.origin}/tree/${treeUUID}/${uuid}>`, '');
+    });
+    return lines.join('\n');
+}
+
+function renderNotes() {
+    const list = document.getElementById('tree-notes-list');
+    if (!list) return;
+    list.textContent = '';
+    const entries = Object.entries(notes);
+    entries.forEach(([uuid, note]) => {
+        const item = document.createElement('li');
+        const host = document.createElement('button');
+        host.type = 'button';
+        host.className = 'lk-notes-host';
+        host.textContent = note.host;
+        host.title = 'Show this node';
+        host.addEventListener('click', () => {
+            const node = document.getElementById(`node_${uuid}`);
+            if (node) centerInViewport(node.querySelector('.node-card') || node);
+        });
+        const text = document.createElement('p');
+        text.textContent = note.text;
+        item.append(host, text);
+        list.appendChild(item);
+    });
+    const count = document.getElementById('tree-notes-count');
+    count.hidden = !entries.length;
+    count.textContent = entries.length;
+    document.getElementById('tree-notes-copy').disabled = !entries.length;
+    document.getElementById('tree-notes-download').disabled = !entries.length;
+}
+
+function setupNotes() {
+    const editor = document.getElementById('tree-note-editor');
+    if (!editor) return;
+    editor.addEventListener('submit', (event) => {
+        event.preventDefault();
+        if (!note_node) return;
+        const text = document.getElementById('tree-note-text').value.trim();
+        if (text) {
+            notes[note_node.data.uuid] = {host: note_node.data.idna || note_node.data.name, text, updated: new Date().toISOString()};
+        } else {
+            delete notes[note_node.data.uuid];
+        }
+        saveNotes();
+        closeNoteEditor();
+    });
+    document.getElementById('tree-note-cancel').addEventListener('click', closeNoteEditor);
+    document.getElementById('tree-note-delete').addEventListener('click', () => {
+        if (note_node) delete notes[note_node.data.uuid];
+        saveNotes();
+        closeNoteEditor();
+    });
+    document.getElementById('tree-note-text').addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') { event.stopPropagation(); closeNoteEditor(); }
+        if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) editor.requestSubmit();
+    });
+
+    const panel = document.getElementById('tree-notes');
+    const toggle = document.getElementById('tree-notes-toggle');
+    const show = (open) => {
+        panel.hidden = !open;
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        toggle.classList.toggle('is-active', open);
+    };
+    toggle.addEventListener('click', () => show(panel.hidden));
+    document.getElementById('tree-notes-close').addEventListener('click', () => show(false));
+    document.getElementById('tree-notes-copy').addEventListener('click', (event) => {
+        navigator.clipboard?.writeText(notesMarkdown()).then(() => {
+            const button = event.currentTarget;
+            const label = button.lastChild.textContent;
+            button.lastChild.textContent = ' Copied';
+            setTimeout(() => { button.lastChild.textContent = label; }, 1500);
+        });
+    });
+    document.getElementById('tree-notes-download').addEventListener('click', () => {
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(new Blob([notesMarkdown()], {type: 'text/markdown'}));
+        link.download = `lookyloo-notes-${treeUUID}.md`;
+        link.click();
+        URL.revokeObjectURL(link.href);
+    });
+    renderNotes();
+}
+
+// Put a floating element of the tree area next to an element of the tree
+function placeNextTo(floating, anchor) {
+    const area = floating.parentElement.getBoundingClientRect();
+    const box = anchor.getBoundingClientRect();
+    let left = box.right - area.left + 12;
+    if (left + floating.offsetWidth > area.width - 8) left = Math.max(8, box.left - area.left - floating.offsetWidth - 12);
+    const top = Math.min(Math.max(8, box.top - area.top), area.height - floating.offsetHeight - 8);
+    floating.style.left = `${left}px`;
+    floating.style.top = `${top}px`;
+}
+
 let info_timer = null;
 function showNodeInfo(event, d) {
     clearTimeout(info_timer);
@@ -361,15 +500,16 @@ function showNodeInfo(event, d) {
             table.append(dt, dd);
         });
         panel.appendChild(table);
-        // Next to the card, inside the tree area
-        const area = panel.parentElement.getBoundingClientRect();
-        const box = (card || event.currentTarget).getBoundingClientRect();
+        if (notes[d.data.uuid]) {
+            const note = document.createElement('p');
+            note.className = 'lk-node-info-note';
+            note.textContent = notes[d.data.uuid].text;
+            panel.appendChild(note);
+        }
+        // Next to the card, inside the tree area (not while a note is being written)
+        if (!document.getElementById('tree-note-editor').hidden) return;
         panel.hidden = false;
-        let left = box.right - area.left + 12;
-        if (left + panel.offsetWidth > area.width - 8) left = Math.max(8, box.left - area.left - panel.offsetWidth - 12);
-        const top = Math.min(Math.max(8, box.top - area.top), area.height - panel.offsetHeight - 8);
-        panel.style.left = `${left}px`;
-        panel.style.top = `${top}px`;
+        placeNextTo(panel, card || event.currentTarget);
     }, 500);
 }
 function hideNodeInfo() {
@@ -380,7 +520,9 @@ function hideNodeInfo() {
 
 // Links and nodes of the main path, and of the path to the hovered node
 function markPaths() {
-    node_container.selectAll('g.node').classed('is-main-path', d => main_path.has(d.data.uuid));
+    node_container.selectAll('g.node')
+        .classed('is-main-path', d => main_path.has(d.data.uuid))
+        .classed('has-note', d => Boolean(notes[d.data.uuid]));
     node_container.selectAll('path.link').classed('is-main-path', l => main_path.has(l.data.uuid));
 }
 function showHoverPath(d) {
@@ -547,11 +689,12 @@ function captureHost(d) {
     form.remove();
 }
 
-// Sprite of the site icons (tools/build_icons.py), to draw them in the tree
+// Sprite of the site icons, to draw them in the tree. name: 'bi:camera', quoted
+// like in the templates so tools/build_icons.py finds it and puts it in the sprite.
 function iconHref(name) {
     const any = document.querySelector('svg.lk-icon use');
     const sprite = any ? any.getAttribute('href').split('#')[0] : '';
-    return `${sprite}#${name}`;
+    return `${sprite}#${name.replace(':', '-').replace('/', '-')}`;
 }
 
 // Click on a card: focus the node and its neighbours; again on it: show everything
@@ -1167,8 +1310,27 @@ function update(root, computed_node_width=0) {
                     })
                     .on('mouseout', () => d3.select('#tooltip').style('opacity', 0));
                 capture_button.append('rect').attr('width', 22).attr('height', 22).attr('rx', 5);
+                // Note of the analyst: pencil next to the camera (shown on hover, kept when there is a note)
+                const note_button = d3.select(this).append('g')
+                    .attr('class', 'node-capture node-note')
+                    .attr('transform', `translate(${selected_node_bbox.width - (enable_bookmark ? 50 : 30) - 26}, 5)`)
+                    .attr('cursor', 'pointer')
+                    .attr('role', 'button')
+                    .on('click', (event, d) => { event.stopPropagation(); editNote(d, this.querySelector('.node-card')); })
+                    .on('mouseover', (event, d) => {
+                        d3.select('#tooltip')
+                            .style('opacity', 1)
+                            .style('left', `${event.pageX + 10}px`)
+                            .style('top', `${event.pageY + 10}px`)
+                            .text(notes[d.data.uuid] ? 'Edit your note on this node' : 'Write a note on this node');
+                    })
+                    .on('mouseout', () => d3.select('#tooltip').style('opacity', 0));
+                note_button.append('rect').attr('width', 22).attr('height', 22).attr('rx', 5);
+                note_button.append('use')
+                    .attr('href', iconHref('bi:pencil'))
+                    .attr('x', 4).attr('y', 4).attr('width', 14).attr('height', 14);
                 capture_button.append('use')
-                    .attr('href', iconHref('bi-camera'))
+                    .attr('href', iconHref('bi:camera'))
                     .attr('x', 4).attr('y', 4).attr('width', 14).attr('height', 14);
 
                 const thumbnail_size = 64;

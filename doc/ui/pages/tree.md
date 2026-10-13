@@ -252,3 +252,17 @@ Computed once on the tree data (`prepareAnalysis()` in `js/tree.js`):
   name server: often the hosting provider or the CDN), NS and MX — from
   `resolved_ips`, `ns`, `mx`, `soa` of the tree dump (`networkLines()`). It
   hides when the pointer leaves the card or a drag starts.
+
+## Notes of the analyst
+
+- Hover a card and click the **pencil** (next to the camera) to write a note on
+  the node (`#tree-note-editor`; Ctrl+Enter saves, Esc cancels, an empty note
+  is deleted). A node with a note keeps the pencil, in the warning colour, and
+  its note shows in the network info panel.
+- The **Notes** button of the tree controls (with the number of notes) opens
+  the panel listing them: click a host to centre its node; **Copy as Markdown**
+  / **Download .md** export the capture (URL, title, link, time) and one
+  section per noted node, with a link to it, for a report or a ticket.
+- Notes are kept **in this browser only** (`localStorage`, key
+  `lk-notes:<capture uuid>`): Lookyloo has no per-user storage. They are
+  inserted as text (never as HTML).

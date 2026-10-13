@@ -119,3 +119,7 @@ the icon name so they stay unique in the sprite. The sprite is served from
 `get_icon()`, `hash_icon` and the PNG images in `static/images/icons/` (tree
 node icons, mimetypes, HTTP status) are not part of this system yet; they will
 be migrated with the capture page.
+
+Scripts can draw sprite icons too (`js/tree.js`, `iconHref('bi:camera')` in an
+SVG `<use>`): `tools/build_icons.py` also scans `static/js/*.js`, so write the
+name quoted, in the same `bi:…` / `misp:…` form as in the templates.

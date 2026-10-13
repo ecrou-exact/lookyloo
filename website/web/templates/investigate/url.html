@@ -1,3 +1,4 @@
+{% from 'macros/investigate.html' import pivot_header, captures_section, pivot_section %}
 
 {% if from_popup %}
 
@@ -9,28 +10,20 @@
 
 
 {% block content %}
+<div class="lk-pivot">
+{{ pivot_header('URL', url, description='Captures that loaded this exact URL.', icon_name='misp:attributes/url',
+                 share_url=url_for('url_details', url=url_quoted, from_popup=True), from_popup=from_popup) }}
 
-{% if from_popup %}
-<center><button class="btn btn-primary goBack" type="button">Go Back</button></center>
-{%endif%}
-
-<center>
-  <p class="lead"><b>{{ url }}</b>
-   {% if not from_popup %}
-   <a href="{{ url_for('url_details', url=url_quoted, from_popup=True) }}" class="btn btn-light">
-       {{ icon('bi:share') }}
-   </a>
-   {%endif%}
-  </p>
-</center>
-
-<table id="urlTable" class="table table-striped" style="width:100%" data-url="{{url_quoted}}">
+{% call captures_section() %}
+<table id="urlTable" class="table lk-pivot-table" style="width:100%" data-url="{{url_quoted}}">
   <thead>
-   <tr>
-     <th>Capture Time</th>
-     <th>Capture Title</th>
-     <th>Landing page</th>
-   </tr>
+    <tr>
+      <th>Capture time</th>
+      <th>Capture title</th>
+      <th>Landing page</th>
+    </tr>
   </thead>
 </table>
+{% endcall %}
+</div>
 {% endblock %}

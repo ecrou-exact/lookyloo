@@ -1,0 +1,73 @@
+{#
+  Building blocks of the pivot pages (templates/investigate/*): a hostname, an
+  IP, a cookie, a resource... and the captures it was seen in. These pages are
+  rendered as a standalone page (from_popup=True, layouts/base.html) or as an
+  HTML fragment inside the capture tree modals.
+  CSS: css/components/pivot.css. Doc: doc/ui/pivot-pages.md
+
+  pivot_header(kind, value, description=None, icon_name=None, image_src=None,
+               share_url=None, from_popup=False, copy=True)
+    kind         what the value is ("Hostname", "Cookie name"...)
+    value        the value itself (escaped, shown in monospace, copy button)
+    description  one sentence about what the page shows
+    icon_name    'bi:...' / 'misp:...' icon, or image_src (data: URI) for a favicon
+    share_url    standalone page of this pivot (from_popup=True); shown as
+                 "Open as a page" when we are in a modal
+    from_popup   standalone page: adds the "Go back" button
+    {% call %}   extra actions (links, buttons) on the right
+
+  captures_section(title='Seen in these captures')
+    Card around the captures table; the table itself is passed with {% call %}
+    so its id / data-* attributes (read by js/render_tables.js) stay explicit.
+#}
+
+{% macro pivot_header(kind, value, description=None, icon_name=None, image_src=None,
+                      share_url=None, from_popup=False, copy=True) -%}
+{% if from_popup %}
+<div class="lk-pivot-back">
+  <button class="btn btn-outline-primary btn-sm goBack" type="button">{{ icon('bi:arrow-left') }} Go back</button>
+</div>
+{% endif %}
+<header class="lk-pivot-head">
+  <span class="lk-pivot-icon">
+    {% if image_src %}<img src="{{ image_src }}" alt="" width="32" height="32">
+    {% elif icon_name %}{{ icon(icon_name) }}{% endif %}
+  </span>
+  <div class="lk-pivot-text">
+    <p class="lk-pivot-kind">{{ kind }}</p>
+    <h1 class="lk-pivot-value">
+      <span>{{ value }}</span>
+      {% if copy %}
+      <button type="button" class="lk-copy js-copy" data-bs-toggle="tooltip" data-copy="{{ value }}"
+              title="Copy" data-bs-original-title="Copy" aria-label="Copy the value">{{ icon('bi:copy') }}</button>
+      {% endif %}
+    </h1>
+    {% if description %}<p class="lk-pivot-description">{{ description }}</p>{% endif %}
+  </div>
+  {% if caller or (share_url and not from_popup) %}
+  <div class="lk-pivot-actions">
+    {% if caller %}{{ caller() }}{% endif %}
+    {% if share_url and not from_popup %}
+    <a class="btn btn-outline-primary btn-sm" href="{{ share_url }}" target="_blank" rel="noopener">
+      {{ icon('bi:box-arrow-up-right') }} Open as a page</a>
+    {% endif %}
+  </div>
+  {% endif %}
+</header>
+{%- endmacro %}
+
+{% macro captures_section(title='Seen in these captures') -%}
+<section class="lk-pivot-section">
+  <h2 class="lk-pivot-section-title">{{ icon('bi:collection') }} {{ title }}</h2>
+  <div class="table-responsive">
+    {{ caller() }}
+  </div>
+</section>
+{%- endmacro %}
+
+{% macro pivot_section(title, icon_name='bi:info-circle') -%}
+<section class="lk-pivot-section">
+  <h2 class="lk-pivot-section-title">{{ icon(icon_name) }} {{ title }}</h2>
+  {{ caller() }}
+</section>
+{%- endmacro %}

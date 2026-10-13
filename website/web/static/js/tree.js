@@ -193,6 +193,7 @@ try {
   setupTreeControls();
   setupNotes();
   setupCompare();
+  setupFullscreen();
   node_container.selectAll('g.node').classed('has-note', d => Boolean(notes[d.data.uuid]));
   // Scroll once the nodes are in place
   await animateTreeEntry(root);
@@ -359,6 +360,8 @@ let note_target = null;
 let note_text = '';
 
 function editNote(uuid, host) {
+    // The editor is a modal of the page: leave the full screen tree first
+    if (document.fullscreenElement) document.exitFullscreen();
     note_target = {uuid, host};
     note_text = notes[uuid]?.text || '';
     hideNodeInfo();
@@ -998,6 +1001,39 @@ function setupTreeControls() {
     });
 }
 
+// Position of the tooltip of the tree: page coordinates, or screen coordinates in
+// full screen (the tooltip is then fixed, inside the full screen element)
+function tipX(event) { return document.fullscreenElement ? event.clientX : event.pageX; }
+function tipY(event) { return document.fullscreenElement ? event.clientY : event.pageY; }
+
+// ****************** Full screen: only the tree area ******************
+
+function setupFullscreen() {
+    const button = document.getElementById('tree-fullscreen');
+    const area = document.querySelector('.lk-tree-area');
+    if (!button || !area) return;
+    if (!document.fullscreenEnabled) {
+        button.hidden = true;
+        return;
+    }
+    button.addEventListener('click', () => {
+        if (document.fullscreenElement) document.exitFullscreen();
+        else area.requestFullscreen().catch(() => { /* refused by the browser */ });
+    });
+    document.addEventListener('fullscreenchange', () => {
+        const on = document.fullscreenElement === area;
+        button.setAttribute('aria-pressed', on ? 'true' : 'false');
+        const label = on ? 'Leave full screen (Esc)' : 'Show only the tree, full screen';
+        button.title = label;
+        button.setAttribute('aria-label', label);
+        button.classList.toggle('is-fullscreen', on);
+        // The tooltip of the tree must be inside the full screen element to be seen
+        const tooltip = document.getElementById('tooltip');
+        if (tooltip) (on ? area : document.body).appendChild(tooltip);
+        hideNodeInfo();
+    });
+}
+
 function setupTreeSearch() {
     document.getElementById('tree-focus-clear')?.addEventListener('click', clearNeighbours);
     // Click on the background of the tree, or Esc outside a field: show everything
@@ -1111,8 +1147,8 @@ function UnbookmarkAllNodes() {
         .on('mouseover', (event, d) => {
             d3.select('#tooltip')
                 .style('opacity', 1)
-                .style('left', `${event.pageX + 10}px`)
-                .style('top', `${event.pageY + 10}px`)
+                .style('left', `${tipX(event) + 10}px`)
+                .style('top', `${tipY(event) + 10}px`)
                 .text('Bookmark this node');
         })
         .on('mouseout', (event, d) => d3.select('#tooltip').style('opacity', 0));
@@ -1133,8 +1169,8 @@ function UnbookmarkHostNode(hostnode_uuid) {
         .on('mouseover', (event, d) => {
             d3.select('#tooltip')
                 .style('opacity', 1)
-                .style('left', `${event.pageX + 10}px`)
-                .style('top', `${event.pageY + 10}px`)
+                .style('left', `${tipX(event) + 10}px`)
+                .style('top', `${tipY(event) + 10}px`)
                 .text('Bookmark this node');
         })
         .on('mouseout', (event, d) => d3.select('#tooltip').style('opacity', 0));
@@ -1151,8 +1187,8 @@ function NodeHighlight(hostnode_uuid) {
         .on('mouseover', (event, d) => {
             d3.select('#tooltip')
                 .style('opacity', 1)
-                .style('left', `${event.pageX + 10}px`)
-                .style('top', `${event.pageY + 10}px`)
+                .style('left', `${tipX(event) + 10}px`)
+                .style('top', `${tipY(event) + 10}px`)
                 .text('Remove bookmark on this node');
         })
         .on('mouseout', (event, d) => d3.select('#tooltip').style('opacity', 0));
@@ -1227,8 +1263,8 @@ function icon_list(relative_x_pos, relative_y_pos, d) {
               .on('mouseover', (event, d) => {
                   d3.select('#tooltip')
                       .style('opacity', 1)
-                      .style('left', `${event.pageX + 10}px`)
-                      .style('top', `${event.pageY + 10}px`)
+                      .style('left', `${tipX(event) + 10}px`)
+                      .style('top', `${tipY(event) + 10}px`)
                       .text(`${counter ? `${counter} ${icon_details.tooltip}` : icon_details.tooltip}. Click to filter the nodes.`);
               })
               .on('mouseout', (event, d) => d3.select('#tooltip').style('opacity', 0));
@@ -1262,8 +1298,8 @@ function text_entry(relative_x_pos, relative_y_pos, d) {
           .on('mouseover', (event, d) => {
               d3.select('#tooltip')
                   .style('opacity', 1)
-                  .style('left', `${event.pageX + 10}px`)
-                  .style('top', `${event.pageY + 10}px`)
+                  .style('left', `${tipX(event) + 10}px`)
+                  .style('top', `${tipY(event) + 10}px`)
                   .text('Open investigation pop-up.');
           })
           .on('mouseout', (event, d) => d3.select('#tooltip').style('opacity', 0))
@@ -1290,8 +1326,8 @@ function text_entry(relative_x_pos, relative_y_pos, d) {
           .on('mouseover', (event, d) => {
               d3.select('#tooltip')
                   .style('opacity', 1)
-                  .style('left', `${event.pageX + 10}px`)
-                  .style('top', `${event.pageY + 10}px`)
+                  .style('left', `${tipX(event) + 10}px`)
+                  .style('top', `${tipY(event) + 10}px`)
                   .text('Open investigation pop-up.');
           })
           .on('mouseout', (event, d) => d3.select('#tooltip').style('opacity', 0))
@@ -1452,8 +1488,8 @@ function update(root, computed_node_width=0) {
                         .on('mouseover', (event, d) => {
                             d3.select('#tooltip')
                                 .style('opacity', 1)
-                                .style('left', `${event.pageX + 10}px`)
-                                .style('top', `${event.pageY + 10}px`)
+                                .style('left', `${tipX(event) + 10}px`)
+                                .style('top', `${tipY(event) + 10}px`)
                                 .text(`This node contains ${d.data.urls_count} URLs.`);
                         })
                         .on('mouseout', (event, d) => d3.select('#tooltip').style('opacity', 0))
@@ -1475,8 +1511,8 @@ function update(root, computed_node_width=0) {
                         .on('mouseover', (event, d) => {
                             d3.select('#tooltip')
                                 .style('opacity', 1)
-                                .style('left', `${event.pageX + 10}px`)
-                                .style('top', `${event.pageY + 10}px`)
+                                .style('left', `${tipX(event) + 10}px`)
+                                .style('top', `${tipY(event) + 10}px`)
                                 .text('Bookmark this node');
                         })
                         .on('mouseout', (event, d) => d3.select('#tooltip').style('opacity', 0));
@@ -1492,8 +1528,8 @@ function update(root, computed_node_width=0) {
                     .on('mouseover', (event, d) => {
                         d3.select('#tooltip')
                             .style('opacity', 1)
-                            .style('left', `${event.pageX + 10}px`)
-                            .style('top', `${event.pageY + 10}px`)
+                            .style('left', `${tipX(event) + 10}px`)
+                            .style('top', `${tipY(event) + 10}px`)
                             .text(`New capture of ${d.data.name}, with the settings of this capture`);
                     })
                     .on('mouseout', () => d3.select('#tooltip').style('opacity', 0));
@@ -1508,8 +1544,8 @@ function update(root, computed_node_width=0) {
                     .on('mouseover', (event, d) => {
                         d3.select('#tooltip')
                             .style('opacity', 1)
-                            .style('left', `${event.pageX + 10}px`)
-                            .style('top', `${event.pageY + 10}px`)
+                            .style('left', `${tipX(event) + 10}px`)
+                            .style('top', `${tipY(event) + 10}px`)
                             .text(notes[d.data.uuid] ? 'Edit your note on this node' : 'Write a note on this node');
                     })
                     .on('mouseout', () => d3.select('#tooltip').style('opacity', 0));
@@ -1544,8 +1580,8 @@ function update(root, computed_node_width=0) {
                       .on('mouseover', (event, d) => {
                           d3.select('#tooltip')
                             .style('opacity', 1)
-                            .style('left', `${event.pageX + 10}px`)
-                            .style('top', `${event.pageY + 10}px`)
+                            .style('left', `${tipX(event) + 10}px`)
+                            .style('top', `${tipY(event) + 10}px`)
                             .text('Potential favicon.');
                       });
                   }
@@ -1568,8 +1604,8 @@ function update(root, computed_node_width=0) {
                         d3.select('#tooltip')
                           .data(d)
                           .style('opacity', 1)
-                          .style('left', `${event.pageX + 10}px`)
-                          .style('top', `${event.pageY + 10}px`)
+                          .style('left', `${tipX(event) + 10}px`)
+                          .style('top', `${tipY(event) + 10}px`)
                           .text(d => d.data.downloaded_filename ? 'Contains the URL rendered in the browser. It also downloaded a file.': 'Contains the URL rendered in the browser.');
                     })
                     .on('click', (event, d) => {
@@ -1604,8 +1640,8 @@ function update(root, computed_node_width=0) {
                         .on('mouseover', (event, d) => {
                             d3.select('#tooltip')
                                 .style('opacity', 1)
-                                .style('left', `${event.pageX + 10}px`)
-                                .style('top', `${event.pageY + 10}px`)
+                                .style('left', `${tipX(event) + 10}px`)
+                                .style('top', `${tipY(event) + 10}px`)
                                 .text('This node containts insecure requests');
                         })
                         .on('mouseout', (event, d) => d3.select('#tooltip').style('opacity', 0));
@@ -1633,8 +1669,8 @@ function update(root, computed_node_width=0) {
                         .on('mouseover', (event, d) => {
                             d3.select('#tooltip')
                                 .style('opacity', 1)
-                                .style('left', `${event.pageX + 10}px`)
-                                .style('top', `${event.pageY + 10}px`)
+                                .style('left', `${tipX(event) + 10}px`)
+                                .style('top', `${tipY(event) + 10}px`)
                                 .text('This node containts known malicious content');
                         })
                         .on('mouseout', (event, d) => d3.select('#tooltip').style('opacity', 0));
@@ -1660,8 +1696,8 @@ function update(root, computed_node_width=0) {
                         .on('mouseover', (event, d) => {
                             d3.select('#tooltip')
                                 .style('opacity', 1)
-                                .style('left', `${event.pageX + 10}px`)
-                                .style('top', `${event.pageY + 10}px`)
+                                .style('left', `${tipX(event) + 10}px`)
+                                .style('top', `${tipY(event) + 10}px`)
                                 .text('This node has only known content');
                         })
                         .on('mouseout', (event, d) => d3.select('#tooltip').style('opacity', 0));
@@ -1687,8 +1723,8 @@ function update(root, computed_node_width=0) {
                     .on('mouseover', (event, d) => {
                         d3.select('#tooltip')
                             .style('opacity', 1)
-                            .style('left', `${event.pageX + 10}px`)
-                            .style('top', `${event.pageY + 10}px`)
+                            .style('left', `${tipX(event) + 10}px`)
+                            .style('top', `${tipY(event) + 10}px`)
                             .text('This node has only empty content');
                     })
                     .on('mouseout', (event, d) => d3.select('#tooltip').style('opacity', 0));
@@ -1706,8 +1742,8 @@ function update(root, computed_node_width=0) {
                       if (d.children || d._children) {
                         d3.select('#tooltip')
                           .style('opacity', 1)
-                          .style('left', `${event.pageX + 10}px`)
-                          .style('top', `${event.pageY + 10}px`)
+                          .style('left', `${tipX(event) + 10}px`)
+                          .style('top', `${tipY(event) + 10}px`)
                           .text(d.children ? 'Collapse the URLs loaded by this node.' : 'Expand the URLs loaded by this node.');
                       };
                     }

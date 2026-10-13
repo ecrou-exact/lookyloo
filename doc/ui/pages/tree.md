@@ -203,6 +203,13 @@ The buttons at the top right of the tree (`setupTreeControls()` in `js/tree.js`)
   follow (columns / rows). The button shows the current orientation (⇄ / ⇅).
 - **Collapse all**: every node but the root is collapsed (the first level stays
   visible).
+- **Full screen** (next to Notes): only the tree area, full screen
+  (`setupFullscreen()`, Fullscreen API on `.lk-tree-area`): the tree, its
+  controls, the legend filter, the chips and the panels stay; Esc or the same
+  button leaves it (the icon follows the state). The tree tooltip moves into
+  the area while it is full screen (`tipX()` / `tipY()` use screen coordinates
+  then), and writing a note leaves the full screen first (the editor is a modal
+  of the page). Hidden when the browser has no Fullscreen API.
 - **Expand all**: expands level after level while the tree stays under
   `MAX_EXPANDED_NODES` (400) shown nodes, to keep the page fast; when some are
   left collapsed, a message says how many nodes are shown out of the total.

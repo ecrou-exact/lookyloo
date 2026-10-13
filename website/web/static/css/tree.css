@@ -364,6 +364,17 @@ body.lk-capture-page .lk-header { position: static; }
   color: var(--lk-color-ink);
 }
 .lk-tree-controls button:hover { background: var(--lk-color-surface-2); }
+/* Full screen button: enter / exit icon */
+#tree-fullscreen .lk-fullscreen-exit,
+#tree-fullscreen.is-fullscreen .lk-fullscreen-enter { display: none; }
+#tree-fullscreen.is-fullscreen .lk-fullscreen-exit { display: inline-flex; }
+#tree-fullscreen span { display: inline-flex; }
+#tree-fullscreen[hidden] { display: none; }
+
+/* The tree area in full screen: the whole screen, the page background */
+.lk-tree-area:fullscreen { height: 100vh; width: 100vw; background: var(--lk-color-bg); }
+.lk-tree-area:fullscreen #tooltip { position: fixed !important; }
+
 /* Orientation button: the icon of the current orientation */
 #tree-orientation .lk-orientation-vertical,
 #tree-orientation.is-vertical .lk-orientation-horizontal { display: none; }

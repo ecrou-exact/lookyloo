@@ -349,6 +349,11 @@
             aria-expanded="false" aria-controls="tree-compare">{{ icon('bi:intersect') }}</button>
     <button type="button" id="tree-notes-toggle" title="Your notes on this capture" aria-label="Your notes on this capture"
             aria-expanded="false" aria-controls="tree-notes">{{ icon('bi:journal-text') }}<span class="lk-notes-count" id="tree-notes-count" hidden></span></button>
+    {# Full screen: only the tree area (js/tree.js, setupFullscreen); the icon follows the state #}
+    <button type="button" id="tree-fullscreen" title="Show only the tree, full screen" aria-label="Show only the tree, full screen" aria-pressed="false">
+      <span class="lk-fullscreen-enter">{{ icon('bi:arrows-fullscreen') }}</span>
+      <span class="lk-fullscreen-exit">{{ icon('bi:fullscreen-exit') }}</span>
+    </button>
     <span class="lk-tree-controls-status" id="tree-controls-status" role="status" hidden></span>
   </div>
 

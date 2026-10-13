@@ -148,8 +148,7 @@
 
 /* Theme-independent tokens */
 :root {
-  /* Typography. Geist is not vendored yet: until static/fonts/ ships it,
-     the stack falls back to the system UI font. */
+  /* Typography. Geist / Geist Mono are self-hosted (fonts.css). */
   --lk-font-sans: "Geist", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --lk-font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
   --lk-font-size-base: 0.9375rem;

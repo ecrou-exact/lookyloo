@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     {% block styles %}
-    {# CSS load order (doc/ui/css.md): vendor -> theme tokens -> bootstrap bridge
+    {# CSS load order (doc/ui/css.md): vendor -> fonts -> theme tokens -> bootstrap bridge
        -> base -> utilities -> page CSS -> instance overrides #}
     {{ bootstrap.load_css() }}
     <link rel="stylesheet" href="{{ url_for('static', filename='vendor/datatables.min.css') }}"
@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='vendor/jquery.json-viewer.css') }}"
           {{get_sri('static', 'vendor/jquery.json-viewer.css')}}
           crossorigin="anonymous">
-    {% for stylesheet in ['css/theme.css', 'css/bootstrap-bridge.css', 'css/base.css', 'css/utilities.css'] %}
+    {% for stylesheet in ['css/fonts.css', 'css/theme.css', 'css/bootstrap-bridge.css', 'css/base.css', 'css/utilities.css'] %}
     <link rel="stylesheet" href="{{ url_for('static', filename=stylesheet) }}"
           {{get_sri('static', stylesheet)}}
           crossorigin="anonymous">

@@ -84,8 +84,11 @@ for its utilities. Keep both in sync when changing a colour.
 | `--lk-content-max-width` | `1440px` | Wide layout |
 | `--lk-transition-fast` | `120ms ease` | Hover transitions |
 
-Geist and Geist Mono are not vendored yet, so the system UI font is used until
-they are added to `static/fonts/` (no external font service: CSP).
+Geist and Geist Mono (v1.7.2, SIL Open Font License 1.1, from the npm package
+`geist`) are self-hosted in `static/fonts/geist/` and declared in `css/fonts.css`.
+They are variable fonts: one file per family covers every weight. To update
+them, replace the two `.woff2` files (and `OFL.txt`), change the version in the
+`fonts.css` header, then regenerate the SRI.
 
 ## Adding or changing a token
 

@@ -1,0 +1,26 @@
+/*
+ * Self-hosted web fonts (no external font service: CSP).
+ * Files in static/fonts/, licence next to them.
+ *
+ * Geist / Geist Mono 1.7.2 (npm package "geist"), SIL Open Font License 1.1.
+ * Variable fonts: one file covers weights 100-900.
+ *
+ * Load order: before theme.css (which names the families in --lk-font-*).
+ * Doc: doc/ui/theme.md
+ */
+
+@font-face {
+  font-family: "Geist";
+  src: url("../fonts/geist/Geist-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Geist Mono";
+  src: url("../fonts/geist/GeistMono-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}

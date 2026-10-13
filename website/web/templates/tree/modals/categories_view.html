@@ -11,12 +11,11 @@ Categorization not enabled.
 
 {%if current_categories %}
 <div class="card" id="current_categories">
-  <div class="card-body">The following <b>{{current_categories|length}}</b> categories are already attached to the capture:
-    <ul>
-      {% for c in current_categories %}
-      <li>{{ c }} (<a href="{{ url_for('index', category=c) }}">See more</a>)</li>
-      {% endfor %}
-    </ul>
+  <div class="card-body">The following <b>{{current_categories|length}}</b> categories are already attached to the capture
+    (click one to see the other captures in it):
+    <div class="lk-capture-tags">
+      {% for c in current_categories|sort %}{{ category_tag(c) }}{% endfor %}
+    </div>
   </div>
 </div>
 {%endif%}

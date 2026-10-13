@@ -375,3 +375,47 @@
     display: none;
   }
 }
+
+/* Title line: title + verdict pill */
+.lk-capture-head {
+  display: flex;
+  align-items: center;
+  gap: var(--lk-space-2);
+  min-width: 0;
+}
+
+.lk-capture-head .lk-capture-title {
+  min-width: 0;
+}
+
+/* Verdict pill (derived from the categories, capture_verdict()) */
+.lk-verdict {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.05rem 0.55rem;
+  border-radius: var(--lk-radius-pill);
+  font-size: var(--lk-font-size-xs);
+  font-weight: var(--lk-font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.lk-verdict-malicious {
+  color: var(--lk-color-on-danger);
+  background: var(--lk-color-danger);
+}
+
+/* Category tags of a capture */
+.lk-capture-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--lk-space-1) var(--lk-space-2);
+  margin-top: var(--lk-space-2);
+}
+
+.lk-capture-tags .lk-tag {
+  font-size: var(--lk-font-size-xs);
+  padding: 0.1rem 0.55rem 0.1rem 0.45rem;
+}

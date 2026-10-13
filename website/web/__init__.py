@@ -270,6 +270,19 @@ CATEGORY_FAMILIES: dict[str, tuple[str, str]] = {
     'digital-content': ('violet', 'bi:play-btn'),
     'geopolitics-and-hacktivism': ('violet', 'bi:flag'),
 }
+# Families of categories that make a capture "malicious" (verdict pill on the capture
+# lists, doc/ui/tags.md). Lookyloo has no other verdict source yet.
+MALICIOUS_FAMILIES = ('cybercrime', 'illegal-markets')
+
+
+def capture_verdict(categories: Iterable[str]) -> str | None:
+    '''Verdict derived from the categories of a capture: "malicious" or None (unknown).'''
+    for category in categories:
+        if (m := CATEGORY_TAG.match(category)) and m['family'] in MALICIOUS_FAMILIES:
+            return 'malicious'
+    return None
+
+
 CATEGORY_TAG = re.compile(r'^(?P<namespace>[^:]+):(?P<family>[^=]+)="?(?P<value>[^"]*)"?$')
 
 
@@ -3280,7 +3293,12 @@ index_capture_template = app.jinja_env.from_string(source='''
          loading="lazy" decoding="async" width="128" height="80">
   </button>
   <div class="lk-capture-body">
-  <a class="lk-capture-title" href="{{ url_for('tree', tree_uuid=capture_uuid) }}">{{ title if title else 'No title' }}</a>
+  <div class="lk-capture-head">
+    <a class="lk-capture-title" href="{{ url_for('tree', tree_uuid=capture_uuid) }}">{{ title if title else 'No title' }}</a>
+    {% if verdict == 'malicious' %}
+    <span class="lk-verdict lk-verdict-malicious" title="Categorized as malicious">{{ icon('bi:exclamation-octagon-fill') }} Malicious</span>
+    {% endif %}
+  </div>
   <div class="lk-capture-url">{{ shorten_string(url, with_copy_button=True) }}</div>
   <ul class="lk-capture-facts">
     {% if error %}
@@ -3304,6 +3322,11 @@ index_capture_template = app.jinja_env.from_string(source='''
     <li>{{ icon('bi:check2') }} No redirect</li>
     {% endif %}
   </ul>
+  {% if categories %}
+  <div class="lk-capture-tags">
+    {% for category in categories %}{{ category_tag(category) }}{% endfor %}
+  </div>
+  {% endif %}
   {% if hops|length > 1 %}
   <details class="lk-route-details">
     <summary>Show the redirect chain <span class="lk-route-count">{{ hops|length }} steps</span></summary>
@@ -3359,6 +3382,8 @@ def index_row(cache: CaptureCache) -> dict[str, Any]:
     title = cache.title if hasattr(cache, 'title') else ''
     initial_url = cache.redirects[0] if cache.redirects else cache.url
     hops = redirect_hops(cache.redirects)
+    # One SMEMBERS in the index (no disk access): see doc/ui/tags.md
+    categories = sorted(get_indexing(flask_login.current_user).get_capture_categories(cache.uuid)) if enable_categorization else []
     return {
         # Markup: index_capture_template is autoescaped, its output is safe HTML
         'page': {'display': Markup(render_template(index_capture_template,
@@ -3368,7 +3393,9 @@ def index_row(cache: CaptureCache) -> dict[str, Any]:
                                             hops=hops,
                                             trail=[hop['host'] for i, hop in enumerate(hops)
                                                    if i == 0 or hop['host'] != hops[i - 1]['host']],
-                                            error=cache.error)),
+                                            error=cache.error,
+                                            categories=categories,
+                                            verdict=capture_verdict(categories))),
                  'filter': escape(f'{title} {" ".join(cache.redirects) if cache.redirects else cache.url}')},
         'capture_time': cache.timestamp.isoformat(),
     }

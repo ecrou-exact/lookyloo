@@ -335,6 +335,8 @@
     </button>
     <button type="button" id="tree-collapse-all" title="Collapse every node" aria-label="Collapse every node">{{ icon('bi:arrows-collapse') }}</button>
     <button type="button" id="tree-expand-all" title="Expand every node" aria-label="Expand every node">{{ icon('bi:arrows-expand') }}</button>
+    <button type="button" id="tree-compare-toggle" title="Compare with another capture" aria-label="Compare with another capture"
+            aria-expanded="false" aria-controls="tree-compare">{{ icon('bi:intersect') }}</button>
     <button type="button" id="tree-notes-toggle" title="Your notes on this capture" aria-label="Your notes on this capture"
             aria-expanded="false" aria-controls="tree-notes">{{ icon('bi:journal-text') }}<span class="lk-notes-count" id="tree-notes-count" hidden></span></button>
     <span class="lk-tree-controls-status" id="tree-controls-status" role="status" hidden></span>
@@ -363,6 +365,38 @@
       <button type="button" class="btn btn-sm btn-outline-primary" id="tree-notes-copy">{{ icon('bi:clipboard') }} Copy as Markdown</button>
       <button type="button" class="btn btn-sm btn-outline-primary" id="tree-notes-download">{{ icon('bi:download') }} Download .md</button>
     </footer>
+  </section>
+
+  {# Comparison with another capture (js/tree.js, compare section): new hosts are
+     marked in the tree, the hosts gone are listed here #}
+  <section class="lk-notes-panel lk-compare-panel" id="tree-compare" aria-labelledby="tree-compare-title" hidden>
+    <header>
+      <h2 id="tree-compare-title">{{ icon('bi:intersect') }} Compare</h2>
+      <button type="button" class="btn-close" id="tree-compare-close" aria-label="Close the comparison panel"></button>
+    </header>
+    <div class="lk-compare-body">
+      <div id="tree-compare-choose">
+        <p class="lk-notes-hint">Which hosts are new, and which are gone, compared with another capture?</p>
+        <h3>Other captures of this URL</h3>
+        <ul class="lk-compare-captures" id="tree-compare-captures"><li class="lk-compare-empty">Looking for other captures…</li></ul>
+        <form id="tree-compare-form" class="lk-compare-form">
+          <label for="tree-compare-input">Or a capture link or UUID</label>
+          <div class="d-flex gap-2">
+            <input type="text" id="tree-compare-input" class="form-control form-control-sm" placeholder="https://…/tree/<uuid>" autocomplete="off">
+            <button type="submit" class="btn btn-sm btn-primary">Compare</button>
+          </div>
+          <p class="lk-compare-error" id="tree-compare-error" hidden></p>
+        </form>
+      </div>
+      <div id="tree-compare-result" hidden>
+        <p class="lk-compare-with" id="tree-compare-with"></p>
+        <p class="lk-compare-summary" id="tree-compare-summary"></p>
+        <label class="lk-compare-only"><input type="checkbox" id="tree-compare-only-new"> Only the new hosts</label>
+        <h3>Hosts gone (in the other capture only)</h3>
+        <ul class="lk-compare-gone" id="tree-compare-gone"></ul>
+        <button type="button" class="btn btn-sm btn-outline-secondary" id="tree-compare-stop">{{ icon('bi:x-circle') }} Stop comparing</button>
+      </div>
+    </div>
   </section>
 
   {# Network info of the hovered node (js/tree.js, showNodeInfo) #}

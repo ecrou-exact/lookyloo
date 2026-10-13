@@ -266,3 +266,19 @@ Computed once on the tree data (`prepareAnalysis()` in `js/tree.js`):
 - Notes are kept **in this browser only** (`localStorage`, key
   `lk-notes:<capture uuid>`): Lookyloo has no per-user storage. They are
   inserted as text (never as HTML).
+
+## Compare with another capture
+
+The **Compare** button of the tree controls opens a panel (`setupCompare()` in
+`js/tree.js`):
+
+- the other captures of the same URL (`POST /json/url_info`, newest first),
+  or a field for the link or UUID of any capture (a `?seed=` in the link is
+  kept, for private captures);
+- once one is chosen, its tree is loaded (`/json/<uuid>/tree_dump`) and its
+  hostnames compared with this one: the **new hosts** of this capture get a
+  green outline (`g.node.is-new-host`), the **hosts gone** (only in the other
+  capture) are listed in the panel, with a summary and a link to the other
+  capture;
+- **Only the new hosts** dims every other node (a fourth filter in
+  `nodeMatches()`); **Stop comparing** removes it all.

@@ -44,6 +44,11 @@ let tree_root = null;
 
 // ---- Analysis state (declared before the first await: used while the tree loads)
 
+// Comparison with another capture: hostnames of the other capture (null = off),
+// and "only the new hosts" filter
+let compare_hosts = null;
+let compare_only_new = false;
+
 // Notes of the analyst: {hostnode uuid: {host, text, updated}}, in this browser
 const NOTES_KEY = `lk-notes:${treeUUID}`;
 let notes = {};
@@ -187,6 +192,7 @@ try {
   setupTreeSearch();
   setupTreeControls();
   setupNotes();
+  setupCompare();
   node_container.selectAll('g.node').classed('has-note', d => Boolean(notes[d.data.uuid]));
   // Scroll once the nodes are in place
   await animateTreeEntry(root);
@@ -461,6 +467,164 @@ function setupNotes() {
     renderNotes();
 }
 
+// ****************** Comparison with another capture ******************
+
+function isNewHost(d) {
+    return compare_hosts !== null && !compare_hosts.has(d.data.name);
+}
+
+function hostnamesOf(tree_data) {
+    const names = new Set();
+    (function walk(n) {
+        names.add(n.name);
+        (n.children || []).forEach(walk);
+    })(tree_data);
+    return names;
+}
+
+// A capture link (with its ?seed= for a private capture) or a bare UUID
+function parseCaptureRef(text) {
+    const value = text.trim();
+    const match = value.match(/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})/i);
+    if (!match) return null;
+    let seed = null;
+    try { seed = new URL(value).searchParams.get('seed'); } catch (e) { /* bare UUID */ }
+    return {uuid: match[1].toLowerCase(), seed};
+}
+
+async function compareWith(ref, label) {
+    const error = document.getElementById('tree-compare-error');
+    error.hidden = true;
+    if (!ref || ref.uuid === treeUUID) {
+        error.textContent = ref ? 'That is this capture: choose another one.' : 'Paste the link or the UUID of a capture.';
+        error.hidden = false;
+        return;
+    }
+    const query = ref.seed ? `?seed=${encodeURIComponent(ref.seed)}` : '';
+    let other;
+    try {
+        const response = await fetch(`/json/${ref.uuid}/tree_dump${query}`);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        other = await response.json();
+    } catch (e) {
+        error.textContent = "This capture can't be loaded (unknown, private without its seed, or not processed yet).";
+        error.hidden = false;
+        return;
+    }
+    compare_hosts = hostnamesOf(other);
+    const ours = new Set(allNodes(tree_root).map(d => d.data.name));
+    const added = [...ours].filter(name => !compare_hosts.has(name));
+    const gone = [...compare_hosts].filter(name => !ours.has(name)).sort();
+
+    const with_link = document.getElementById('tree-compare-with');
+    with_link.textContent = 'Compared with ';
+    const a = document.createElement('a');
+    a.href = `/tree/${ref.uuid}${query}`;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.textContent = label || ref.uuid;
+    with_link.appendChild(a);
+    document.getElementById('tree-compare-summary').textContent =
+        `${added.length} new host${added.length === 1 ? '' : 's'} in this capture, ${gone.length} gone.`;
+    const gone_list = document.getElementById('tree-compare-gone');
+    gone_list.textContent = '';
+    gone.forEach(name => {
+        const li = document.createElement('li');
+        li.textContent = name;
+        gone_list.appendChild(li);
+    });
+    if (!gone.length) {
+        const li = document.createElement('li');
+        li.className = 'lk-compare-empty';
+        li.textContent = 'None.';
+        gone_list.appendChild(li);
+    }
+    document.getElementById('tree-compare-choose').hidden = true;
+    document.getElementById('tree-compare-result').hidden = false;
+    document.getElementById('tree-compare-toggle').classList.add('is-on');
+    markPaths();
+    applyTreeFilter();
+}
+
+function stopComparing() {
+    compare_hosts = null;
+    compare_only_new = false;
+    document.getElementById('tree-compare-only-new').checked = false;
+    document.getElementById('tree-compare-choose').hidden = false;
+    document.getElementById('tree-compare-result').hidden = true;
+    document.getElementById('tree-compare-toggle').classList.remove('is-on');
+    markPaths();
+    applyTreeFilter();
+}
+
+// Other captures of the same URL (index of the URLs), newest first
+async function listOtherCaptures() {
+    const list = document.getElementById('tree-compare-captures');
+    let captures = [];
+    try {
+        const response = await fetch('/json/url_info', {
+            method: 'POST', headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({url: capture_info.url, limit: 15})});
+        captures = ((await response.json()).response || []).filter(c => c.capture_uuid !== treeUUID);
+    } catch (e) { /* index unavailable: only the field */ }
+    list.textContent = '';
+    if (!captures.length) {
+        const li = document.createElement('li');
+        li.className = 'lk-compare-empty';
+        li.textContent = 'No other capture of this URL in the index.';
+        list.appendChild(li);
+        return;
+    }
+    captures.forEach(capture => {
+        const li = document.createElement('li');
+        const button = document.createElement('button');
+        button.type = 'button';
+        const when = new Date(capture.start_timestamp);
+        const date = document.createElement('span');
+        date.className = 'lk-compare-date';
+        date.textContent = isNaN(when) ? capture.start_timestamp : when.toLocaleString();
+        const title = document.createElement('span');
+        title.textContent = capture.title || capture.capture_uuid;
+        button.append(date, title);
+        button.addEventListener('click', () => compareWith({uuid: capture.capture_uuid, seed: null}, `the capture of ${date.textContent}`));
+        li.appendChild(button);
+        list.appendChild(li);
+    });
+}
+
+function setupCompare() {
+    const panel = document.getElementById('tree-compare');
+    if (!panel) return;
+    const toggle = document.getElementById('tree-compare-toggle');
+    let listed = false;
+    const show = (open) => {
+        panel.hidden = !open;
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        toggle.classList.toggle('is-active', open);
+        if (open) {
+            // One panel at a time
+            const notes_panel = document.getElementById('tree-notes');
+            if (notes_panel && !notes_panel.hidden) document.getElementById('tree-notes-close').click();
+            if (!listed) { listed = true; listOtherCaptures(); }
+        }
+    };
+    toggle.addEventListener('click', () => show(panel.hidden));
+    document.getElementById('tree-compare-close').addEventListener('click', () => show(false));
+    document.getElementById('tree-compare-form').addEventListener('submit', (event) => {
+        event.preventDefault();
+        compareWith(parseCaptureRef(document.getElementById('tree-compare-input').value));
+    });
+    document.getElementById('tree-compare-stop').addEventListener('click', stopComparing);
+    document.getElementById('tree-compare-only-new').addEventListener('change', (event) => {
+        compare_only_new = event.target.checked;
+        applyTreeFilter();
+    });
+    // Opening the notes closes this panel
+    document.getElementById('tree-notes-toggle').addEventListener('click', () => {
+        if (!panel.hidden) show(false);
+    });
+}
+
 // Put a floating element of the tree area next to an element of the tree
 function placeNextTo(floating, anchor) {
     const area = floating.parentElement.getBoundingClientRect();
@@ -521,6 +685,7 @@ function hideNodeInfo() {
 // Links and nodes of the main path, and of the path to the hovered node
 function markPaths() {
     node_container.selectAll('g.node')
+        .classed('is-new-host', d => isNewHost(d))
         .classed('is-main-path', d => main_path.has(d.data.uuid))
         .classed('has-note', d => Boolean(notes[d.data.uuid]));
     node_container.selectAll('path.link').classed('is-main-path', l => main_path.has(l.data.uuid));
@@ -619,7 +784,8 @@ function nodeMatches(d) {
     const icon_ok = active_filters.size === 0 || [...active_filters].some(key => nodeHas(d, key));
     const text_ok = !search_text || nodeText(d).includes(search_text);
     const focus_ok = !focus_uuid || isNeighbour(d);
-    return icon_ok && text_ok && focus_ok;
+    const compare_ok = !compare_only_new || isNewHost(d);
+    return icon_ok && text_ok && focus_ok && compare_ok;
 }
 
 function matchingNodes() {
@@ -627,7 +793,7 @@ function matchingNodes() {
 }
 
 function applyTreeFilter() {
-    const filtering = active_filters.size > 0 || search_text !== '' || focus_uuid !== null;
+    const filtering = active_filters.size > 0 || search_text !== '' || focus_uuid !== null || compare_only_new;
     let matches = 0;
     node_container.selectAll('g.node').each(function(d) {
         const match = filtering && nodeMatches(d);
@@ -1608,5 +1774,5 @@ function update(root, computed_node_width=0) {
   // Main path to the rendered page (nodes and links of this update included)
   markPaths();
   // Nodes shown again after an expand keep the filters
-  if (active_filters.size > 0 || search_text || focus_uuid) applyTreeFilter();
+  if (active_filters.size > 0 || search_text || focus_uuid || compare_only_new) applyTreeFilter();
 }

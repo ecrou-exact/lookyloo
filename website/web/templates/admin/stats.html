@@ -1,9 +1,8 @@
-{% extends "layouts/main.html" %}
+{% extends "layouts/page.html" %}
 
 {% block title %}Statistics{% endblock %}
 
-{% block content %}
-{% include 'partials/top_navbar.html' %}
+{% block main %}
 <div>
 {% for week in stats['weeks'] %}
   <h2> Week: {{ week['week_number'] }}</h2>

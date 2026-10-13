@@ -29,7 +29,7 @@ def test_has_title(page: Page) -> None:
 def test_capture_page(page: Page) -> None:
     domain = 'google.be'
     capture_url = f'https://{domain}'
-    page.get_by_role("link", name="Start a new capture").click()
+    page.get_by_role("link", name="All capture options").click()
     page.get_by_role("button", name="Lacus Selection").click()
     expect(page.get_by_role("button", name="Browser Configuration")).to_be_visible()
     page.get_by_role("textbox", name="URL to capture").click()
@@ -68,8 +68,10 @@ def test_capture_page(page: Page) -> None:
     expect(page.get_by_role("button", name="Index capture")).to_have_count(0, timeout=10_000)
     # go to search page and search
     page.get_by_role("link", name="Lookyloo icon").click()
-    page.get_by_role("button", name="Toggle navigation").click()
-    page.get_by_role("link", name="Search").click()
+    # The navigation collapses behind the toggler on small screens only
+    if page.get_by_role("button", name="Toggle navigation").is_visible():
+        page.get_by_role("button", name="Toggle navigation").click()
+    page.get_by_role("navigation", name="Main navigation").get_by_role("link", name="Search").click()
     expect(page).to_have_title(re.compile("Search"))
     page.get_by_role("textbox", name="URL part:").fill(domain)
     page.get_by_role("button", name="Search").click()

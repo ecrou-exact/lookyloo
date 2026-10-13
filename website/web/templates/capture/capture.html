@@ -1,4 +1,4 @@
-{% extends "layouts/main.html" %}
+{% extends "layouts/page.html" %}
 {% from 'bootstrap5/utils.html' import render_messages %}
 {% from "macros/macros.html" import monitoring_form %}
 {% from "macros/macros.html" import notify_form %}
@@ -33,10 +33,8 @@
 {{ super() }}
 {% endblock %}
 
-{% block content %}
+{% block main %}
 <div class="container">
-  {% include 'partials/top_navbar.html' %}
-  {{ render_messages(container=True, dismissible=True) }}
   {% if current_user.is_authenticated %}
   <div class="alert alert-info" role="alert">
     <p class="lead">You are logged-in as <strong>{{ current_user.id }}</strong></p>

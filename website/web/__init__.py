@@ -52,6 +52,7 @@ from werkzeug.security import check_password_hash
 from werkzeug.wrappers.response import Response as WerkzeugResponse
 
 from lookyloo import Lookyloo, LookylooException
+from lookyloo.capturecache import CaptureCache
 from lookyloo_models import LookylooCaptureSettings, CaptureSettingsError, StorageStateSettings
 from lookyloo.default import get_config, get_homedir, ConfigError
 from lookyloo.exceptions import (UnknownUUID, NoValidHarFile, LacusUnreachable, TreeNeedsRebuild,
@@ -167,13 +168,7 @@ def _load_user_from_request(request: Request) -> User | None:
 @app.route('/login', methods=['GET', 'POST'])
 def login() -> WerkzeugResponse | str | Response:
     if request.method == 'GET':
-        return '''
-               <form action='login' method='POST'>
-                <input type='text' name='username' id='username' placeholder='username'/>
-                <input type='password' name='password' id='password' placeholder='password'/>
-                <input type='submit' name='submit'/>
-               </form>
-               '''
+        return render_template('admin/login.html')
 
     username = request.form['username']
     users_table = build_users_table()
@@ -452,6 +447,13 @@ def load_custom_local_ressource(ressource_type: str, filename: str) -> tuple[str
         sri_hash = f"sha512-{base64.b64encode(hashlib.sha512(f.read()).digest()).decode('utf-8')}"
     url = url_for('static', filename=f'{ressource_type}/{filename}')
     return (url, sri_hash)
+
+
+@app.context_processor
+def inject_layout_context() -> dict[str, Any]:
+    '''Variables needed by the shared layout (partials/header.html, partials/footer.html).'''
+    return {'lookyloo_version': pkg_version,
+            'enable_takedown_form': get_config('generic', 'enable_takedown_form')}
 
 
 app.jinja_env.globals.update(
@@ -2213,6 +2215,10 @@ def index_generic(show_hidden: bool=False, show_error: bool=True, category: str 
                            mastobot_enabled=get_config('mastobot', 'enable'),
                            mastodon_domain=mastodon_domain,
                            mastodon_botname=mastodon_botname,
+                           default_device=user_agents.default['default_device_name'],
+                           default_mobile_device=user_agents.default.get('default_mobile_device_name'),
+                           default_public=lookyloo.default_public,
+                           default_private=lookyloo.default_private,
                            version=pkg_version)
 
 
@@ -2278,14 +2284,18 @@ def ressources() -> str:
         freq = get_indexing(flask_login.current_user).get_captures_body_hash_count(h)
         context = lookyloo.context.find_known_content(h)
         # Only get the recent captures
-        _, entries = get_indexing(flask_login.current_user).get_captures_body_hash(h, oldest_capture=datetime.now() - lookyloo.time_delta_on_index)
+        entries = get_indexing(flask_login.current_user).get_captures_body_hash(h, oldest_capture=datetime.now() - lookyloo.time_delta_on_index)
+        # One row per resource, from the most recent capture where it can be loaded
         for capture_uuid in entries:
             url_nodes = get_indexing(flask_login.current_user).get_capture_body_hash_nodes(capture_uuid, h)
+            if not url_nodes:
+                continue
             url_node = url_nodes.pop()
             ressource = lookyloo.get_ressource(capture_uuid, url_node, h)
             if not ressource:
                 continue
             ressources.append((h, freq, context.get(h), capture_uuid, url_node, ressource[0], ressource[2]))
+            break
     return render_template('explore/ressources.html', ressources=ressources)
 
 
@@ -3162,24 +3172,36 @@ def _safe_capture_title(capture_uuid: str, title: str, nodes: Sequence[tuple[str
             'filter': Markup(f'{title_modal["filter"]} {node_view["filter"]}')}
 
 
-index_link_template = app.jinja_env.from_string(source='''
-<b>Page title</b>: <span title="{{title}}">{{title}}</span><br>
-<b>Initial URL</b>: {{shorten_string(url, with_copy_button=True)}}<br>
-<a style="float: right;" href="{{url_for('tree', tree_uuid=capture_uuid)}}" class="btn btn-outline-primary" role="button">Show capture</a>
-''')
-
-redir_chain_template = app.jinja_env.from_string(source='''
-
-<div class="text-center">
- <div class="row"><div class="col">{{shorten_string(redirects[0], with_copy_button=True)}}</div></div>
- {% for r in redirects[1:] %}
-   <div class="row"><div class="col">{{ icon('bi:arrow-down') }}</div></div>
-   <div class="row"><div class="col">{{ shorten_string(r, with_copy_button=True) }}</div></div>
- {% endfor %}
+# Row of the landing page list (#IndexTable). Only uses data from the capture cache
+# (doc/ui/pages/index.md): never load the tree here.
+index_capture_template = app.jinja_env.from_string(source='''
+<div class="lk-capture">
+  <a class="lk-capture-title" href="{{ url_for('tree', tree_uuid=capture_uuid) }}">{{ title if title else 'No title' }}</a>
+  <div class="lk-capture-url">{{ shorten_string(url, with_copy_button=True) }}</div>
+  <ul class="lk-capture-facts">
+    {% if error %}
+    <li class="lk-capture-error">{{ icon('bi:exclamation-triangle') }} Capture error</li>
+    {% endif %}
+    {% if redirects|length > 1 %}
+    <li>{{ icon('bi:signpost-split') }} {{ redirects|length - 1 }} redirect{{ 's' if redirects|length > 2 }}</li>
+    {% if final_host and final_host != initial_host %}
+    <li title="Final hostname">{{ icon('bi:arrow-return-right') }} <span class="lk-mono">{{ final_host }}</span></li>
+    {% endif %}
+    {% elif not error %}
+    <li>No redirect</li>
+    {% endif %}
+  </ul>
+  {% if redirects|length > 1 %}
+  <details class="lk-capture-chain">
+    <summary>Redirect chain</summary>
+    <ol>
+      {% for r in redirects %}<li>{{ shorten_string(r, with_copy_button=True) }}</li>{% endfor %}
+    </ol>
+    <a href="{{ url_for('redirects', tree_uuid=capture_uuid) }}">{{ icon('bi:download') }} Download the redirects</a>
+  </details>
+  {% endif %}
 </div>
-<a style="float: right;" href="{{url_for('redirects', tree_uuid=uuid)}}" class="btn btn-outline-primary" role="button">Download redirects</a>
 ''')
-
 
 favicon_download_button_template = app.jinja_env.from_string(source='''
 <button type="button" class="btn btn-light downloadFaviconButton" data-mimetype="{{mimetype}}" data-b64favicon="{{b64_favicon}}" data-filename="favicon.ico">
@@ -3188,7 +3210,7 @@ favicon_download_button_template = app.jinja_env.from_string(source='''
 
 
 def get_index(offset: int, limit: int, public: bool=True, show_error: bool=False, category: str | None=None,
-              search: str | None=None) -> tuple[int, int | None, list[tuple[str, str, list[str], datetime]]]:
+              search: str | None=None) -> tuple[int, int | None, list[CaptureCache]]:
     '''Returns the index.'''
     total_filtered: int | None = None
     if category:
@@ -3221,7 +3243,7 @@ def get_index(offset: int, limit: int, public: bool=True, show_error: bool=False
             cached_captures = [capture for capture in cached_captures if capture.search(search)]
             total_filtered = len(cached_captures)
         cached_captures = cached_captures[offset: offset + limit]
-    return total, total_filtered, [(cache.uuid, cache.title, cache.redirects, cache.timestamp) for cache in cached_captures]
+    return total, total_filtered, cached_captures
 
 
 @app.route('/tables/<string:table_name>/', methods=['POST'])
@@ -3232,7 +3254,7 @@ def post_table(table_name: str, value: str='') -> Response:
     start = request.form.get('start', type=int)
     length = request.form.get('length', type=int)
     search = request.form.get('search[value]', type=str)
-    captures: list[tuple[str, str, datetime, str, str]] | list[tuple[str, str, str, datetime, list[tuple[str, str]]]] | list[tuple[str, str, str, datetime]] | list[tuple[str, str, list[str], datetime]]
+    captures: list[tuple[str, str, datetime, str, str]] | list[tuple[str, str, str, datetime, list[tuple[str, str]]]] | list[tuple[str, str, str, datetime]]
     to_append: dict[str, int | str | dict[str, str] | dict[str, Markup]]
     if table_name == 'indexTable':
         show_error, category = get_index_params(request)
@@ -3245,23 +3267,23 @@ def post_table(table_name: str, value: str='') -> Response:
             app.logger.info(f'Missing start {start} or length {length}.')
             return jsonify({'error': f'Missing start {start} or length {length}.'})
 
-        total, total_filtered, captures = get_index(public=show_hidden is False, category=category, offset=start, limit=length, search=search)
+        total, total_filtered, index_captures = get_index(public=show_hidden is False, category=category, offset=start, limit=length, search=search)
         prepared_captures = []
-        for capture_uuid, title, redirects, capture_time in captures:
+        for cache in index_captures:
+            title = cache.title if hasattr(cache, 'title') else ''
+            initial_url = cache.redirects[0] if cache.redirects else cache.url
             to_append = {
-                'page': {'display': render_template(index_link_template,
+                'page': {'display': render_template(index_capture_template,
+                                                    capture_uuid=cache.uuid,
                                                     title=title,
-                                                    url=redirects[0],
-                                                    capture_uuid=capture_uuid),
-                         'filter': escape(title)},
-                'capture_time': capture_time.isoformat(),
+                                                    url=initial_url,
+                                                    redirects=cache.redirects,
+                                                    initial_host=urlparse(initial_url).hostname,
+                                                    final_host=urlparse(cache.redirects[-1]).hostname if cache.redirects else None,
+                                                    error=cache.error),
+                         'filter': escape(f'{title} {" ".join(cache.redirects) if cache.redirects else cache.url}')},
+                'capture_time': cache.timestamp.isoformat(),
             }
-            to_append['redirects'] = {'display': Markup('No redirect'), 'filter': escape('')}
-            if redirects:
-                to_append['redirects'] = {'display': render_template(redir_chain_template,
-                                                                     redirects=redirects,
-                                                                     uuid=capture_uuid),
-                                          'filter': escape(' '.join(redirects))}
             prepared_captures.append(to_append)
         return jsonify({'draw': draw, 'recordsTotal': total, 'recordsFiltered': total if not search else total_filtered, 'data': prepared_captures})
 

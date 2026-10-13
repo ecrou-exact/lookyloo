@@ -1,4 +1,5 @@
-{% extends "layouts/main.html" %}
+{% extends "layouts/base.html" %}
+{% from 'macros/loader.html' import loader %}
 
 {% from 'bootstrap5/utils.html' import render_messages %}
 {% from "macros/macros.html" import monitoring_form %}
@@ -556,8 +557,8 @@
 </div>
 
 {{ render_messages(container=True, dismissible=True) }}
-<div class="spinner-border" role="status" id='tree-loading' alt="Tree loading spinner">
-  <span class="visually-hidden">Tree loading, please wait</span>
+<div id='tree-loading' alt="Tree loading spinner">
+  {{ loader('Tree loading, please wait', size='lg') }}
 </div>
 </div>
 

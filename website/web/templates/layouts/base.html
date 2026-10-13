@@ -1,10 +1,20 @@
 <!doctype html>
+{#
+  Document skeleton: every page extends this file, directly (full-screen
+  pages: capture tree, popups) or through layouts/page.html (pages with the
+  site header and footer). Doc: doc/ui/layout.md
+#}
 <html lang="en" data-bs-theme="light">
   <head>
     {% block head %}
-    <!-- Required meta tags -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    {# Applies the stored / OS colour theme before the first paint #}
+    <script src='{{ url_for('static', filename='js/theme_toggle.js') }}'
+            {{get_sri('static', 'js/theme_toggle.js')}}
+            nonce="{{ csp_nonce() }}"
+            crossorigin="anonymous"></script>
 
     {% block styles %}
     {# CSS load order (doc/ui/css.md): vendor -> fonts -> theme tokens -> bootstrap bridge
@@ -17,7 +27,8 @@
           {{get_sri('static', 'vendor/jquery.json-viewer.css')}}
           crossorigin="anonymous">
     {% for stylesheet in ['css/fonts.css', 'css/theme.css', 'css/bootstrap-bridge.css', 'css/base.css', 'css/utilities.css',
-                           'css/components/icon.css'] %}
+                          'css/components/icon.css', 'css/components/layout.css', 'css/components/header.css',
+                          'css/components/footer.css', 'css/components/loader.css'] %}
     <link rel="stylesheet" href="{{ url_for('static', filename=stylesheet) }}"
           {{get_sri('static', stylesheet)}}
           crossorigin="anonymous">
@@ -44,14 +55,14 @@
   </head>
   <body>
     {% include "custom_header.html" ignore missing %}
-    <!-- Your page content -->
+    {% block body %}
     <div id="content" class="container">
       {% block content %}{% endblock%}
     </div>
+    {% endblock %}
     {% include "custom_footer.html" ignore missing %}
 
     {% block scripts %}
-    <!-- Optional JavaScript -->
     {{ bootstrap.load_js(nonce=csp_nonce()) }}
     <script src='{{ url_for('static', filename='vendor/jquery.min.js') }}'
             {{get_sri('static', 'vendor/jquery.min.js')}}
@@ -71,10 +82,6 @@
             crossorigin="anonymous"></script>
     <script src='{{ url_for('static', filename='vendor/jquery.json-viewer.js') }}'
             {{get_sri('static', 'vendor/jquery.json-viewer.js')}}
-            nonce="{{ csp_nonce() }}"
-            crossorigin="anonymous"></script>
-    <script src='{{ url_for('static', filename='js/theme_toggle.js') }}'
-            {{get_sri('static', 'js/theme_toggle.js')}}
             nonce="{{ csp_nonce() }}"
             crossorigin="anonymous"></script>
     {% set overrides_js = load_custom_js('overrides.js') %}

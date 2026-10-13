@@ -1,0 +1,26 @@
+{#
+  Page building blocks for templates extending layouts/page.html.
+  Doc: doc/ui/layout.md
+
+  page_header(title, lead=None): page title + optional lead text; anything
+  passed with {% call %} is rendered as actions on the right.
+
+    {% from 'macros/page.html' import page_header %}
+    {% block page_header %}
+      {% call page_header('Search', lead='Find captures by URL, hostname or hash.') %}
+        <a class="btn btn-outline-primary" href="...">Export</a>
+      {% endcall %}
+    {% endblock %}
+#}
+
+{% macro page_header(title, lead=None) -%}
+<div class="lk-page-header">
+  <div>
+    <h1>{{ title }}</h1>
+    {% if lead %}<p class="lk-page-header-lead">{{ lead }}</p>{% endif %}
+  </div>
+  {% if caller %}
+  <div class="lk-page-header-actions">{{ caller() }}</div>
+  {% endif %}
+</div>
+{%- endmacro %}

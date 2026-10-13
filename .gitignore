@@ -115,6 +115,8 @@ d3.v5.js
 *.pid
 *.rdb
 *log*
+# ...but not templates whose name contains "log" (login.html, dialog.html...)
+!website/web/templates/**
 full_index/db
 
 # Local config files

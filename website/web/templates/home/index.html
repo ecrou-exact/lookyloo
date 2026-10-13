@@ -1,6 +1,10 @@
-{% extends "layouts/main.html" %}
-
-{% from 'bootstrap5/utils.html' import render_messages %}
+{% extends "layouts/page.html" %}
+{#
+  Landing page: quick capture + list of recent captures.
+  The list is a server-side DataTable (#IndexTable, js/render_tables.js), its rows
+  are rendered by index_capture_template in website/web/__init__.py and only use
+  data from the capture cache (doc/ui/pages/index.md).
+#}
 
 {% block title %}Lookyloo{% endblock %}
 
@@ -28,54 +32,83 @@
   {% endif %}
 {% endblock %}
 
-{% block styles %}
-{{ super() }}
+{% block page_styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}"
+      {{get_sri('static', 'css/index.css')}}
+      crossorigin="anonymous">
 {% endblock %}
 
+{% block main %}
+<section class="lk-quick-capture" aria-labelledby="quick-capture-title">
+  <div class="lk-quick-capture-intro">
+    <h1 id="quick-capture-title">Capture a URL</h1>
+    <p>Lookyloo opens the page in a real browser and records every redirect, request and resource it loads.</p>
+  </div>
+  <form class="lk-quick-capture-form" method="post" action="{{ url_for('capture_web') }}">
+    {# Honeypot: bots fill it, the capture route rejects them #}
+    <input class="boatymcboat" type="text" name="name" tabindex="-1" autocomplete="off" aria-hidden="true">
+    <input type="hidden" name="java_script_enabled" value="1">
+    <div class="lk-quick-capture-row">
+      <label for="quick-capture-url" class="visually-hidden">URL to capture</label>
+      <input type="text" class="form-control" id="quick-capture-url" name="url"
+             placeholder="https://example.com" required autocomplete="off" spellcheck="false">
+      <button type="submit" class="btn btn-primary">{{ icon('bi:camera') }} Capture</button>
+    </div>
+    <div class="lk-quick-capture-options">
+      <label class="lk-inline-field">
+        <span>Device</span>
+        <select class="form-select form-select-sm" name="device_name">
+          <option value="{{ default_device }}" selected>{{ default_device }}</option>
+          {% if default_mobile_device %}
+          <option value="{{ default_mobile_device }}">{{ default_mobile_device }}</option>
+          {% endif %}
+        </select>
+      </label>
+      <label class="lk-inline-field">
+        <span>Visibility</span>
+        <select class="form-select form-select-sm" name="visibility">
+          <option value="public" {% if default_public and not default_private %}selected{% endif %}>Public</option>
+          <option value="unlisted" {% if not default_public and not default_private %}selected{% endif %}>Unlisted</option>
+          <option value="private" {% if default_private %}selected{% endif %}>Private</option>
+        </select>
+      </label>
+      <span class="lk-quick-capture-links">
+        <a href="{{ url_for('submit_capture') }}">Upload a capture</a>
+        <a href="{{ url_for('capture_web') }}">All capture options {{ icon('bi:arrow-right') }}</a>
+      </span>
+    </div>
+  </form>
+</section>
 
-{% block content %}
-  {% include 'partials/top_navbar.html' %}
-  <center>
-    <a href="{{ url_for('capture_web') }}">
-      <button class="new-capture-button btn btn-primary">Start a new capture</button>
-    </a>
-    <a href="{{ url_for('submit_capture') }}">
-      <button class="new-capture-button btn btn-primary">Submit capture</button>
-    </a>
-    {% if current_user.is_authenticated and enable_takedown_form == true %}
-    <a href="{{ url_for('simple_capture') }}">
-      <button class="new-capture-button btn btn-primary">Takedown process</button>
-    </a>
-    {% endif %}
-    <br>
-    {% if current_user.is_authenticated %}
-    <p class="lead">
-    You are logged-in as <strong>{{ current_user.id }}</strong>,
-      {% if show_hidden == false %}
-      and you can check the <a href="{{ url_for('index_hidden', category=category if category else None) }}">hidden</a> captures.
-      {% else %}
-      and you're looking at the hidden captures. Go back to the <a href="{{ url_for('index', category=category if category else None) }}">public</a> captures.
-      {% endif %}
-    </p>
-    {% endif %}
+<section class="lk-recent" aria-labelledby="recent-captures-title">
+  <div class="lk-recent-head">
+    <h2 class="lk-section-title" id="recent-captures-title">
+      {% if show_hidden %}Hidden captures{% else %}Recent captures{% endif %}
+    </h2>
     {% if category %}
-    <p class="lead">
-    Only showing the captures for the category <strong>{{ category }}</strong>.
-    </p>
+    <span class="lk-filter-chip">
+      Category: <strong>{{ category }}</strong>
+      <a href="{{ url_for('index_hidden' if show_hidden else 'index') }}" aria-label="Remove the category filter">{{ icon('bi:x-lg') }}</a>
+    </span>
     {% endif %}
-    {{ render_messages(container=True, dismissible=True) }}
-  </center>
+    {% if current_user.is_authenticated %}
+    <nav class="lk-segmented" aria-label="Captures to show">
+      <a href="{{ url_for('index', category=category if category else None) }}"
+         {% if not show_hidden %}aria-current="page"{% endif %}>Public</a>
+      <a href="{{ url_for('index_hidden', category=category if category else None) }}"
+         {% if show_hidden %}aria-current="page"{% endif %}>Hidden</a>
+    </nav>
+    {% endif %}
+  </div>
 
-  <div class="table-responsive">
-    <table id="IndexTable" class="table table-striped" style="width:100%"
-        data-indextype="{%if show_hidden%}hidden{%else%}index{%endif%}">
+  <table id="IndexTable" class="table lk-capture-table"
+         data-indextype="{%if show_hidden%}hidden{%else%}index{%endif%}">
     <thead>
-     <tr>
-       <th>Page</th>
-       <th>Timestamp</th>
-       <th>Redirects</th>
-     </tr>
+      <tr>
+        <th>Capture</th>
+        <th class="text-end">Captured</th>
+      </tr>
     </thead>
   </table>
-  </div>
+</section>
 {% endblock %}

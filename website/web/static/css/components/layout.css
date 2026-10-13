@@ -1,0 +1,98 @@
+/*
+ * Page layout (layouts/page.html): content width, main column, page header.
+ * Doc: doc/ui/layout.md
+ */
+
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Wide, centred column shared by header, main and footer */
+.lk-container {
+  width: 100%;
+  max-width: var(--lk-content-max-width);
+  margin-inline: auto;
+  padding-inline: var(--lk-space-5);
+}
+
+.lk-container-narrow {
+  max-width: 960px;
+}
+
+@media (max-width: 576px) {
+  .lk-container {
+    padding-inline: var(--lk-space-4);
+  }
+}
+
+.lk-main {
+  flex: 1 0 auto;
+  padding-block: var(--lk-space-6) var(--lk-space-7);
+}
+
+.lk-skip-link {
+  position: absolute;
+  top: var(--lk-space-2);
+  left: var(--lk-space-2);
+  z-index: 1100;
+  padding: var(--lk-space-2) var(--lk-space-3);
+  background: var(--lk-color-surface);
+  border: 1px solid var(--lk-color-rule-strong);
+  border-radius: var(--lk-radius-md);
+}
+
+.lk-flashes .alert {
+  margin-bottom: var(--lk-space-4);
+}
+
+/* Page header (macros/page.html page_header()) */
+.lk-page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--lk-space-3) var(--lk-space-5);
+  margin-bottom: var(--lk-space-5);
+}
+
+.lk-page-header h1 {
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.lk-page-header-lead {
+  color: var(--lk-color-muted);
+  margin: var(--lk-space-1) 0 0;
+}
+
+.lk-page-header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--lk-space-2);
+}
+
+/* Section title inside a page */
+.lk-section-title {
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+/* Login box */
+.lk-login {
+  max-width: 420px;
+  margin: var(--lk-space-6) auto;
+}
+
+.lk-login .lk-page-header {
+  margin-bottom: var(--lk-space-4);
+}
+
+/* Generic surface: bordered box on the page background */
+.lk-card {
+  background: var(--lk-color-surface);
+  border: 1px solid var(--lk-color-rule);
+  border-radius: var(--lk-radius-lg);
+  padding: var(--lk-space-5);
+}

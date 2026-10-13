@@ -56,6 +56,50 @@ DataTable.render.datetime_with_tz = function () {
     };
 }
 
+// "3 days ago" with the exact date and time underneath and as a tooltip.
+// Only builds markup from a parsed Date, never from the raw input.
+function render_relative_time(data) {
+    const date = new Date(isNaN(data) ? data : parseInt(data));
+    if (isNaN(date.getTime())) {
+        return '';
+    }
+    const seconds = Math.round((date.getTime() - Date.now()) / 1000);
+    const units = [['year', 31536000], ['month', 2592000], ['week', 604800],
+                   ['day', 86400], ['hour', 3600], ['minute', 60]];
+    const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
+    let relative = rtf.format(seconds, 'second');
+    for (const [unit, size] of units) {
+        if (Math.abs(seconds) >= size) {
+            relative = rtf.format(Math.round(seconds / size), unit);
+            break;
+        }
+    }
+    const absolute = render_datetime_with_tz(date.getTime());
+    const short = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, "0")}-${date.getDate().toString().padStart(2, "0")} ${date.getHours().toString().padStart(2, "0")}:${date.getMinutes().toString().padStart(2, "0")}`;
+    const time = document.createElement('time');
+    time.dateTime = date.toISOString();
+    time.title = absolute;
+    time.className = 'lk-relative-time';
+    time.textContent = relative;
+    const small = document.createElement('span');
+    small.className = 'lk-absolute-time';
+    small.textContent = short;
+    time.appendChild(small);
+    return time.outerHTML;
+};
+
+DataTable.render.relative_time = function () {
+    return function ( data, type, row ) {
+        if ( type === 'display' ) {
+            return render_relative_time(data);
+        }
+        if ( type === 'filter' ) {
+            return render_datetime_with_tz(data);
+        }
+        return data;
+    };
+}
+
 function newTabClickListener() {
     document.querySelectorAll('.openNewTab').forEach(el => el.addEventListener('click', event => {
         if (window.opener === null) {

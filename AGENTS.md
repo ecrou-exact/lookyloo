@@ -57,8 +57,9 @@ website/web/
   sri.txt               Generated SRI hashes for every file in static/, keyed by
                         path relative to static/ (e.g. "css/theme.css")
   templates/
-    layouts/            Page skeletons (main.html: every page extends it)
-    partials/           Pieces included in layouts/pages (top_navbar.html)
+    layouts/            base.html (document skeleton, every page extends it) and
+                        page.html (base + header + footer, for normal pages)
+    partials/           Pieces included in layouts/pages (header.html, footer.html)
     macros/             Shared Jinja macros (macros.html)
     errors/             Error pages
     home/               Landing list of captures (index.html), search.html
@@ -147,12 +148,15 @@ cd website && DEBUG=1 poetry run flask --app web run --port 5100 --debug
 
 ### Template map
 
-All pages extend `templates/layouts/main.html` (loads Bootstrap CSS/JS, jQuery,
+All pages extend `templates/layouts/base.html` (loads Bootstrap CSS/JS, jQuery,
 DataTables, json-viewer, the shared CSS (`css/theme.css`, `css/bootstrap-bridge.css`,
 `css/base.css`, `css/utilities.css`), `js/generic.js`, `js/render_tables.js`,
 `js/theme_toggle.js`, and optional `custom_header.html` / `custom_footer.html` /
-`css/overrides.css` / `js/overrides.js`). Top-level pages include
-`partials/top_navbar.html`. Page-specific CSS goes in the `page_styles` block
+`css/overrides.css` / `js/overrides.js`). Normal pages extend
+`layouts/page.html` (header `partials/header.html`, footer `partials/footer.html`,
+`main` block, see `doc/ui/layout.md`); the tree and popups extend `base.html`
+directly. `investigate/*` pages are HTML fragments loaded in the tree modals
+unless opened with `from_popup=True`. Page-specific CSS goes in the `page_styles` block
 (loaded before `overrides.css`), never in `styles`.
 
 Where to put new files (decided once, so files don't move again):
@@ -172,7 +176,7 @@ their path from `static/` in both `url_for` and `get_sri`
 | Capture side panels (loaded in modals) | everything in `tree/modals/` |
 | Pivot / correlation pages | everything in `investigate/` |
 | Global listings | everything in `explore/`; `admin/stats.html` (instance statistics, login required) |
-| Misc | `errors/error.html`, `tree/prettify_text.html`, `macros/macros.html`, `partials/top_navbar.html` |
+| Misc | `errors/error.html`, `tree/prettify_text.html`, `macros/macros.html`, `macros/page.html`, `partials/header.html`, `partials/footer.html`, `admin/login.html` |
 
 Jinja globals available in every template (see `app.jinja_env.globals` in
 `website/web/__init__.py`): `get_sri`, `shorten_string`, `sizeof_fmt`,

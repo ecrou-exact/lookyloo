@@ -15,10 +15,15 @@ function renderTables() {
         url: `/tables/indexTable/${indexType}${window.location.search}`,
         type: 'POST',
       },
+      language: {
+        search: '',
+        searchPlaceholder: 'Filter by title or URL',
+        emptyTable: 'No capture to show yet.',
+        zeroRecords: 'No capture matches this filter.',
+      },
       columns : [
-          { data: {_: 'page.display', filter: 'page.filter'}, width: '40%' },
-          { data: 'capture_time', width: '20%', render: DataTable.render.datetime_with_tz() },
-          { data: {_: 'redirects.display', filter: 'redirects.filter'}, width: '40%' }
+          { data: {_: 'page.display', filter: 'page.filter'}, width: '80%' },
+          { data: 'capture_time', width: '20%', className: 'text-end', render: DataTable.render.relative_time() }
       ],
     })
   }

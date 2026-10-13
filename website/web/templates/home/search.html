@@ -1,4 +1,4 @@
-{% extends "layouts/main.html" %}
+{% extends "layouts/page.html" %}
 {% block title %}Search{% endblock %}
 
 {% block card %}
@@ -19,9 +19,8 @@
 <meta name="twitter:card" content="summary_large_image">
 {% endblock %}
 
-{% block content %}
+{% block main %}
 <div class="container">
-  {% include 'partials/top_navbar.html' %}
   <br>
   <div>Please only search one of the following thing at a time.</div>
   <br>

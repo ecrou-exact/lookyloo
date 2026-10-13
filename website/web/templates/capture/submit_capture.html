@@ -1,4 +1,4 @@
-{% extends "layouts/main.html" %}
+{% extends "layouts/page.html" %}
 {% from 'bootstrap5/utils.html' import render_messages %}
 {% block title %}Submit an existing capture{% endblock %}
 
@@ -20,10 +20,8 @@
 <meta name="twitter:card" content="summary_large_image">
 {% endblock %}
 
-{% block content %}
+{% block main %}
 <div class="container">
-  {% include 'partials/top_navbar.html' %}
-  {{ render_messages(container=True, dismissible=True) }}
   <form role="form" action="{{ url_for('submit_capture') }}" method=post enctype=multipart/form-data>
     <div class="row mb-3">
       <div class="col-sm-10">

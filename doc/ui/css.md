@@ -5,7 +5,7 @@ each file is served as-is and protected by SRI.
 
 ## Files and load order
 
-`templates/layouts/main.html` loads the stylesheets in this order. Later files
+`templates/layouts/base.html` loads the stylesheets in this order. Later files
 win, so the order matters.
 
 | # | File | Role | Contains |
@@ -16,8 +16,8 @@ win, so the order matters.
 | 4 | `css/bootstrap-bridge.css` | Bootstrap theming | Maps `--lk-*` onto `--bs-*`, and overrides the components where Bootstrap compiles literal colours (buttons, form focus, checkboxes, pagination, nav pills, dropdown and list-group active items, progress bars, accordion) |
 | 5 | `css/base.css` | Element defaults | Rules on HTML elements shared by every page: headings, links, focus ring, tables, logo inversion in dark mode |
 | 6 | `css/utilities.css` | Shared helpers | Small classes used by templates, Python-generated HTML and JS: `.new-capture-button`, `.help-tip`, `.blur`, `.middleEllipsis*`, `.tooltip` (D3), `.timeline`/`.tl-*`, arrows, collapse toggles, honeypot field |
-| 7 | `css/components/*.css` | Components | One file per `lk-` component, e.g. `components/icon.css` ([icons.md](icons.md)) |
-| 8 | Page CSS (`css/tree.css`, `css/stats.css`) | One page | Loaded only by its page through the `page_styles` block |
+| 7 | `css/components/*.css` | Components | One file per `lk-` component: `icon.css` ([icons.md](icons.md)), `layout.css`, `header.css`, `footer.css` ([layout.md](layout.md)), `loader.css` ([loader.md](loader.md)) |
+| 8 | Page CSS (`css/index.css`, `css/tree.css`, `css/stats.css`) | One page | Loaded only by its page through the `page_styles` block |
 | 9 | `css/overrides.css` | Instance hook | Optional, not in git, loaded last so an instance can override anything |
 
 ## Adding CSS
@@ -39,7 +39,7 @@ win, so the order matters.
   `overrides.css`, `styles` is not.
 - **A reusable piece of UI** → a component with the `lk-` class prefix (to avoid
   collisions with Bootstrap, e.g. `.alert`), in its own file
-  `css/components/<name>.css` added to the list in `layouts/main.html`, and
+  `css/components/<name>.css` added to the list in `layouts/base.html`, and
   documented in its own page in `doc/ui/`. `utilities.css` is for the legacy helpers; don't grow it.
 - **Changing Bootstrap's look** → `bootstrap-bridge.css`, using tokens.
 

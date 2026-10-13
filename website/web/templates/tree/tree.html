@@ -342,6 +342,12 @@
 
   {# Layout of the tree (js/tree.js, setupTreeControls) #}
   <div class="lk-tree-controls" role="toolbar" aria-label="Tree layout">
+    {# Labels shown or icons only (js/tree.js, setupControlsCompact), remembered #}
+    <button type="button" id="tree-controls-compact" class="lk-tree-controls-compact" aria-pressed="false"
+            title="Icons only" aria-label="Show the icons only">
+      <span class="lk-compact-off">{{ icon('bi:chevron-bar-right') }}</span>
+      <span class="lk-compact-on">{{ icon('bi:chevron-bar-left') }}</span>
+    </button>
     {# The icon shows the current orientation (js/tree.js, showOrientation) #}
     <button type="button" id="tree-orientation" title="Draw the tree from top to bottom" aria-label="Draw the tree from top to bottom">
       <span class="lk-orientation-horizontal">{{ icon('bi:arrow-left-right') }}</span>
@@ -859,6 +865,7 @@
   ("circle.node", "Fold a branch", "Click a circle to hide or show the hosts loaded by this one."),
   ("path.link.is-main-path", "The path to the page", "In colour: the redirects from the URL you gave to the page the browser finally showed."),
   (".lk-tree-controls", "Tree tools", "Draw the tree from left to right or from top to bottom, fold or unfold everything, compare with another capture, change the background, full screen."),
+  ("#tree-controls-compact", "Icons only", "Hide the labels of these tools to keep only their icons, or show them again. Your choice is remembered."),
   ("#tree-orientation", "Orientation", "Draw the tree from left to right, or from top to bottom when it is very wide. The icon shows the current way; your choice is remembered."),
   ("#tree-collapse-all", "Collapse all", "Fold every branch: only the first level stays. Then open the branches you are interested in."),
   ("#tree-expand-all", "Expand all", "Unfold the branches again, level after level, up to 400 hosts to keep the page fast; a message says when some stay folded."),

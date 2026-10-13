@@ -441,9 +441,22 @@ body.lk-capture-page > .lk-footer { flex: none; display: block; width: 100%; }
 #tree-orientation.is-vertical .lk-orientation-horizontal { display: none; }
 #tree-orientation.is-vertical .lk-orientation-vertical { display: inline-flex; }
 #tree-orientation span { display: inline-flex; }
+/* Icons only (#tree-controls-compact) */
+.lk-tree-controls > .lk-tree-controls-compact { color: var(--lk-color-muted); }
+#tree-controls-compact span { display: inline-flex; }
+#tree-controls-compact .lk-compact-on,
+.lk-tree-controls.is-compact #tree-controls-compact .lk-compact-off { display: none; }
+.lk-tree-controls.is-compact #tree-controls-compact .lk-compact-on { display: inline-flex; }
+.lk-tree-controls.is-compact .lk-tree-control-label,
+.lk-tree-controls.is-compact #tree-orientation .lk-tree-control-label,
+.lk-tree-controls.is-compact #tree-fullscreen .lk-tree-control-label { display: none; }
+.lk-tree-controls.is-compact > button,
+.lk-tree-controls.is-compact > .dropdown > button { width: 30px; padding: 0; }
 /* Labels next to the icons, like "Legend & filter"; icons only on small screens */
 .lk-tree-controls .lk-tree-control-label { display: inline; }
+#tree-controls-compact { width: 30px; padding: 0; }
 @media (max-width: 991.98px) {
+  #tree-controls-compact { display: none; }
   .lk-tree-controls .lk-tree-control-label,
   #tree-orientation .lk-tree-control-label,
   #tree-fullscreen .lk-tree-control-label { display: none; }

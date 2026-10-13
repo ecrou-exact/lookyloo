@@ -220,6 +220,7 @@ try {
   setupAttention(root);
   setupTreeSearch();
   setupTreeControls();
+  setupControlsCompact();
   setupNotes();
   setupCompare();
   setupFullscreen();
@@ -1020,6 +1021,28 @@ function showOrientation() {
     button.title = label;
     button.setAttribute('aria-label', label);
     button.classList.toggle('is-vertical', orientation === 'vertical');
+}
+
+// Tree controls with their labels, or icons only: remembered (localStorage)
+function setupControlsCompact() {
+    const button = document.getElementById('tree-controls-compact');
+    if (!button) return;
+    const bar = button.closest('.lk-tree-controls');
+    const show = (compact) => {
+        bar.classList.toggle('is-compact', compact);
+        button.setAttribute('aria-pressed', compact ? 'true' : 'false');
+        const label = compact ? 'Show the labels' : 'Show the icons only';
+        button.title = label;
+        button.setAttribute('aria-label', label);
+    };
+    let compact = false;
+    try { compact = localStorage.getItem('lk-tree-controls-compact') === '1'; } catch (e) { /* default */ }
+    show(compact);
+    button.addEventListener('click', () => {
+        compact = !compact;
+        show(compact);
+        try { localStorage.setItem('lk-tree-controls-compact', compact ? '1' : '0'); } catch (e) { /* not kept */ }
+    });
 }
 
 function setupTreeControls() {

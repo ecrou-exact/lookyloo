@@ -3,6 +3,7 @@
 // - The tree area fills the screen under the top block (site header, capture bar,
 //   messages): --lk-capture-top-height is kept equal to the height of that block.
 // - The capture bar can be folded to one line; the choice is remembered.
+// - The tree can be dragged with the mouse to scroll it.
 
 (() => {
     const top = document.getElementById('capture_top');
@@ -39,4 +40,67 @@
             localStorage.setItem(KEY, folded ? '1' : '0');
         } catch (e) { /* not remembered */ }
     });
+})();
+
+// Drag the tree with the mouse: press anywhere in the tree area and move to
+// scroll it (no need for the scrollbars). A press without movement stays a
+// normal click (card focus, hostname pop-up, icon filter); after a drag the
+// click is swallowed so nothing gets selected by accident.
+(() => {
+    const viewport = document.getElementById('tree_viewport');
+    if (!viewport) {
+        return;
+    }
+    const THRESHOLD = 4;   // pixels before a press becomes a drag
+    let start = null;
+    let dragged = false;
+
+    viewport.addEventListener('pointerdown', (event) => {
+        if (event.pointerType !== 'mouse' || event.button !== 0) {
+            return;   // touch screens scroll natively
+        }
+        start = {x: event.clientX, y: event.clientY, left: viewport.scrollLeft, top: viewport.scrollTop};
+        dragged = false;
+    });
+
+    viewport.addEventListener('pointermove', (event) => {
+        if (!start) {
+            return;
+        }
+        const dx = event.clientX - start.x;
+        const dy = event.clientY - start.y;
+        if (!dragged && Math.hypot(dx, dy) < THRESHOLD) {
+            return;
+        }
+        if (!dragged) {
+            dragged = true;
+            viewport.classList.add('is-panning');
+            viewport.setPointerCapture(event.pointerId);
+        }
+        viewport.scrollLeft = start.left - dx;
+        viewport.scrollTop = start.top - dy;
+        event.preventDefault();
+    });
+
+    const stop = (event) => {
+        if (!start) {
+            return;
+        }
+        start = null;
+        viewport.classList.remove('is-panning');
+        if (viewport.hasPointerCapture?.(event.pointerId)) {
+            viewport.releasePointerCapture(event.pointerId);
+        }
+    };
+    viewport.addEventListener('pointerup', stop);
+    viewport.addEventListener('pointercancel', stop);
+
+    // The click that ends a drag does nothing
+    viewport.addEventListener('click', (event) => {
+        if (dragged) {
+            event.stopPropagation();
+            event.preventDefault();
+            dragged = false;
+        }
+    }, true);
 })();

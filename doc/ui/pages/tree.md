@@ -170,6 +170,14 @@ background of the tree, the pill's ✕ or press Esc to show everything. It is a
 third filter, combined with the search and the icons (`isNeighbour()` in
 `nodeMatches()`).
 
+## Moving around the tree
+
+Press anywhere in the tree with the mouse and drag to scroll it
+(`js/capture_page.js`, cursor *grab* / *grabbing*): no need for the
+scrollbars. A press that doesn't move (less than 4 px) stays a normal click
+(card focus, hostname pop-up, icon filter, camera); the click that ends a drag
+is swallowed. Touch screens keep their native scrolling.
+
 ## Scrolling to a node
 
 Every "show this node" (search matches, bookmarks, located node, rendered

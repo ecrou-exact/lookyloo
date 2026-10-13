@@ -243,6 +243,10 @@ body.lk-capture-page .lk-header { position: static; }
   position: relative;
   outline: none;
 }
+/* Drag to scroll (js/capture_page.js) */
+.lk-tree-viewport { cursor: grab; }
+.lk-tree-viewport.is-panning { cursor: grabbing; user-select: none; }
+.lk-tree-viewport.is-panning * { cursor: grabbing !important; }
 
 #tree_svg { position: relative; }
 

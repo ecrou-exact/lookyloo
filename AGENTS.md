@@ -200,7 +200,9 @@ Filters: `markdown`, `b64encode`. Some HTML is also built in Python
 - **Third-party libs** (jQuery, DataTables BS5, D3, json-viewer) are downloaded
   by `tools/3rdparty.py` into `static/vendor/` and are git-ignored; Bootstrap is served by
   bootstrap-flask (`BOOTSTRAP_SERVE_LOCAL`). Adding a lib = add it to
-  `3rdparty.py` + regenerate SRI.
+  `3rdparty.py` + regenerate SRI. Offline install (no CDN):
+  `tools/3rdparty.py --export DIR` then `--from-dir DIR` or
+  `LOOKYLOO_VENDOR_DIR=DIR` (see `doc/ui/offline.md`).
 - **IDs and data-attributes are an API**: `render_tables.js` binds to element
   IDs (`#IndexTable`, `#categoriesTable`, `#HHHDetailsTable`, …) and to the
   JSON shape returned by `post_table`; `tree.js` reads `#menu_horizontal_content`,

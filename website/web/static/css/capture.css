@@ -27,6 +27,8 @@
 }
 
 .lk-form-section-head {
+  cursor: pointer;
+  list-style: none;
   display: flex;
   align-items: center;
   gap: var(--lk-space-3);
@@ -51,6 +53,35 @@
   color: var(--lk-color-accent);
   font-size: 1.2rem;
   flex-shrink: 0;
+}
+
+.lk-form-section-head::-webkit-details-marker {
+  display: none;
+}
+
+/* Chevron: turns when the section is open */
+.lk-form-section-head::after {
+  content: '';
+  margin-left: auto;
+  flex-shrink: 0;
+  width: 0.55rem;
+  height: 0.55rem;
+  border-right: 2px solid var(--lk-color-muted);
+  border-bottom: 2px solid var(--lk-color-muted);
+  transform: rotate(45deg);
+  transition: transform var(--lk-transition-fast);
+}
+
+.lk-form-section[open] > .lk-form-section-head::after {
+  transform: rotate(-135deg);
+}
+
+.lk-form-section:not([open]) > .lk-form-section-head {
+  border-bottom: 0;
+}
+
+.lk-form-section-head:hover h2 {
+  color: var(--lk-color-accent);
 }
 
 .lk-form-section-head h2 {

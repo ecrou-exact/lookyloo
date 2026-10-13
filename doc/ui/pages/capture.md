@@ -7,7 +7,9 @@ Route `capture_web` (`/capture`), template `capture/capture.html`, CSS
 
 Page header, then two columns (one column below 1100px):
 
-- **Sections** (numbered cards, macro `section()` local to the template):
+- **Sections** (numbered collapsible cards, `<details>`, macro `section()` local
+  to the template; only the first one (What to capture) open by default; a link of the summary
+  panel or an invalid field opens its section, see `js/capture.js`):
   1. What to capture: URL / multiple URLs / document tabs
   2. Privacy: public / unlisted / private as radio cards, seed expiration
   3. Browser: own user-agent, predefined (OS type, OS, browser, user-agent or

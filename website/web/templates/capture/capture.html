@@ -46,18 +46,18 @@
 {% endblock %}
 
 {% block main %}
-{% macro section(num, anchor, icon_name, title, description) -%}
-<section class="lk-form-section" id="{{ anchor }}" aria-labelledby="{{ anchor }}-title">
-  <header class="lk-form-section-head">
+{% macro section(num, anchor, icon_name, title, description, open=False) -%}
+<details class="lk-form-section" id="{{ anchor }}" {% if open %}open{% endif %}>
+  <summary class="lk-form-section-head">
     <span class="lk-form-section-num" aria-hidden="true">{{ num }}</span>
     <span class="lk-form-section-icon">{{ icon(icon_name) }}</span>
     <div>
       <h2 id="{{ anchor }}-title">{{ title }}</h2>
       <p>{{ description }}</p>
     </div>
-  </header>
+  </summary>
   <div class="lk-form-section-body">{{ caller() }}</div>
-</section>
+</details>
 {%- endmacro %}
 
 {% if current_user.is_authenticated %}
@@ -102,7 +102,7 @@
 <div class="lk-capture-sections">
 
   {# ---------------- 1. What to capture ---------------- #}
-  {% call section(1, 'capture-target', 'bi:crosshair', 'What to capture', 'One URL, a list of URLs, or a document opened in the browser.') %}
+  {% call section(1, 'capture-target', 'bi:crosshair', 'What to capture', 'One URL, a list of URLs, or a document opened in the browser.', open=True) %}
     <nav>
       <div class="nav nav-tabs lk-capture-tabs" id="submission-type" role="tablist">
         <button class="nav-link active" id="nav-url-tab" data-bs-toggle="tab" data-bs-target="#nav-url" type="button" role="tab" aria-current="nav-url" aria-selected="true" href="#">{{ icon('misp:attributes/url') }} URL(s)</button>

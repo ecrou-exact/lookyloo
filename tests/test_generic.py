@@ -74,7 +74,7 @@ def test_capture_page(page: Page) -> None:
         page.get_by_role("button", name="Toggle navigation").click()
     page.get_by_role("navigation", name="Main navigation").get_by_role("link", name="Search").click()
     expect(page).to_have_title(re.compile("Search"))
-    page.get_by_role("textbox", name="URL part:").fill(domain)
+    page.get_by_role("textbox", name="URL part").fill(domain)
     page.get_by_role("button", name="Search").click()
     expect(page).to_have_title(re.compile(domain))
     expect(page.get_by_text("The capture contains").first).to_be_visible()

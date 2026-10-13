@@ -24,46 +24,68 @@
 {{ page_header('Search', description='Find the captures that loaded a URL, a hostname, an IP address, a resource, a cookie or a favicon. Search one thing at a time.', icon_name='bi:search') }}
 {% endblock %}
 
+{% block page_styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}"
+      {{get_sri('static', 'css/search.css')}}
+      crossorigin="anonymous">
+{% endblock %}
+
 {% block main %}
-<div class="container">
-  <form role="form" action="{{ url_for('search') }}" method=post enctype=multipart/form-data>
-    <div class="row mb-3">
-      <label for="url" class="col-sm-2 col-form-label">URL part:</label>
-      <div class="col-sm-10">
-        <input type="text" class="form-control" name="url" id=url placeholder="Full URL, hostname, domain, suffix, or TLD">
+<form class="lk-search lk-card" role="search" action="{{ url_for('search') }}" method=post
+      enctype=multipart/form-data data-lk-loading="Searching">
+  <p class="lk-search-note">{{ icon('bi:info-circle') }} <span>Fill in <strong>one</strong> field: the first one filled is used.</span></p>
+  <div class="lk-search-grid">
+      <div class="lk-search-field">
+        <span class="lk-search-field-icon">{{ icon('misp:attributes/url') }}</span>
+        <div class="lk-search-field-body">
+          <label for="url">URL part</label>
+          <p id="url-hint">Full URL, hostname, domain, suffix or TLD</p>
+          <input type="text" class="form-control" name="url" id="url" placeholder="https://example.com/login" aria-describedby="url-hint" autocomplete="off" spellcheck="false">
+        </div>
       </div>
-    </div>
-    <div class="row mb-3">
-      <label for="ip" class="col-sm-2 col-form-label">IP Address:</label>
-      <div class="col-sm-10">
-        <input type="text" class="form-control" name="ip" id=ip placeholder="IP">
+      <div class="lk-search-field">
+        <span class="lk-search-field-icon">{{ icon('misp:attributes/ip-dst') }}</span>
+        <div class="lk-search-field-body">
+          <label for="ip">IP address</label>
+          <p id="ip-hint">IPv4 or IPv6 address seen in a capture</p>
+          <input type="text" class="form-control" name="ip" id="ip" placeholder="203.0.113.42" aria-describedby="ip-hint" autocomplete="off" spellcheck="false">
+        </div>
       </div>
-    </div>
-    <div class="row mb-3">
-      <label for="ressource" class="col-sm-2 col-form-label">Ressource:</label>
-      <div class="col-sm-10">
-        <input type="text" class="form-control" name="ressource" id=ressource placeholder="Sha521 of the ressource">
+      <div class="lk-search-field">
+        <span class="lk-search-field-icon">{{ icon('misp:attributes/sha256') }}</span>
+        <div class="lk-search-field-body">
+          <label for="ressource">Resource</label>
+          <p id="ressource-hint">SHA512 of a file loaded by a page (script, image...)</p>
+          <input type="text" class="form-control" name="ressource" id="ressource" placeholder="sha512" aria-describedby="ressource-hint" autocomplete="off" spellcheck="false">
+        </div>
       </div>
-    </div>
-    <div class="row mb-3">
-      <label for="cookie" class="col-sm-2 col-form-label">Cookie name:</label>
-      <div class="col-sm-10">
-        <input type="text" class="form-control" name="cookie" id=cookie placeholder="Cookie name">
+      <div class="lk-search-field">
+        <span class="lk-search-field-icon">{{ icon('misp:attributes/cookie') }}</span>
+        <div class="lk-search-field-body">
+          <label for="cookie">Cookie name</label>
+          <p id="cookie-hint">Name of a cookie set by a page</p>
+          <input type="text" class="form-control" name="cookie" id="cookie" placeholder="_ga" aria-describedby="cookie-hint" autocomplete="off" spellcheck="false">
+        </div>
       </div>
-    </div>
-    <div class="row mb-3">
-      <label for="favicon_sha512" class="col-sm-2 col-form-label">Favicon SHA512:</label>
-      <div class="col-sm-10">
-        <input type="text" class="form-control" name="favicon_sha512" id=favicon_sha512 placeholder="Sha512 of a favicon">
+      <div class="lk-search-field">
+        <span class="lk-search-field-icon">{{ icon('misp:attributes/sha1') }}</span>
+        <div class="lk-search-field-body">
+          <label for="favicon_sha512">Favicon hash</label>
+          <p id="favicon_sha512-hint">SHA512 of a favicon</p>
+          <input type="text" class="form-control" name="favicon_sha512" id="favicon_sha512" placeholder="sha512" aria-describedby="favicon_sha512-hint" autocomplete="off" spellcheck="false">
+        </div>
       </div>
-    </div>
-    <div class="row mb-3">
-      <label for="favicon_file" class="col-sm-2 col-form-label">Favicon:</label>
-      <div class="col-sm-10">
-        <input class="form-control" type="file" id="favicon_file" name="favicon_file">
+      <div class="lk-search-field">
+        <span class="lk-search-field-icon">{{ icon('bi:image') }}</span>
+        <div class="lk-search-field-body">
+          <label for="favicon_file">Favicon file</label>
+          <p id="favicon_file-hint">Upload a favicon to find the captures using it</p>
+          <input class="form-control" type="file" id="favicon_file" name="favicon_file" aria-describedby="favicon_file-hint">
+        </div>
       </div>
-    </div>
-    <button type="submit" class="btn btn-primary" id="btn-looking">Search</button>
-  </form>
-</div>
+  </div>
+  <div class="lk-search-actions">
+    <button type="submit" class="btn btn-primary btn-lg" id="btn-looking">{{ icon('bi:search') }} Search</button>
+  </div>
+</form>
 {% endblock %}

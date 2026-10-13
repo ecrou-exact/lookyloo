@@ -419,3 +419,17 @@
   font-size: var(--lk-font-size-xs);
   padding: 0.1rem 0.55rem 0.1rem 0.45rem;
 }
+
+/* "Reset filters" button added next to the DataTables search box (js/render_tables.js) */
+.lk-dt-reset {
+  margin-left: var(--lk-space-2);
+  white-space: nowrap;
+}
+
+.dt-search {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: var(--lk-space-1);
+}

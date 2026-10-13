@@ -4,6 +4,163 @@
 // (lkLoader() from js/loader.js; the dots are hidden in css/components/loader.css).
 DataTable.defaults.language.processing = lkLoader('Loading');
 
+// Pagination in the URL: ?page=2 (and &length=25 when the page size was changed).
+// Restored when the page is loaded, so a reload or a shared link opens the same page.
+// Several tables on a page: the parameters are prefixed with the table id
+// (?hostnameTable_page=2). Tables inside modals (capture tree) are left alone.
+function lkPaginationKeys(table) {
+    const several = [...document.querySelectorAll('table')].filter(t => !t.closest('.modal')).length > 1
+                    && table.id;
+    return several ? [`${table.id}_page`, `${table.id}_length`, `${table.id}_q`] : ['page', 'length', 'q'];
+}
+
+function lkPaginationEnabled(table) {
+    return table && !table.closest('.modal');
+}
+
+// DataTables 3 triggers its events on the table only (no bubbling): bind them on
+// each table now (this script runs after the tables are in the page, before any
+// DataTable is created).
+// DataTables 3 settings names (pageLength, displayStart, features, init), with the
+// DataTables 1/2 names as a fallback.
+function lkWantedPagination(table) {
+    const [pageKey, lengthKey, searchKey] = lkPaginationKeys(table);
+    const params = new URLSearchParams(window.location.search);
+    return {page: parseInt(params.get(pageKey), 10), length: parseInt(params.get(lengthKey), 10),
+            search: params.get(searchKey) || ''};
+}
+
+// Filters other than the DataTables search box, set in the URL (e.g. ?category= on
+// the captures list): the reset button removes them too.
+const LK_URL_FILTERS = ['category'];
+
+function lkUrlFiltersActive() {
+    const params = new URLSearchParams(window.location.search);
+    return LK_URL_FILTERS.some(key => params.get(key));
+}
+
+// "Reset filters" button next to the search box, shown only when a filter is active
+function lkResetButton(table, api) {
+    const container = table.closest('.dt-container');
+    if (!container) {
+        return null;
+    }
+    let button = container.querySelector('.lk-dt-reset');
+    if (!button) {
+        button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'btn btn-sm btn-outline-primary lk-dt-reset';
+        button.innerHTML = '<span aria-hidden="true">&times;</span> ';
+        button.appendChild(document.createTextNode('Reset filters'));
+        button.hidden = true;
+        button.addEventListener('click', () => {
+            if (lkUrlFiltersActive()) {
+                // URL filters are applied by the server: reload without them
+                const url = new URL(window.location.href);
+                [...LK_URL_FILTERS, ...lkPaginationKeys(table)].forEach(key => url.searchParams.delete(key));
+                window.location.assign(url);
+                return;
+            }
+            api.search('');
+            api.columns().search('');
+            api.page(0).draw();
+        });
+        const search = container.querySelector('.dt-search');
+        (search || container).appendChild(button);
+    }
+    return button;
+}
+
+// Before the first load: jump to the page in the URL (saves a request for the
+// server-side tables). Only when the page size is the default one.
+function lkOnPreInit(e, settings) {
+    // Read the URL once, before the first draw rewrites it
+    const wanted = lkWantedPagination(e.currentTarget);
+    e.currentTarget._lkWanted = wanted;
+    const pageLength = settings.pageLength ?? settings._iDisplayLength;
+    if (wanted.page > 1 && !wanted.length && pageLength > 0) {
+        const start = (wanted.page - 1) * pageLength;
+        if ('displayStart' in settings) {
+            settings.displayStart = start;
+            settings.displayStartInit = start;
+        } else {
+            settings._iDisplayStart = start;
+        }
+    }
+}
+
+// After the first load: apply what preInit could not (custom page size, tables
+// loading their data afterwards).
+function lkOnInit(e, settings) {
+    const table = e.currentTarget;
+    const wanted = table._lkWanted || lkWantedPagination(table);
+    table._lkReady = true;
+    const api = new DataTable.Api(settings);
+    let changed = false;
+    if (wanted.search && api.search() !== wanted.search) {
+        api.search(wanted.search);
+        changed = true;
+    }
+    if ((wanted.length > 0 || wanted.length === -1) && api.page.len() !== wanted.length) {
+        api.page.len(wanted.length);
+        changed = true;
+    }
+    if (wanted.page > 1 && api.page() !== wanted.page - 1 && wanted.page <= api.page.info().pages) {
+        api.page(wanted.page - 1);
+        changed = true;
+    }
+    if (changed) {
+        api.draw(false);
+    } else {
+        lkOnDraw(e, settings);  // sync the URL and the reset button with the current state
+    }
+}
+
+function lkOnDraw(e, settings) {
+    const table = e.currentTarget;
+    if (!table._lkReady) {
+        return;  // first draw: the page asked by the URL is not applied yet (lkOnInit)
+    }
+    const api = new DataTable.Api(settings);
+    const info = api.page.info();
+    const [pageKey, lengthKey, searchKey] = lkPaginationKeys(table);
+    const url = new URL(window.location.href);
+    const search = api.search();
+    if (search) {
+        url.searchParams.set(searchKey, search);
+    } else {
+        url.searchParams.delete(searchKey);
+    }
+    // Array in DataTables 3, array-like API object before
+    const columnsFiltered = Array.prototype.some.call(api.columns().search(), v => v);
+    const reset = lkResetButton(table, api);
+    if (reset) {
+        reset.hidden = !(search || columnsFiltered || lkUrlFiltersActive());
+    }
+    if (info.page > 0) {
+        url.searchParams.set(pageKey, info.page + 1);
+    } else {
+        url.searchParams.delete(pageKey);
+    }
+    const init = settings.init || settings.oInit || {};
+    const defaultLength = init.pageLength || DataTable.defaults.pageLength;
+    if (info.length !== defaultLength) {
+        url.searchParams.set(lengthKey, info.length);
+    } else {
+        url.searchParams.delete(lengthKey);
+    }
+    if (url.href !== window.location.href) {
+        history.replaceState(history.state, '', url);
+    }
+}
+
+document.querySelectorAll('table').forEach(table => {
+    if (lkPaginationEnabled(table)) {
+        // DataTables triggers 'draw.dt': jQuery only calls handlers bound with that namespace
+        $(table).on('preInit.dt', lkOnPreInit).on('init.dt', lkOnInit).on('draw.dt', lkOnDraw);
+    }
+});
+
 function renderTables() {
   if (document.getElementById('IndexTable')) {
     let indexType = document.getElementById('IndexTable').dataset.indextype;

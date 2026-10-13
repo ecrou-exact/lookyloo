@@ -1,5 +1,6 @@
 {% extends "layouts/base.html" %}
 {% from 'macros/loader.html' import loader %}
+{% from 'macros/modals.html' import remote_modal %}
 
 {% from 'bootstrap5/utils.html' import render_messages %}
 {% from "macros/macros.html" import monitoring_form %}
@@ -361,410 +362,50 @@
   </div>
 </div>
 
-<div class="modal fade" id="statsModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-xl" role="document">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title" id="statsModalLabel">Statistics</h5>
-              <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-              {{ loader('Loading statistics', show_label=True) }}
-          </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </div>
-      </div>
-  </div>
-</div>
+{{ remote_modal('statsModal', 'Statistics', 'Loading statistics') }}
 
-<div class="modal fade" id="storageStateModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-xl" role="document">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title" id="storageStateModalLabel">Storage State </h5>
-              <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-              {{ loader('Loading storage state', show_label=True) }}
-          </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </div>
-      </div>
-  </div>
-</div>
+{{ remote_modal('storageStateModal', 'Storage State', 'Loading storage state') }}
 
-<div class="modal fade" id="consoleMessagesModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-xl" role="document">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title" id="consoleMessagesModalLabel">Console Messages</h5>
-              <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-              {{ loader('Loading console messages', show_label=True) }}
-          </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </div>
-      </div>
-  </div>
-</div>
+{{ remote_modal('consoleMessagesModal', 'Console Messages', 'Loading console messages') }}
 
-<div class="modal fade" id="downloadsModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-xl" role="document">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title" id="downloadsModalLabel">Downloads</h5>
-              <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-              {{ loader('Loading downloads', show_label=True) }}
-          </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </div>
-      </div>
-  </div>
-</div>
+{{ remote_modal('downloadsModal', 'Downloads', 'Loading downloads') }}
 
-<div class="modal fade" id="videoModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-xl" role="document">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title" id="videoModalLabel">Video</h5>
-              <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-              {{ loader('Loading video', show_label=True) }}
-          </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </div>
-      </div>
-  </div>
-</div>
+{{ remote_modal('videoModal', 'Video', 'Loading video') }}
 
-<div class="modal fade" id="identifiersModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-xl" role="document">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title" id="identifiersModalLabel">Identifiers found on the rendered page</h5>
-              <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-              {{ loader('Loading identifiers', show_label=True) }}
-          </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </div>
-      </div>
-  </div>
-</div>
+{{ remote_modal('identifiersModal', 'Identifiers found on the rendered page', 'Loading identifiers') }}
 
-<div class="modal fade" id="identifierDetailsModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-xl" role="document">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title" id="identifierDetailsModalLabel">Other occurrences of the identifier</h5>
-              <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-              {{ loader('Loading identifier details', show_label=True) }}
-          </div>
-          <div class="modal-footer">
-              <a class="btn btn-primary" href="#identifiersModal"
-                 data-remote="{{ url_for('tree_identifiers', tree_uuid=tree_uuid, seed=seed) }}"
-                 data-bs-toggle="modal" data-bs-target="#identifiersModal" role="button">Back to capture's identifiers</a>
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </div>
-      </div>
-  </div>
-</div>
+{{ remote_modal('identifierDetailsModal', 'Other occurrences of the identifier', 'Loading identifier details') }}
 
-<div class="modal fade" id="faviconsModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-xl" role="document">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title" id="faviconsModalLabel">Favicons found on the rendered page</h5>
-              <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-              {{ loader('Loading favicons', show_label=True) }}
-          </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </div>
-      </div>
-  </div>
-</div>
+{{ remote_modal('faviconsModal', 'Favicons found on the rendered page', 'Loading favicons') }}
 
-<div class="modal fade" id="faviconDetailsModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-xl" role="document">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title" id="faviconDetailsModalLabel">Other occurrences of the favicon</h5>
-              <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-              {{ loader('Loading favicon details', show_label=True) }}
-          </div>
-          <div class="modal-footer">
-              <a class="btn btn-primary" href="#faviconsModal"
-                 data-remote="{{ url_for('tree_favicons', tree_uuid=tree_uuid, seed=seed) }}"
-                 data-bs-toggle="modal" data-bs-target="#faviconsModal" role="button">Back to capture's favicons</a>
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </div>
-      </div>
-  </div>
-</div>
+{{ remote_modal('faviconDetailsModal', 'Other occurrences of the favicon', 'Loading favicon details') }}
 
-<div class="modal fade" id="captureHashesTypesModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-xl" role="document">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title" id="captureHashesTypesModalLabel">Hashes of the rendered page</h5>
-              <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-              {{ loader('Loading hash types', show_label=True) }}
-          </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </div>
-      </div>
-  </div>
-</div>
+{{ remote_modal('captureHashesTypesModal', 'Hashes of the rendered page', 'Loading hash types') }}
 
-<div class="modal fade" id="captureHashesTypesDetailsModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-xl" role="document">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title" id="captureHashesTypesDetailsModalLabel">Other occurrences of the hash</h5>
-              <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-              {{ loader('Loading hash details', show_label=True) }}
-          </div>
-          <div class="modal-footer">
-              <a class="btn btn-primary" href="#captureHashesTypesModal"
-                 data-remote="{{ url_for('tree_capture_hashes_types', tree_uuid=tree_uuid, seed=seed) }}"
-                 data-bs-toggle="modal" data-bs-target="#captureHashesTypesModal" role="button">Back to capture's hashes</a>
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </div>
-      </div>
-  </div>
-</div>
+{{ remote_modal('captureHashesTypesDetailsModal', 'Other occurrences of the hash', 'Loading hash details') }}
 
-<div class="modal fade" id="faviconDetailsProbabilisticHashModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-xl" role="document">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title" id="faviconDetailsProbabilisticHashModalLabel">Other occurrences of the favicon from a probabilistic hash</h5>
-              <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-              {{ loader('Loading favicon details from probabilistic hash', show_label=True) }}
-          </div>
-          <div class="modal-footer">
-              <a class="btn btn-primary" href="#faviconsModal"
-                 data-remote="{{ url_for('tree_favicons', tree_uuid=tree_uuid, seed=seed) }}"
-                 data-bs-toggle="modal" data-bs-target="#faviconsModal" role="button">Back to capture's favicons</a>
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </div>
-      </div>
-  </div>
-</div>
+{{ remote_modal('faviconDetailsProbabilisticHashModal', 'Other occurrences of the favicon from a probabilistic hash', 'Loading favicon details from probabilistic hash') }}
 
-<div class="modal fade" id="bodyHashesModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-xl" role="document">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title" id="bodyHashesModalLabel">Resources in tree</h5>
-              <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-              {{ loader('Loading resources', show_label=True) }}
-          </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </div>
-      </div>
-  </div>
-</div>
+{{ remote_modal('bodyHashesModal', 'Resources in tree', 'Loading resources') }}
 
-<div class="modal fade" id="bodyHashDetailsModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-xl" role="document">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title" id="bodyHashDetailsModalLabel">Other occurrences of the resource</h5>
-              <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-              {{ loader('Loading resource details', show_label=True) }}
-          </div>
-          <div class="modal-footer">
-              <a class="btn btn-primary" href="#bodyHashesModal"
-                 data-remote="{{ url_for('tree_body_hashes', tree_uuid=tree_uuid, seed=seed) }}"
-                 data-bs-toggle="modal" data-bs-target="#bodyHashesModal" role="button">Back to capture's resources</a>
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </div>
-      </div>
-  </div>
-</div>
+{{ remote_modal('bodyHashDetailsModal', 'Other occurrences of the resource', 'Loading resource details') }}
 
-<div class="modal fade" id="ipsModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-xl" role="document">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title" id="ipsModalLabel">IPs in tree</h5>
-              <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-              {{ loader('Loading IPs', show_label=True) }}
-          </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </div>
-      </div>
-  </div>
-</div>
+{{ remote_modal('ipsModal', 'IPs in tree', 'Loading IPs') }}
 
-<div class="modal fade" id="ipDetailsModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-xl" role="document">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title" id="ipDetailsModalLabel">Other occurrences of the IP</h5>
-              <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-              {{ loader('Loading IP details', show_label=True) }}
-          </div>
-          <div class="modal-footer">
-              <a class="btn btn-primary" href="#HostnamesModal"
-                 data-remote="{{ url_for('tree_hostnames', tree_uuid=tree_uuid, seed=seed) }}"
-                 data-bs-toggle="modal" data-bs-target="#hostnamesModal" role="button">Back to capture's hostnames</a>
-              <a class="btn btn-primary" href="#ipsModal"
-                 data-remote="{{ url_for('tree_ips', tree_uuid=tree_uuid, seed=seed) }}"
-                 data-bs-toggle="modal" data-bs-target="#ipsModal" role="button">Back to capture's IPs</a>
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </div>
-      </div>
-  </div>
-</div>
+{{ remote_modal('ipDetailsModal', 'Other occurrences of the IP', 'Loading IP details') }}
 
 
-<div class="modal fade" id="hostnamesModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-xl" role="document">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title" id="hostnamesModalLabel">Hostnames in tree</h5>
-              <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-              {{ loader('Loading hostnames', show_label=True) }}
-          </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </div>
-      </div>
-  </div>
-</div>
+{{ remote_modal('hostnamesModal', 'Hostnames in tree', 'Loading hostnames') }}
 
-<div class="modal fade" id="hostnameDetailsModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-xl" role="document">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title" id="hostnameDetailsModalLabel">Other occurrences of the hostname</h5>
-              <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-              {{ loader('Loading hostname details', show_label=True) }}
-          </div>
-          <div class="modal-footer">
-              <a class="btn btn-primary" href="#ipsModal"
-                 data-remote="{{ url_for('tree_ips', tree_uuid=tree_uuid, seed=seed) }}"
-                 data-bs-toggle="modal" data-bs-target="#ipsModal" role="button">Back to capture's IPs</a>
-              <a class="btn btn-primary" href="#HostnamesModal"
-                 data-remote="{{ url_for('tree_hostnames', tree_uuid=tree_uuid, seed=seed) }}"
-                 data-bs-toggle="modal" data-bs-target="#hostnamesModal" role="button">Back to capture's hostnames</a>
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </div>
-      </div>
-  </div>
-</div>
+{{ remote_modal('hostnameDetailsModal', 'Other occurrences of the hostname', 'Loading hostname details') }}
 
-<div class="modal fade" id="urlsModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-xl" role="document">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title" id="urlsModalLabel">URLs in tree</h5>
-              <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-              {{ loader('Loading urls', show_label=True) }}
-          </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </div>
-      </div>
-  </div>
-</div>
+{{ remote_modal('urlsModal', 'URLs in tree', 'Loading urls') }}
 
-<div class="modal fade" id="urlDetailsModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-xl" role="document">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title" id="hostnameDetailsModalLabel">Other occurrences of the URL</h5>
-              <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-              {{ loader('Loading url details', show_label=True) }}
-          </div>
-          <div class="modal-footer">
-              <a class="btn btn-primary" href="#HostnamesModal"
-                 data-remote="{{ url_for('tree_urls', tree_uuid=tree_uuid, seed=seed) }}"
-                 data-bs-toggle="modal" data-bs-target="#urlsModal" role="button">Back to capture's URLs</a>
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </div>
-      </div>
-  </div>
-</div>
+{{ remote_modal('urlDetailsModal', 'Other occurrences of the URL', 'Loading url details') }}
 
-<div class="modal fade" id="mispPushModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-xl" role="document">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title" id="mispPushModalLabel">MISP Push</h5>
-              <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-              {{ loader('Loading MISP Push view', show_label=True) }}
-          </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </div>
-      </div>
-  </div>
-</div>
+{{ remote_modal('mispPushModal', 'MISP Push', 'Loading MISP Push view') }}
 
-<div class="modal fade" id="mispLookupModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-xl" role="document">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title" id="mispLookupModalLabel">MISP Lookup</h5>
-              <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-              {{ loader('Loading MISP Lookup view', show_label=True) }}
-          </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </div>
-      </div>
-  </div>
-</div>
+{{ remote_modal('mispLookupModal', 'MISP Lookup', 'Loading MISP Lookup view') }}
 
 <div class="modal fade" id="screenshotModal" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-xl" role="document">
@@ -797,89 +438,15 @@
   </div>
 </div>
 
-<div class="modal fade" id="modulesModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-xl" role="document">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h4 class="modal-title" id="modulesModalLabel">
-                  Reports from 3rd party services
-              </h4>
-              <br>
-              <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <br>
-          <center><h5>Note that if you get an error when you click on a
-                  link below, it probably means the capture is still ongoing.
-                  Try reloading the page after a few seconds.</h5></center>
-          <div class="modal-body" id="modulesBody">
-              {{ loader('Loading results from 3rd party modules', show_label=True) }}
-          </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-success" id="modulesForceRefresh">Re-run all modules</button>
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </div>
-      </div>
-  </div>
-</div>
+{% call remote_modal('modulesModal', 'Reports from 3rd party services', 'Loading results from 3rd party modules',
+                     note='If a link below gives an error, the capture is probably still ongoing: reload the page in a few seconds.',
+                     body_id='modulesBody') %}
+<button type="button" class="btn btn-success" id="modulesForceRefresh">Re-run all modules</button>
+{% endcall %}
 
-<div class="modal fade" id="historyModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-xl" role="document">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h4 class="modal-title" id="historyModalLabel">
-                  Historical data and context about this capture
-              </h4>
-              <br>
-              <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <br>
-          <div class="modal-body">
-              {{ loader('Loading results historical context', show_label=True) }}
-          </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </div>
-      </div>
-  </div>
-</div>
+{{ remote_modal('historyModal', 'Historical data and context about this capture', 'Loading results historical context') }}
 
-<div class="modal fade" id="statsModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-xl" role="document">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title" id="statsModalLabel">Statistics</h5>
-              <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-              {{ loader('Loading statistics', show_label=True) }}
-          </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </div>
-      </div>
-  </div>
-</div>
-
-<div class="modal fade" id="downloadModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-xl" role="document">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h4 class="modal-title" id="downloadModalLabel">
-                  Forensic Acquisition of the Web Capture
-              </h4>
-              <br>
-              <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <br>
-          <div class="modal-body">
-            {{ loader('Loading elements', show_label=True) }}
-          </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </div>
-      </div>
-  </div>
-</div>
+{{ remote_modal('downloadModal', 'Forensic Acquisition of the Web Capture', 'Loading elements') }}
 
 <div class="modal fade" id="visibilityModal" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-xl" role="document">
@@ -972,65 +539,12 @@
   </div>
 </div>
 
-<div class="modal fade" id="ollamaModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-xl" role="document">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h4 class="modal-title" id="ollamaModalLabel">
-                  Ollama Report
-              </h4>
-              <br>
-              <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <br>
-          <div class="modal-body">
-              {{ loader('Loading report from ollama', show_label=True) }}
-          </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </div>
-      </div>
-  </div>
-</div>
+{{ remote_modal('ollamaModal', 'Ollama Report', 'Loading report from ollama') }}
 
-<div class="modal fade" id="hashlookupModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-xl" role="document">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h4 class="modal-title" id="hashlookupModalLabel">
-                  Hits in Hashlookup
-              </h4>
-              <br>
-              <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <br>
-          <div class="modal-body">
-              {{ loader('Loading results from hashlookup', show_label=True) }}
-          </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </div>
-      </div>
-  </div>
-</div>
+{{ remote_modal('hashlookupModal', 'Hits in Hashlookup', 'Loading results from hashlookup') }}
 
 {% if enable_categorization %}
-<div class="modal fade" id="categoriesModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-xl" role="document">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title" id="categoriesModalLabel">Categorize the capture</h5>
-              <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-              {{ loader('Loading the categorization options', show_label=True) }}
-          </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </div>
-      </div>
-  </div>
-</div>
+{{ remote_modal('categoriesModal', 'Categorize the capture', 'Loading the categorization options') }}
 {% endif %}
 
 {% if enable_monitoring %}
@@ -1079,21 +593,6 @@
 </div>
 {% endif %}
 
-<div class="modal fade" id="urlsInPageModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-xl" role="document">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title" id="urlsInPageModalLabel">URLs in the rendered page</h5>
-              <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-              {{ loader('Loading URLs in rendered page', show_label=True) }}
-          </div>
-          <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          </div>
-      </div>
-  </div>
-</div>
+{{ remote_modal('urlsInPageModal', 'URLs in the rendered page', 'Loading URLs in rendered page') }}
 {% endblock content %}
 {% endblock body %}

@@ -101,3 +101,23 @@ same key as in `icon_list()` (or the badge) in `js/tree.js`.
 Flash messages (capture not indexed, downloads, errors…) are shown under the
 capture bar (`.lk-capture-flashes`), dismissible, instead of floating over the
 tree.
+
+## Modals
+
+Modals whose content comes from the server are all defined with one macro,
+`remote_modal(id, title, loading, note=None, body_id=None)` in
+`macros/modals.html` (doc in the file): same ids as before, so the links of the
+toolbar and of the loaded fragments (details buttons, `details_modal_button()`)
+still target them with `data-bs-target="#<id>"` + `data-remote="<url>"`.
+`js/tree_modals.js` listens on every `.modal[data-lk-remote-modal]` (no list
+of ids to maintain): it shows the eyes loader, fetches `data-remote` and puts
+the answer in `.modal-body`. A list modal and its details modal are separate
+modals, so opening details from a list keeps the list.
+
+To add one: a link with `data-bs-toggle="modal"`, `data-bs-target="#myModal"`,
+`data-remote="{{ url_for(...) }}"`, and `{{ remote_modal('myModal', 'Title', 'Loading …') }}`
+in `tree.html`.
+
+The modals with server-rendered content or forms (details, screenshot,
+visibility, push to another Lookyloo, monitoring, e-mail notification) are
+still written in `tree.html`.

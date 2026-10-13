@@ -167,25 +167,19 @@ function LocateNode(hostnode_uuid) {
 
 // Modals
 document.addEventListener("DOMContentLoaded", () => {
-    ["#hashlookupModal", "#modulesModal", "#historyModal", "#categoriesModal", "#statsModal",
-     "#downloadModal", "#videoModal",
-     "#identifiersModal", "#identifierDetailsModal",
-     "#faviconsModal", "#faviconDetailsModal",
-     "#faviconDetailsProbabilisticHashModal",
-     "#captureHashesTypesModal", "#captureHashesTypesDetailsModal",
-     "#bodyHashesModal", "#bodyHashDetailsModal",
-     "#hostnamesModal", "#hostnameDetailsModal",
-     "#urlsModal", "#urlDetailsModal", "#consoleMessagesModal",
-     "#urlsInPageModal", "#storageStateModal", "#downloadsModal",
-     "#ipsModal", "#ipDetailsModal", "#ollamaModal",
-     "#mispPushModal", "#mispLookupModal"].forEach(modal => {
-        // Some modals only exist when their feature is enabled (e.g. #categoriesModal):
-        // skip the missing ones instead of stopping the loop for all the others.
-        document.querySelector(modal)?.addEventListener('show.bs.modal', function(e) {
-          var curTarget = e.currentTarget;
+    // Every modal loaded from the server (macros/modals.html remote_modal): the link
+    // that opens it carries the URL of the content in data-remote.
+    document.querySelectorAll('.modal[data-lk-remote-modal]').forEach(modal => {
+        modal.addEventListener('show.bs.modal', function(e) {
+          const curTarget = e.currentTarget;
+          const remote = e.relatedTarget?.dataset.remote;
+          if (!remote) {
+            // Opened without a link (e.g. from code): keep the current content
+            return;
+          }
           // Eyes while loading, also when the modal is opened again with other content
           curTarget.querySelector('.modal-body').innerHTML = lkLoader('Loading', 'md', true);
-          fetch(e.relatedTarget.dataset.remote)
+          fetch(remote)
             .then(response => response.text())
             .then(data => {
                 curTarget.querySelector('.modal-body').innerHTML = data;

@@ -1,0 +1,40 @@
+{#
+  Modals whose content is an HTML fragment loaded from the server
+  (data-remote on the link that opens them). One definition for all of them:
+  js/tree_modals.js listens on every .modal[data-lk-remote-modal], shows the
+  loader, fetches the data-remote URL of the link and puts the answer in
+  .modal-body. Doc: doc/ui/pages/tree.md
+
+  remote_modal(id, title, loading, note=None, body_id=None)
+    id       id of the modal: the links target it with data-bs-target="#<id>"
+             (also from the fragments: details buttons, see details_modal_button)
+    title    title of the modal
+    loading  label of the loader while the content loads
+    note     optional line under the title
+    body_id  optional id of the .modal-body
+    {% call %} optional extra buttons in the footer (before Close)
+#}
+{% from 'macros/loader.html' import loader %}
+
+{% macro remote_modal(id, title, loading, note=None, body_id=None) -%}
+<div class="modal fade lk-modal" id="{{ id }}" tabindex="-1" role="dialog" aria-labelledby="{{ id }}Label" data-lk-remote-modal>
+  <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div>
+          <h5 class="modal-title" id="{{ id }}Label">{{ title }}</h5>
+          {% if note %}<p class="lk-modal-note">{{ note }}</p>{% endif %}
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body"{% if body_id %} id="{{ body_id }}"{% endif %}>
+        {{ loader(loading, show_label=True) }}
+      </div>
+      <div class="modal-footer">
+        {% if caller %}{{ caller() }}{% endif %}
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+{%- endmacro %}

@@ -15,6 +15,7 @@ same commit as the code.
 | [page-header.md](page-header.md) | Page header component: breadcrumb + card with icon, title, description |
 | [pivot-pages.md](pivot-pages.md) | Pivot pages (hostname, IP, favicon, resource, cookie...): page and modal modes |
 | [tags.md](tags.md) | Category tags: coloured pills with icons |
+| [credits.md](credits.md) | Credits & licenses page (footer link) |
 | [errors.md](errors.md) | Error pages (404, 500) with the Lookyloo eyes |
 | [loader.md](loader.md) | Loading indicator with the Lookyloo eyes (`loader()` macro) |
 | [css.md](css.md) | How the stylesheets are organised: files, load order, where to put new CSS, rules |

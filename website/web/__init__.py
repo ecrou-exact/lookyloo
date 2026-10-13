@@ -2326,6 +2326,12 @@ def get_index_params(request: Request) -> tuple[bool, str]:
 
 # ##### Index level methods #####
 
+@app.route('/credits', methods=['GET'])
+def credits() -> str:
+    '''Third-party projects and licenses used by the interface (about/credits.html).'''
+    return render_template('about/credits.html')
+
+
 @app.route('/index', methods=['GET'])
 def index() -> str:
     show_error, category = get_index_params(request)

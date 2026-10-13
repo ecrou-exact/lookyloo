@@ -106,10 +106,20 @@ function LocateNode(hostnode_uuid) {
     window.centerInViewport ? window.centerInViewport(card) : element.scrollIntoView({block: "center", inline: "center"});
 
     document.querySelectorAll('g.node.is-located').forEach(node => node.classList.remove('is-located'));
+    document.querySelectorAll('.node-located-label').forEach(label => label.remove());
     element.classList.add('is-located');
+
+    // A label above the card ("This node"), with a small pointer to it
+    const label = d3.select(element).append('g').attr('class', 'node-located-label');
+    const text = label.append('text').attr('x', 10).attr('y', -46).text('This node');
+    const width = text.node().getBBox().width + 20;
+    label.insert('rect', 'text').attr('x', 0).attr('y', -62).attr('rx', 6).attr('width', width).attr('height', 22);
+    label.insert('path', 'text').attr('d', 'M14,-40.5 l6,7 l6,-7 Z');
+
     clearTimeout(LocateNode.timer);
     const stop = () => {
         element.classList.remove('is-located');
+        label.remove();
         document.removeEventListener('pointerdown', stop, true);
     };
     LocateNode.timer = setTimeout(stop, 8000);

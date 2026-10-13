@@ -782,12 +782,25 @@ g.node.is-located .node-card {
   fill: var(--lk-color-accent-soft);
   animation: lk-node-located 1.6s ease-in-out infinite;
 }
+/* "This node" label above the located card */
+.node-located-label rect,
+.node-located-label path { fill: var(--lk-color-accent); }
+.node-located-label text {
+  fill: var(--lk-color-on-accent);
+  font-family: var(--lk-font-sans);
+  font-size: 12px;
+  font-weight: 600;
+}
+.node-located-label { pointer-events: none; animation: lk-node-label-in 240ms ease-out; }
+@keyframes lk-node-label-in { from { opacity: 0; transform: translateY(4px); } }
+
 @keyframes lk-node-located {
   0%, 100% { filter: drop-shadow(0 0 0 var(--lk-color-accent)); }
   50% { filter: drop-shadow(0 0 10px var(--lk-color-accent)); }
 }
 @media (prefers-reduced-motion: reduce) {
   g.node.is-located .node-card { animation: none; filter: drop-shadow(0 0 6px var(--lk-color-accent)); }
+  .node-located-label { animation: none; }
 }
 
 /* Match centred by the search (previous / next) */

@@ -95,8 +95,8 @@ the page background colour behind it, so the image matches the screen. Web
 fonts are not embedded in the image (the browser falls back to a system font).
 A located node (`?node=` in the URL, or *Locate in tree* in the hostname pop-up:
 `LocateNode()` in `js/tree_modals.js`) is centred in the tree and its card glows
-in the accent colour (`g.node.is-located`, a soft pulse) for 8 seconds, or until
-the next click.
+in the accent colour (`g.node.is-located`, a soft pulse) with a "This node"
+label above it (`.node-located-label`), for 8 seconds or until the next click.
 
 ## Legend & icon filter (`tree/legend.html`)
 

@@ -1802,16 +1802,37 @@ class Lookyloo():
             return file.getvalue().decode()
         return None
 
+    # Thumbnail widths kept on disk (the landing page uses 256). Other widths are
+    # generated on every call: caching any width requested in the URL would let
+    # anyone fill the disk.
+    thumbnail_cache_widths = (64, 128, 256)
+
+    def _thumbnail_cache_path(self, capture_uuid: str, width: int) -> Path:
+        '''Thumbnails are stored outside of the capture directory: get_screenshot()
+        and the capture export pick up every *.png in there.'''
+        return get_homedir() / 'thumbnails' / capture_uuid[:2] / f'{capture_uuid}-{width}.png'
+
     def get_screenshot_thumbnail(self, capture_uuid: str, /, for_datauri: bool=False, width: int=64) -> str | BytesIO:
         '''Get the thumbnail of the rendered page. Always crop to a square.'''
         logger = LookylooCacheLogAdapter(self.logger, {'uuid': capture_uuid})
         to_return = BytesIO()
         size = width, width
+        cache_path = self._thumbnail_cache_path(capture_uuid, width) if width in self.thumbnail_cache_widths else None
+        if cache_path and cache_path.exists():
+            to_return.write(cache_path.read_bytes())
+            to_return.seek(0)
+            if for_datauri:
+                return base64.b64encode(to_return.getvalue()).decode()
+            return to_return
+
+        # Only thumbnails made from an actual screenshot are kept on disk
+        from_screenshot = False
         try:
             success, s = self.get_screenshot(capture_uuid)
             if success:
                 orig_screenshot = Image.open(s)
                 to_thumbnail = orig_screenshot.crop((0, 0, orig_screenshot.width, orig_screenshot.width))
+                from_screenshot = True
             else:
                 to_thumbnail = get_error_screenshot()
         except Image.DecompressionBombError as e:
@@ -1836,6 +1857,15 @@ class Lookyloo():
 
         to_thumbnail.thumbnail(size)
         to_thumbnail.save(to_return, 'png')
+
+        if cache_path and from_screenshot:
+            try:
+                cache_path.parent.mkdir(parents=True, exist_ok=True)
+                tmp_path = cache_path.with_suffix(f'.{secrets.token_hex(4)}.tmp')
+                tmp_path.write_bytes(to_return.getvalue())
+                tmp_path.replace(cache_path)  # atomic: concurrent requests never read a partial file
+            except OSError as e:
+                logger.warning(f'Unable to store the thumbnail in {cache_path}: {e}')
 
         to_return.seek(0)
         if for_datauri:

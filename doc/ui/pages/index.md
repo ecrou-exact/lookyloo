@@ -51,7 +51,13 @@ JSON row shape (the contract between `post_table()` and `render_tables.js`):
     porn included); a click toggles the blur (`.lk-thumb`, handler in
     `js/generic.js`). Loaded lazily from `/tree/<uuid>/thumbnail/256`, which
     sends `Cache-Control: private, max-age=86400` (a screenshot never changes).
-    The blur is visual comfort, not protection: the image is downloaded anyway;
+    The blur is visual comfort, not protection: the image is downloaded anyway.
+    Server side, thumbnails of widths 64, 128 and 256 made from a real
+    screenshot are stored in `<LOOKYLOO_HOME>/thumbnails/<uuid[:2]>/<uuid>-<width>.png`
+    the first time they are requested (`Lookyloo.get_screenshot_thumbnail`), so
+    later requests do not decode the full screenshot again. Not stored in the
+    capture directory on purpose (`get_screenshot()` and exports read every
+    `*.png` there). No cleanup yet: removing the folder is always safe;
   - the title linking to the capture and the initial URL with a copy button;
   - facts: capture error, **hostname trail** (`google.com › www.google.com`,
     consecutive identical hosts merged, middle hosts collapsed into "+n" after

@@ -78,7 +78,7 @@
     "js/theme_toggle.js": "uKN/+Aejt7nm/sizGOfsXHEfHJAoVIIsXXbGWcjkbR26Pb3Z8M0JIE8rxoPsh+kMIzD/F7fa2tEDgeWShvnW7w==",
     "js/tour.js": "3H/ubyXtFF3c6vMWQhJt2w9SI8Gzpcj9Sh8axGnq+HMhjEqHzdSQX+ovKSDDqMuUBq0rbjouWW3e4LHr9IRwwA==",
     "js/tour_demo_rows.js": "1sNMWYojnIW3FF/24rEnuEEyUn+7lUg2d/ynaS77ka/pbj4OXepNjU3DxfNh5OFnspWkQ0OEkWHWNgI6gvaS9Q==",
-    "js/tree.js": "Vi98irbamU/T6HsCtdH+/WUFp5zGl4XPKACsv44TNOiyapYt+IyDeHutns4KRXAkDjecGJ8dDuWVDn/7xidvqw==",
+    "js/tree.js": "doocsoqkLO1dlC/qjZgIPrZ2mmq7d1FAtumS3AfIT/JhVgsGwsiFMGqmisGJhpU9ki9RcFGo/JmDNIFhMpCieg==",
     "js/tree_modals.js": "Luq+QiinAwSCvEzzJf3mdo3NX16s5x3YfZyEiQgjCU6FEwlySSRlj1MWHZaGEhcYPFDS7GZpegd2hBQwPQGs/w==",
     "js/tree_wait.js": "W49O+Ayxo2BJ0l08q1wjcnWpy+5J8UdWqjBqcSTc7vXag/QUT4A8hHXHzaBUFXGksTIiCyINhEpWLDuQMIIVOA==",
     "js/vitrine_setup.js": "tDa/j2HONimzoxsRdq8CK4fIFvALbE4ceSsYc6aoG5nKnYMAcISIp6QeLfv4MiK/J5iGO8hZXM+XjqHhQhQOgg==",

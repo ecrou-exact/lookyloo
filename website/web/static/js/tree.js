@@ -1035,7 +1035,9 @@ function focusMatch(step) {
     if (!nodes.length) return;
     search_index = (search_index + step + nodes.length) % nodes.length;
     const node = nodes[search_index];
-    centerInViewport(node);
+    // The card, not the group: Firefox counts the nested <svg> of the node in the box
+    // of the group (huge), and the view went far from the tree
+    centerInViewport(node.querySelector('.node-card') || node);
     node_container.selectAll('g.node').classed('is-search-current', false);
     d3.select(node).classed('is-search-current', true);
     const count = document.getElementById('tree-search-count');

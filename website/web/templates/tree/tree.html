@@ -471,6 +471,32 @@
 
   {% include 'tree/legend.html' %}
 
+  {# Keyboard shortcuts of the page (js/tree.js, setupShortcutsHelp): a small button
+     in the bottom left corner of the tree, or "?" #}
+  <div class="lk-shortcuts">
+    <button type="button" class="lk-shortcuts-btn" id="tree-shortcuts-btn" aria-expanded="false" aria-controls="tree-shortcuts"
+            title="Keyboard shortcuts (?)" aria-label="Keyboard shortcuts">{{ icon('bi:keyboard') }}</button>
+    <section class="lk-shortcuts-card" id="tree-shortcuts" aria-labelledby="tree-shortcuts-title" hidden>
+      <h2 id="tree-shortcuts-title">Keyboard shortcuts</h2>
+      <dl>
+        {% for keys, what in [
+             (['/'], 'Search the tree'),
+             (['Enter'], 'Next match of the search'),
+             (['Shift', 'Enter'], 'Previous match'),
+             (['Esc'], 'Clear the search or the neighbours, close the panel'),
+             (['Ctrl', 'wheel'], 'Zoom in and out, around the pointer'),
+             (['Ctrl', '+'], 'Zoom in'),
+             (['Ctrl', '-'], 'Zoom out'),
+             (['Ctrl', '0'], 'Back to 100 %'),
+             (['←', '→'], 'Resize the side panel (on its edge)'),
+             (['Ctrl', 'Enter'], 'Save a note'),
+             (['?'], 'Show or hide this list')] %}
+        <div><dt>{% for key in keys %}<kbd>{{ key }}</kbd>{% if not loop.last %} {% endif %}{% endfor %}</dt><dd>{{ what }}</dd></div>
+        {% endfor %}
+      </dl>
+    </section>
+  </div>
+
   {# Side panel (js/side_panel.js): the panels of the menus open here, next to the
      tree, instead of modals. The modals of the page are moved in .lk-side-panel-stack. #}
   <aside class="lk-side-panel" id="lk-side-panel" tabindex="-1" hidden>

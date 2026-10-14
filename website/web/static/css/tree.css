@@ -1142,3 +1142,51 @@ circle.node.is-collapsed { fill: var(--lk-color-tree-node); }
 }
 .lk-tree-zoom button:hover { background: var(--lk-color-surface-2); }
 #tree-zoom-reset { min-width: 3.2rem; font-weight: var(--lk-font-weight-medium); }
+
+/* Keyboard shortcuts: a small button in the bottom left corner of the tree area */
+.lk-shortcuts { position: absolute; left: var(--lk-space-4); bottom: var(--lk-space-4); z-index: 1020; }
+.lk-shortcuts-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--lk-color-rule);
+  border-radius: var(--lk-radius-md);
+  background: var(--lk-color-surface);
+  color: var(--lk-color-muted);
+  opacity: 0.7;
+}
+.lk-shortcuts-btn:hover,
+.lk-shortcuts-btn[aria-expanded="true"] { opacity: 1; color: var(--lk-color-ink); }
+.lk-shortcuts-card {
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + var(--lk-space-2));
+  width: 21rem;
+  padding: var(--lk-space-3);
+  background: var(--lk-color-surface);
+  border: 1px solid var(--lk-color-rule);
+  border-radius: var(--lk-radius-md);
+  box-shadow: var(--lk-shadow-md);
+  font-size: var(--lk-font-size-sm);
+}
+.lk-shortcuts-card[hidden] { display: none; }
+.lk-shortcuts-card h2 { margin: 0 0 var(--lk-space-2); font-size: var(--lk-font-size-sm); font-weight: var(--lk-font-weight-semibold); }
+.lk-shortcuts-card dl { margin: 0; }
+.lk-shortcuts-card dl > div { display: flex; gap: var(--lk-space-3); padding: 3px 0; }
+.lk-shortcuts-card dt { flex: 0 0 7.5rem; font-weight: normal; }
+.lk-shortcuts-card dd { margin: 0; color: var(--lk-color-muted); }
+.lk-shortcuts-card kbd {
+  display: inline-block;
+  min-width: 1.4rem;
+  padding: 0 5px;
+  border: 1px solid var(--lk-color-rule-strong);
+  border-bottom-width: 2px;
+  border-radius: var(--lk-radius-sm);
+  background: var(--lk-color-surface-2);
+  color: var(--lk-color-ink);
+  font-family: var(--lk-font-mono);
+  font-size: var(--lk-font-size-xs);
+  text-align: center;
+}

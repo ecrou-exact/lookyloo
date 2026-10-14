@@ -232,6 +232,7 @@ try {
   setupTreeControls();
   setupControlsCompact();
   setupZoom();
+  setupShortcutsHelp();
   setupNotes();
   setupCompare();
   setupFullscreen();
@@ -1035,6 +1036,27 @@ function setZoom(zoom, anchor_x=null, anchor_y=null) {
     tree_viewport.scrollTop = point_y * zoom - my;
     const reset = document.getElementById('tree-zoom-reset');
     if (reset) reset.textContent = `${Math.round(zoom * 100)} %`;
+}
+
+// Keyboard shortcuts list (tree/tree.html, .lk-shortcuts): its button, or "?"
+function setupShortcutsHelp() {
+    const button = document.getElementById('tree-shortcuts-btn');
+    const card = document.getElementById('tree-shortcuts');
+    if (!button || !card) return;
+    const show = (open) => {
+        card.hidden = !open;
+        button.setAttribute('aria-expanded', open ? 'true' : 'false');
+    };
+    button.addEventListener('click', () => show(card.hidden));
+    document.addEventListener('keydown', (event) => {
+        const tag = document.activeElement?.tagName;
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || document.activeElement?.isContentEditable) return;
+        if (event.key === '?') { event.preventDefault(); show(card.hidden); }
+        else if (event.key === 'Escape' && !card.hidden) show(false);
+    });
+    document.addEventListener('pointerdown', (event) => {
+        if (!card.hidden && !event.target.closest('.lk-shortcuts')) show(false);
+    });
 }
 
 function setupZoom() {

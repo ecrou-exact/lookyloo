@@ -472,3 +472,11 @@ with the modules that were checked (`checked`), and says when none of them
 found anything (`has_hits`): a module without a hit has no section, the panel
 was empty before. Modules with an API key (VirusTotal, urlscan.io, Phishing
 Initiative…) only run when their key is in `config/modules.json`.
+
+## Keyboard shortcuts
+
+A small keyboard button in the bottom left corner of the tree area
+(`.lk-shortcuts`, `#tree-shortcuts-btn`, `setupShortcutsHelp()` in
+`js/tree.js`), or **?**, shows the list of the shortcuts of the page (Esc or a
+click elsewhere hides it). The list is written in `tree/tree.html`: add a line
+there with every new shortcut.

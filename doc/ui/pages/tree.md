@@ -396,3 +396,10 @@ the Capture menu.
 - Kept as a real modal: the note editor (`noteModal`, `KEPT_AS_MODALS`).
   Code can open a panel with `window.lkSidePanel.open(id)` (the screenshot of
   the tree does).
+
+### Screenshot panel
+
+**Capture → Page screenshot** (`#screenshotModal`) always has a **Blur / Unblur**
+button (`#blurScreenshot`, `js/tree_modals.js`): the screenshot starts blurred
+when the instance blurs them by default (`enable_default_blur_screenshot`), and
+can be blurred or unblurred either way.

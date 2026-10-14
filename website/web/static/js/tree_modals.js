@@ -167,12 +167,22 @@ document.addEventListener("DOMContentLoaded", () => {
       MarkAsKnown(treeUUID)
     });
 
-    document.getElementById("blurScreenshot")?.addEventListener("click", function (e) {
-      let blur_status = document.getElementById('screenshot').classList.toggle('blur');
-      if (blur_status) {
-        this.innerText = 'Unblur';
-      } else {
-        this.innerText = 'Blur';
+    // Blur / Unblur the screenshot: the icons of the button are in the sprite
+    // (bi:eye and bi:eye-slash, used in tree/tree.html)
+    document.getElementById("blurScreenshot")?.addEventListener("click", function () {
+      const blurred = document.getElementById('screenshot').classList.toggle('blur');
+      const sprite = this.querySelector('use')?.getAttribute('href')?.split('#')[0];
+      this.setAttribute('aria-pressed', blurred ? 'true' : 'false');
+      this.textContent = '';
+      if (sprite) {
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('class', 'lk-icon');
+        svg.setAttribute('aria-hidden', 'true');
+        const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
+        use.setAttribute('href', `${sprite}#bi-${blurred ? 'eye' : 'eye-slash'}`);
+        svg.appendChild(use);
+        this.appendChild(svg);
       }
+      this.append(blurred ? ' Unblur' : ' Blur');
     });
 });

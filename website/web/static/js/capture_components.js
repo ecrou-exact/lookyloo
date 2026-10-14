@@ -1,7 +1,9 @@
 // Vitrine components of the capture page (tree/tree.html): <vt-markdown> for the
-// notes (js/tree.js) and <vt-json> for the MISP export. Doc: doc/ui/pages/tree.md
+// notes (js/tree.js), <vt-json> for the MISP export, and the file viewer of the
+// forensic acquisition (<vt-json>, <vt-code>, <vt-markdown>). Doc: doc/ui/pages/tree.md
 import { configure } from './vitrine_setup.js';
 import '../vendor/vitrine/esm/vt-json.js';
+import '../vendor/vitrine/esm/vt-code.js';
 
 // MISP exports embed the resources of the capture: allow vitrine's maximum (50 MiB)
 const MAX_JSON = 52428800;
@@ -82,3 +84,29 @@ if (modal) {
         copyWithFeedback(copy_button, current.text);
     });
 }
+
+// Forensic acquisition (tree/modals/download_elements.html, loaded in the side
+// panel): a button per text file; the file is shown below, in the vitrine element
+// of its kind, which loads it itself (src, same origin).
+const VIEWERS = {
+    json: () => document.createElement('vt-json'),
+    html: () => { const el = document.createElement('vt-code'); el.setAttribute('language', 'html'); return el; },
+    markdown: () => { const el = document.createElement('vt-markdown'); el.setAttribute('default-tab', 'source'); return el; },
+    text: () => { const el = document.createElement('vt-code'); el.setAttribute('language', 'plaintext'); return el; },
+};
+document.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-lk-view-src]');
+    if (!button) return;
+    const slot = button.closest('.lk-file-viewer')?.querySelector('.lk-file-viewer-slot');
+    const make = VIEWERS[button.dataset.lkViewKind];
+    if (!slot || !make) return;
+    button.parentElement.querySelectorAll('[data-lk-view-src]').forEach(b => b.setAttribute('aria-pressed', b === button ? 'true' : 'false'));
+    const viewer = make();
+    viewer.classList.add('lk-vitrine', 'lk-file-viewer-content');
+    viewer.setAttribute('variant', 'full');
+    viewer.setAttribute('max-height', '60vh');
+    viewer.setAttribute('label', button.dataset.lkViewName);
+    viewer.setAttribute('download', button.dataset.lkViewName);
+    viewer.setAttribute('src', button.dataset.lkViewSrc);
+    slot.replaceChildren(viewer);
+});

@@ -281,3 +281,25 @@ TSA: unspecified
   </pre>
 </div>
 {% endif %}
+
+{# The text files of the capture, shown in vitrine (js/capture_components.js):
+   loaded only when one is chosen (the HAR can be big) #}
+<section class="lk-file-viewer" aria-labelledby="file-viewer-title">
+  <h6 class="lk-file-viewer-title" id="file-viewer-title">{{ icon('bi:code-slash') }} View the files</h6>
+  <div class="lk-file-viewer-choices" role="group" aria-label="File to show">
+    {% for label, endpoint, kind, filename in [
+         ('HTTP archive (HAR)', 'har_download', 'json', tree_uuid ~ '_har.json'),
+         ('Rendered HTML', 'html', 'html', tree_uuid ~ '_page.html'),
+         ('HTML as Markdown', 'html_as_markdown', 'markdown', tree_uuid ~ '_page.md'),
+         ('Cookies', 'cookies', 'json', tree_uuid ~ '_cookies.json'),
+         ('Storage', 'storage_state_download', 'json', tree_uuid ~ '_storage_state.json'),
+         ('Hashes', 'hashes_tree', 'text', tree_uuid ~ '_hashes.txt')] %}
+    <button type="button" class="btn btn-sm btn-outline-primary" aria-pressed="false"
+            data-lk-view-src="{{ url_for(endpoint, tree_uuid=tree_uuid, seed=seed) }}"
+            data-lk-view-kind="{{ kind }}" data-lk-view-name="{{ filename }}">{{ label }}</button>
+    {% endfor %}
+  </div>
+  <div class="lk-file-viewer-slot" id="file-viewer-slot">
+    <p class="lk-modal-note">Choose a file to read it here: search, copy, download.</p>
+  </div>
+</section>

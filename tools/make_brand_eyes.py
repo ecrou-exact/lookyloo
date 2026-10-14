@@ -16,10 +16,10 @@ from lookyloo.default import get_homedir
 
 BRAND = get_homedir() / 'website' / 'web' / 'static' / 'images' / 'brand'
 
-# In pixels of lookyloo.png (706x316): centre of the ring, centre and radius of the pupil
-EYES = [
-    {'ring': (180.0, 85.6), 'pupil': (191.9, 94.3), 'pupil_r': 18.5},
-    {'ring': (281.2, 82.5), 'pupil': (292.5, 91.8), 'pupil_r': 18.5},
+# In pixels of lookyloo.png (706x316): centre of the ring, centre of the pupil, radius of the pupil
+EYES: list[tuple[tuple[float, float], tuple[float, float], float]] = [
+    ((180.0, 85.6), (191.9, 94.3), 18.5),
+    ((281.2, 82.5), (292.5, 91.8), 18.5),
 ]
 # Inside of the rings: only these pixels are erased, the ring itself is kept
 RING_INNER_R = 26.5
@@ -27,8 +27,7 @@ RING_INNER_R = 26.5
 if __name__ == '__main__':
     logo = Image.open(BRAND / 'lookyloo.png').convert('RGBA')
     px = logo.load()
-    for eye in EYES:
-        (rx, ry), (cx, cy), r = eye['ring'], eye['pupil'], eye['pupil_r']
+    for (rx, ry), (cx, cy), r in EYES:
         for y in range(int(cy - r - 2), int(cy + r + 3)):
             for x in range(int(cx - r - 2), int(cx + r + 3)):
                 if math.hypot(x - cx, y - cy) <= r and math.hypot(x - rx, y - ry) < RING_INNER_R:

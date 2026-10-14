@@ -36,8 +36,8 @@ def test_capture_page(page: Page) -> None:
     page.get_by_role("textbox", name="URL to capture").click()
     page.get_by_role("textbox", name="URL to capture").fill(capture_url)
     page.get_by_role("button", name="Start looking!").click()
-    # Capture ongoing
-    expect(page).to_have_title(re.compile("Ongoing capture..."), timeout=10)
+    # Capture ongoing (or already done: a quick capture skips the waiting page)
+    expect(page).to_have_title(re.compile(f"Ongoing capture...|Capture of {capture_url}"), timeout=10_000)
     max_loop = 5
     while max_loop > 0:
         # Wait for the capture to be done
@@ -49,16 +49,17 @@ def test_capture_page(page: Page) -> None:
             break
     # Capture done
     expect(page).to_have_title(re.compile(f"Capture of {capture_url}"))
-    expect(page.get_by_text("The capture has not been")).to_be_visible()
-    expect(page.get_by_alt_text("Tree loading spinner")).not_to_be_visible(timeout=20_000)
-    # trigger indexing
-    page.get_by_role("button", name="Analytical Tools").click()
+    # Not indexed yet (or the indexing db too slow to say)
+    expect(page.get_by_text(re.compile("has not been indexed|indexing db is slow"))).to_be_visible()
+    expect(page.locator("#tree-loading")).to_be_hidden(timeout=20_000)
+    # trigger indexing (Analysis menu)
+    page.get_by_role("button", name="Analysis").click()
     page.get_by_role("button", name="Index capture").click()
     time.sleep(2)
     max_loop = 5
     while max_loop > 0:
         # Sometimes, the indexing fails in a weird way
-        page.get_by_role("button", name="Analytical Tools").click()
+        page.get_by_role("button", name="Analysis").click()
         try:
             expect(page.get_by_role("button", name="Index capture")).to_have_count(1)
             page.get_by_role("button", name="Index capture").click()
@@ -68,7 +69,7 @@ def test_capture_page(page: Page) -> None:
             break
     expect(page.get_by_role("button", name="Index capture")).to_have_count(0, timeout=10_000)
     # go to search page and search
-    page.get_by_role("link", name="Lookyloo icon").click()
+    page.get_by_role("link", name="Lookyloo", exact=True).click()
     # The navigation collapses behind the toggler on small screens only
     if page.get_by_role("button", name="Toggle navigation").is_visible():
         page.get_by_role("button", name="Toggle navigation").click()

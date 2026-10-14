@@ -37,4 +37,13 @@ own modules (CSP `script-src-elem 'self'`), `tools/generate_sri.py` skips them.
 |---|---|
 | Capture page: notes of the analyst (doc/ui/pages/tree.md) | `<vt-markdown>` (editor with preview, rendering) |
 | Capture page: MISP export (doc/ui/pages/tree.md) | `<vt-json>` |
+| Capture page: OpenSSL commands of the forensic acquisition (doc/ui/pages/tree.md) | `<vt-terminal>` |
 | API reference `/api` (doc/ui/pages/api.md) | `<vt-openapi>`, `<vt-http>` |
+
+## No external request
+
+Vitrine is configured with local URLs only (`js/vitrine_setup.js`:
+`languagesUrl`, `syntaxThemesUrl`, `vendorUrl` under `static/vendor/vitrine/`),
+and no element uses `allow-remote`: a `src` can only be on the instance itself.
+Checked by loading the pages and panels that use it while recording the network
+requests: none leaves the instance.

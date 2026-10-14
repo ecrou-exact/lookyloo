@@ -62,7 +62,7 @@ remembered in `localStorage` (`lk-capture-bar-folded`).
     instance; then the help link.
   On small screens the toolbar keeps only the icons.
 
-The menu ids (`#capture-menu`, `#tools-menu`, `#actions-menu`, `#extra-menu`,
+The menu ids (`#capture-menu`, `#tools-menu`, `#actions-menu`, `#download-menu`,
 `#admin-menu`), the action ids (`#removeCapture`, `#unbookmarkAllNodes`,
 `#markAsKnown`) and every `data-bs-target` / `data-remote` are read by
 `js/tree_modals.js`: keep them.
@@ -93,7 +93,7 @@ so the tree follows the light and dark themes.
 | `.tree-parent-*` | "triggered from a previous capture" box above the root |
 | `#tooltip` | tooltip of the tree |
 
-The PNG export (*Get forensic acquisition* > tree) copies the computed styles
+The PNG export (*Download* > *Tree as PNG*) copies the computed styles
 into the exported SVG (`inlineSvgStyles` in `js/tree_modals.js`) and paints
 the page background colour behind it, so the image matches the screen. Web
 fonts are not embedded in the image (the browser falls back to a system font).

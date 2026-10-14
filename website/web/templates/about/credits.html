@@ -49,9 +49,22 @@
       {{ credit('Bootstrap-Flask', 'Bootstrap integration for Flask.', 'MIT', 'https://github.com/helloflask/bootstrap-flask') }}
       {{ credit('jQuery', 'JavaScript utilities used by the tables.', 'MIT', 'https://jquery.com', 'https://jquery.org/license/') }}
       {{ credit('DataTables', 'Interactive tables (lists of captures, pivots, explore pages).', 'MIT', 'https://datatables.net', 'https://datatables.net/license/mit') }}
-      {{ credit('D3.js', 'Drawing of the capture tree.', 'ISC', 'https://d3js.org', 'https://github.com/d3/d3/blob/main/LICENSE') }}
+      {{ credit('D3.js', 'Drawing of the capture tree and of the statistics charts.', 'ISC', 'https://d3js.org', 'https://github.com/d3/d3/blob/main/LICENSE') }}
       {{ credit('jquery.json-viewer', 'JSON pretty printer.', 'MIT', 'https://github.com/abodelot/jquery.json-viewer') }}
-      {{ credit('Vitrine', 'Web components: API reference, notes (Markdown editor and preview) and MISP export viewer of the capture page.', 'MIT', 'https://github.com/ecrou-exact/vitrine', 'https://github.com/ecrou-exact/vitrine/blob/main/LICENSE') }}
+      {{ credit('Vitrine', 'Web components: API reference, notes (Markdown editor and preview), MISP export viewer and OpenSSL commands of the forensic acquisition (capture page).', 'MIT', 'https://github.com/ecrou-exact/vitrine', 'https://github.com/ecrou-exact/vitrine/blob/main/LICENSE') }}
+    </ul>
+  </section>
+  {# Bundled in the build of Vitrine served from static/vendor/vitrine/ (its THIRD_PARTY_NOTICES.md,
+     at the commit pinned in tools/3rdparty.py) #}
+  <section class="lk-card lk-credits-section">
+    <h2>{{ icon('bi:box-seam') }} Bundled with Vitrine</h2>
+    <ul class="lk-credits-list">
+      {{ credit('highlight.js', 'Syntax highlighting of the code blocks.', 'BSD-3-Clause', 'https://highlightjs.org', 'https://github.com/highlightjs/highlight.js/blob/main/LICENSE') }}
+      {{ credit('marked', 'Markdown parsing (notes).', 'MIT', 'https://marked.js.org', 'https://github.com/markedjs/marked/blob/master/LICENSE.md') }}
+      {{ credit('DOMPurify', 'Sanitization of the HTML rendered from Markdown.', 'Apache-2.0 or MPL-2.0', 'https://github.com/cure53/DOMPurify', 'https://github.com/cure53/DOMPurify/blob/main/LICENSE') }}
+      {{ credit('Lucide', 'Icons of the Vitrine components (derived from Feather, MIT).', 'ISC', 'https://lucide.dev', 'https://lucide.dev/license') }}
+      {{ credit('Apache ECharts and ZRender', 'Charts of the <vt-chart> component (shipped, not used by Lookyloo).', 'Apache-2.0 / BSD-3-Clause', 'https://echarts.apache.org', 'https://github.com/apache/echarts/blob/master/LICENSE') }}
+      {{ credit('js-yaml', 'YAML reading of the <vt-openapi> component.', 'MIT', 'https://github.com/nodeca/js-yaml', 'https://github.com/nodeca/js-yaml/blob/master/LICENSE') }}
     </ul>
   </section>
 

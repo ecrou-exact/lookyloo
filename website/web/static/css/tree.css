@@ -966,3 +966,121 @@ circle.node.is-collapsed { fill: var(--lk-color-tree-node); }
 /* ---------- Modals loaded from the server (macros/modals.html) ---------- */
 
 .lk-modal-note { margin: var(--lk-space-1) 0 0; color: var(--lk-color-muted); font-size: var(--lk-font-size-sm); }
+
+/* ---------- Side panel (js/side_panel.js): the panels of the menus, next to the tree ---------- */
+
+.lk-tree-area { --lk-side-panel-width: 40rem; }
+.lk-side-panel {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1030;
+  display: flex;
+  flex-direction: column;
+  width: var(--lk-side-panel-width);
+  max-width: calc(100% - 3rem);
+  background: var(--lk-color-surface);
+  border-left: 1px solid var(--lk-color-rule);
+  box-shadow: var(--lk-shadow-md);
+  outline: none;
+}
+.lk-side-panel[hidden] { display: none; }
+.lk-side-panel.is-wide { width: calc(100% - 6rem); }
+.lk-side-panel.is-resizing { user-select: none; }
+/* The tools of the tree move left of the panel */
+.lk-tree-area.has-side-panel .lk-tree-controls,
+.lk-tree-area.has-side-panel .lk-tree-legend { right: calc(var(--lk-side-panel-width) + var(--lk-space-4)); }
+.lk-tree-area.has-side-panel:has(.lk-side-panel.is-wide) .lk-tree-controls,
+.lk-tree-area.has-side-panel:has(.lk-side-panel.is-wide) .lk-tree-legend { visibility: hidden; }
+
+.lk-side-panel-resize {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -4px;
+  width: 8px;
+  cursor: col-resize;
+  z-index: 2;
+}
+.lk-side-panel-resize:hover,
+.lk-side-panel-resize:focus-visible,
+.lk-side-panel.is-resizing .lk-side-panel-resize { background: var(--lk-color-accent-soft); outline: none; }
+
+.lk-side-panel-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--lk-space-2);
+  min-height: 2.5rem;
+  padding: var(--lk-space-1) var(--lk-space-2);
+  border-bottom: 1px solid var(--lk-color-rule);
+  background: var(--lk-color-surface-2);
+}
+.lk-side-panel-tools { display: flex; gap: var(--lk-space-1); margin-left: auto; }
+.lk-side-panel-bar button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--lk-space-1);
+  height: 30px;
+  padding: 0 var(--lk-space-2);
+  border: 0;
+  border-radius: var(--lk-radius-sm);
+  background: none;
+  color: var(--lk-color-ink);
+  font-size: var(--lk-font-size-sm);
+}
+.lk-side-panel-bar button:hover { background: var(--lk-color-surface); }
+.lk-side-panel-back { min-width: 0; font-weight: var(--lk-font-weight-medium); }
+.lk-side-panel-back > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lk-side-panel-back[hidden] { display: none !important; }
+#lk-side-panel-wide[aria-pressed="true"] { background: var(--lk-color-accent-soft); color: var(--lk-color-accent); }
+
+/* The modals moved in the panel: shown as its content, not as dialogs */
+.lk-side-panel-stack { position: relative; flex: 1; min-height: 0; }
+.lk-side-panel-stack > .modal {
+  position: absolute;
+  inset: 0;
+  display: block;
+  overflow: hidden;
+  z-index: auto;
+  opacity: 1;
+  background: none;
+}
+.lk-side-panel-stack > .modal[hidden] { display: none; }
+.lk-side-panel-stack .modal-dialog {
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  margin: 0;
+  transform: none !important;
+}
+.lk-side-panel-stack .modal-content {
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: var(--lk-color-surface);
+}
+.lk-side-panel-stack .modal-header {
+  padding: var(--lk-space-3) var(--lk-space-4);
+  border-bottom: 1px solid var(--lk-color-rule);
+}
+.lk-side-panel-stack .modal-header .btn-close { display: none; }
+.lk-side-panel-stack .modal-title { font-size: 1.125rem; font-weight: var(--lk-font-weight-semibold); }
+.lk-side-panel-stack .modal-body { flex: 1; min-height: 0; overflow: auto; padding: var(--lk-space-4); }
+.lk-side-panel-stack .modal-footer { padding: var(--lk-space-2) var(--lk-space-4); border-top: 1px solid var(--lk-color-rule); }
+/* Close is the one of the panel */
+.lk-side-panel-stack .modal-footer > [data-bs-dismiss="modal"] { display: none; }
+.lk-side-panel-stack .modal-footer:not(:has(> :not([data-bs-dismiss="modal"]))) { display: none; }
+
+@media (max-width: 767.98px) {
+  .lk-side-panel { width: 100%; max-width: none; }
+  .lk-side-panel-resize { display: none; }
+}
+/* With the panel open, the tree controls are icons only (less room) */
+.lk-tree-area.has-side-panel .lk-tree-controls .lk-tree-control-label,
+.lk-tree-area.has-side-panel #tree-orientation .lk-tree-control-label,
+.lk-tree-area.has-side-panel #tree-fullscreen .lk-tree-control-label,
+.lk-tree-area.has-side-panel #tree-controls-compact { display: none; }
+.lk-tree-area.has-side-panel .lk-tree-controls > button,
+.lk-tree-area.has-side-panel .lk-tree-controls > .dropdown > button { width: 30px; padding: 0; }

@@ -55,6 +55,10 @@
           {{get_sri('static', 'js/tree_modals.js')}}
           nonce="{{ csp_nonce() }}"
           crossorigin="anonymous"></script>
+  <script src='{{ url_for('static', filename='js/side_panel.js') }}'
+          {{get_sri('static', 'js/side_panel.js')}}
+          nonce="{{ csp_nonce() }}"
+          crossorigin="anonymous"></script>
 
   <script nonce="{{ csp_nonce() }}">
     const buttonModulesRefresh = document.getElementById("modulesForceRefresh");
@@ -198,9 +202,6 @@
         <button type="button" class="lk-tree-search-nav" id="tree-search-prev" title="Previous match" aria-label="Previous match" hidden>{{ icon('bi:chevron-up') }}</button>
         <button type="button" class="lk-tree-search-nav" id="tree-search-next" title="Next match" aria-label="Next match" hidden>{{ icon('bi:chevron-down') }}</button>
       </div>
-
-      <button type="button" class="btn btn-sm lk-tool-btn" data-bs-toggle="modal" data-bs-target="#detailsModal"
-              title="Details about the capture configuration">{{ icon('bi:info-circle') }}<span>Details</span></button>
 
       <div id="capture-menu" class="dropdown">
         <button class="btn btn-sm lk-tool-btn dropdown-toggle" type="button" id="capture-menu-btn"
@@ -451,6 +452,23 @@
   </div>
 
   {% include 'tree/legend.html' %}
+
+  {# Side panel (js/side_panel.js): the panels of the menus open here, next to the
+     tree, instead of modals. The modals of the page are moved in .lk-side-panel-stack. #}
+  <aside class="lk-side-panel" id="lk-side-panel" tabindex="-1" hidden>
+    <div class="lk-side-panel-resize" role="separator" aria-orientation="vertical" tabindex="0"
+         title="Drag to resize the panel" aria-label="Resize the panel (left and right arrows)"></div>
+    <div class="lk-side-panel-bar">
+      <button type="button" class="lk-side-panel-back" id="lk-side-panel-back" hidden>
+        {{ icon('bi:arrow-left') }}<span>Back to <span id="lk-side-panel-back-label"></span></span>
+      </button>
+      <span class="lk-side-panel-tools">
+        <button type="button" id="lk-side-panel-wide" aria-pressed="false" title="Wide panel" aria-label="Wide panel">{{ icon('bi:arrows-angle-expand') }}</button>
+        <button type="button" id="lk-side-panel-close" title="Close the panel (Esc)" aria-label="Close the panel">{{ icon('bi:x-lg') }}</button>
+      </span>
+    </div>
+    <div class="lk-side-panel-stack"></div>
+  </aside>
 </div>
 
 {# Site footer, the same as on every page #}

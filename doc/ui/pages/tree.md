@@ -368,3 +368,31 @@ A card is `node_height + 5` high (`node_height` = 64 in `js/tree.js`, which also
 spaces the rows of the layout) and as wide as its content plus room for its
 tools on the first line, at the right (camera, view from here, pencil,
 bookmark): they never cover the hostname or the badges.
+
+## Side panel
+
+The entries of the menus (Capture, Analysis, Actions, Extras, Admin) open in a
+panel at the right of the tree (`#lk-side-panel`, `js/side_panel.js`), not in
+modals: the tree stays visible and usable next to it. **Capture details** is in
+the Capture menu.
+
+- The panels are still written as Bootstrap modals (`remote_modal()` in
+  `macros/modals.html`, or in `tree/tree.html`): IDs, `data-remote` and
+  `data-bs-target` don't change. A click on a `[data-bs-toggle="modal"]` link is
+  taken over (listener on `window`, capture phase: Bootstrap's delegated
+  listeners are on `document`, capture phase too), the modal is moved into
+  `.lk-side-panel-stack` and shown as the content of the panel. The
+  `show.bs.modal` / `shown.bs.modal` events are sent by the panel with the link
+  as `relatedTarget`, so the loaders (`js/tree_modals.js`,
+  `js/capture_components.js`) work as before; `hidden.bs.modal` when it closes.
+- A link inside a panel (e.g. a hostname in **Hostnames**) opens the next panel
+  on top; **Back to …** comes back to the previous one (its remote content is
+  loaded again). A link from the menus starts a new history.
+- Close: the ✕ of the panel, `Esc`, or any `data-bs-dismiss="modal"` button of
+  a panel (their Close buttons are hidden: the panel has its own).
+- Width: drag the left edge (or focus it and use the arrows), remembered in
+  `localStorage` (`lk-side-panel-width`); the expand button makes it wide. The
+  tree controls and the legend move left of the panel, the controls icons only.
+- Kept as a real modal: the note editor (`noteModal`, `KEPT_AS_MODALS`).
+  Code can open a panel with `window.lkSidePanel.open(id)` (the screenshot of
+  the tree does).

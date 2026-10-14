@@ -564,6 +564,13 @@ on `.lk-tree-heat g.node .node-card` (a focused card keeps its accent fill). The
 scale (0 and the maximum, formatted) shows under the choices in the menu, which
 scrolls when it is taller than the screen.
 
+Each choice explains itself in the menu (`.lk-heat-item small`): what is
+measured and which hosts stand out. Under the choices, a sentence says how to
+read the colours (the redder, the higher, compared with the highest of the
+capture). While a measure is shown, hovering a node adds its value and its
+share of the highest at the top of the node info panel (`showNodeInfo()`,
+`heat_max`).
+
 ### Links in the filter, hover
 
 The legend (`tree/legend.html`) has a **Links** section: one entry per link

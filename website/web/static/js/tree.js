@@ -90,13 +90,15 @@ try {
     const saved = localStorage.getItem('lk-tree-heat');
     if (HEAT_MEASURES.includes(saved)) heat_measure = saved;
 } catch (e) { /* default */ }
+// Highest value of the heat map measure shown (applyHeat), for the node info panel
+let heat_max = 0;
 // Measures of the heat map (applyHeat)
 const HEAT = {
-    size: { value: d => tree_stats[d.data.uuid]?.size || 0, format: formatBytes, stats: true },
-    duration: { value: d => { const s = tree_stats[d.data.uuid]; return s ? s.end - s.start : 0; },
+    size: { label: 'Bytes received', value: d => tree_stats[d.data.uuid]?.size || 0, format: formatBytes, stats: true },
+    duration: { label: 'Loading time', value: d => { const s = tree_stats[d.data.uuid]; return s ? s.end - s.start : 0; },
                 format: ms => `${(ms / 1000).toFixed(2)} s`, stats: true },
-    arrival: { value: d => tree_stats[d.data.uuid]?.start || 0, format: ms => `${(ms / 1000).toFixed(2)} s`, stats: true },
-    urls: { value: d => d.data.urls_count || 0, format: n => `${n} URL${n > 1 ? 's' : ''}`, stats: false },
+    arrival: { label: 'First call', value: d => tree_stats[d.data.uuid]?.start || 0, format: ms => `${(ms / 1000).toFixed(2)} s`, stats: true },
+    urls: { label: 'URLs', value: d => d.data.urls_count || 0, format: n => `${n} URL${n > 1 ? 's' : ''}`, stats: false },
 };
 // Radial: centre of the rings (coordinates of node_container), set by update()
 const radial_center = { x: 0, y: 0 };
@@ -806,6 +808,12 @@ function showNodeInfo(event, d) {
         }
         panel.appendChild(title);
         const lines = networkLines(d);
+        // Heat map on: the value of the node, first
+        const heat = HEAT[heat_measure];
+        if (heat && (!heat.stats || tree_stats) && heat_max) {
+            const value = heat.value(d);
+            lines.unshift([heat.label, `${heat.format(value)} (${Math.round(value / heat_max * 100)} % of the highest)`]);
+        }
         const table = document.createElement('dl');
         (lines.length ? lines : [['DNS', 'No DNS data in this capture']]).forEach(([label, value]) => {
             const dt = document.createElement('dt');
@@ -1434,6 +1442,7 @@ async function applyHeat() {
     const all = allNodes(tree_root);
     const max = d3.max(all, measure.value) || 1;
     const tint = d3.scaleSqrt().domain([0, max]).range([0, 75]);
+    heat_max = max;
     node_container.selectAll('g.node').style('--lk-heat', d => `${tint(measure.value(d)).toFixed(1)}%`);
     tree_viewport.classList.add('lk-tree-heat');
     if (legend) {

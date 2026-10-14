@@ -982,6 +982,11 @@ path.link {
 .lk-tree-heat g.node:not(.is-focused) .node-card {
   fill: color-mix(in srgb, var(--lk-color-tree-heat) var(--lk-heat, 0%), var(--lk-color-surface));
 }
+.lk-tree-bg-menu .lk-heat-item { flex-direction: column; align-items: flex-start; gap: 0; white-space: normal; }
+.lk-heat-item small { font-size: var(--lk-font-size-xs); color: var(--lk-color-muted); line-height: 1.35; }
+.lk-heat-item.active small, .lk-heat-item[aria-pressed="true"] small { color: inherit; opacity: 0.85; }
+.lk-tree-bg-menu { width: 19rem; }
+.lk-heat-help { display: block; line-height: 1.35; }
 .lk-heat-legend { padding: var(--lk-space-1) var(--lk-space-3) var(--lk-space-2); font-size: var(--lk-font-size-xs); color: var(--lk-color-muted); }
 .lk-heat-legend[hidden] { display: none; }
 .lk-heat-gradient {

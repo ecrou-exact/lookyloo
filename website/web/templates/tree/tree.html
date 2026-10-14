@@ -413,10 +413,18 @@
         {# Heat map (js/tree.js, setupHeat): the cards tinted by a measure of the host #}
         <li><hr class="dropdown-divider"></li>
         <li><h6 class="dropdown-header">Colour the nodes by</h6></li>
-        {% for value, label in [('none', 'Nothing'), ('size', 'Bytes received'), ('duration', 'Loading time'), ('arrival', 'Time of the first call'), ('urls', 'Number of URLs')] %}
-        <li><button type="button" class="dropdown-item" data-tree-heat="{{ value }}" aria-pressed="false">{{ label }}</button></li>
+        {% for value, label, help in [
+          ('none', 'Nothing', 'Plain cards.'),
+          ('size', 'Bytes received', 'Weight of everything this host sent (pages, scripts, images…). Heavy hosts stand out.'),
+          ('duration', 'Loading time', 'From the first request to this host to the end of its last one. Slow or long-lived hosts stand out (trackers that keep sending, slow servers).'),
+          ('arrival', 'Time of the first call', 'When the browser first contacted this host, since the start of the capture. Hosts called late stand out (loaded after the page, often by scripts).'),
+          ('urls', 'Number of URLs', 'How many URLs were loaded from this host. Busy hosts stand out.'),
+        ] %}
+        <li><button type="button" class="dropdown-item lk-heat-item" data-tree-heat="{{ value }}" data-help="{{ help }}" aria-pressed="false">
+          <span>{{ label }}</span><small>{{ help }}</small></button></li>
         {% endfor %}
         <li class="lk-heat-legend" id="tree-heat-legend" hidden>
+          <span class="lk-heat-help">The redder the card, the higher its value, compared with the highest of this capture. Hover a node: its value.</span>
           <span class="lk-heat-gradient" aria-hidden="true"></span>
           <span class="lk-heat-scale"><span id="tree-heat-min">0</span><span id="tree-heat-max"></span></span>
         </li>

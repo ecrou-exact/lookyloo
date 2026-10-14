@@ -86,7 +86,20 @@ Favicons, HTTP headers hashes, API.
   page, `autoStart()` starts its tour at once (a page without a tour goes to the
   next one). The progress reads "Full tour · page 3 / 12 · 5 / 65"; the last
   step of a page says "Next page: <label> →" and goes there.
-- *Stop the full tour*, Esc or a click outside the card stop the whole tour
-  (`quit()`); the last page ends it (*Finish*).
+- Only the **Stop** button ends a tour (any tour, `quit()`): a click outside
+  the card or Esc do nothing, so a tour is never closed by accident.
+- **Your first capture**, after the API page: the capture form
+  (`#lk-tour-example` steps of `capture/capture.html`, stage `example`). The
+  step with a `type` types https://github.com in the URL field, one character
+  at a time (`typeInto()`); the last button, *Capture github.com →*, presses
+  *Start looking!* (the `submit` of the entry). Stage `wait`: the loading page
+  (`tree/tree_wait.html`) shows its tour, then a **waiting step** (`waiting`,
+  `showWaiting()`): no buttons, the eyes of the loader, funny messages every
+  2.6 s and a clock; the page is fetched every 4 s and reloaded once it holds
+  the tree (stage `waiting`; a manual reload goes straight back to that card).
+  The loading page itself reloads with `js/tree_wait.js` (10 s, waiting while a
+  tour is open; `<noscript>` meta refresh without JavaScript). On the tree, its
+  own tour starts; its end ends the full tour.
+- Steps in the macro: `(selector, title, text[, open[, type[, waiting]]])`.
 - Any element with `data-lk-tour-full` starts it (one listener on the document,
   so a button loaded later works too).

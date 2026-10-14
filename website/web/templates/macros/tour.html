@@ -7,18 +7,25 @@
       (None, 'Welcome', 'A step without element: a centred card.'),
     ]) }}{% endblock %}
 
-  Each step: (CSS selector or None, title, text[, open]). Steps whose element is
+  Each step: (CSS selector or None, title, text[, open[, type[, waiting]]]).
+  type: text typed in the element (an input) while the step is shown.
+  waiting: a last step that stays until the page goes on by itself (the loading
+  page of the first capture of the full tour): no buttons, an animation. Steps whose element is
   not on the page (or hidden) are skipped, so a page can list optional features.
   open: selector of a dropdown toggle to open before the step (to explain the
   entries of a menu: the selector is then an entry of that menu).
   Output: <script type="application/json" id="lk-tour"> (data, never executed;
   tojson escapes <, > and &).
 #}
-{% macro tour(steps) -%}
+{# id: another list of steps of the same page (e.g. "lk-tour-example": the first
+   capture of the full tour, on the home page) #}
+{% macro tour(steps, id='lk-tour') -%}
 {%- set ns = namespace(items=[]) -%}
 {%- for step in steps -%}
   {%- set ns.items = ns.items + [{'selector': step[0], 'title': step[1], 'text': step[2],
-                                  'open': step[3] if step|length > 3 else None}] -%}
+                                  'open': step[3] if step|length > 3 else None,
+                                  'type': step[4] if step|length > 4 else None,
+                                  'waiting': step[5] if step|length > 5 else False}] -%}
 {%- endfor -%}
-<script type="application/json" id="lk-tour">{{ ns.items|tojson }}</script>
+<script type="application/json" id="{{ id }}">{{ ns.items|tojson }}</script>
 {%- endmacro %}

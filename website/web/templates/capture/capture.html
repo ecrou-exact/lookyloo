@@ -724,4 +724,11 @@ window.addEventListener('DOMContentLoaded', () => {
   ("#collapseConfigCapture", "The capture", "Cookies, headers, referer, proxy, timeouts and other technical settings of the browser."),
   ("#btn-looking", "Start", "Starts the capture. The page of the capture opens and fills in when the capture is done."),
   ("#lk-tour-menu-btn", "The tutorial, any time", "This button starts the tour of the page you are on. Turn the tutorial mode on to get the tour of each page the first time you open it.")
-]) }}{% endblock %}
+]) }}
+{# End of the full tour (js/tour.js): a first capture, of github.com, made together #}
+{{ tour([
+  (None, "Your first capture", "Now let's try it for real: Lookyloo will capture github.com, a page you know, so you can see what it records."),
+  ("#singleCaptureField", "Type the link", "This is where the link goes. Watch: we type https://github.com for you. Any link works the same way.", None, "https://github.com"),
+  (".lk-capture-toc", "The settings", "Browser, device, cookies, proxy… The defaults are fine for a first try: nothing else to fill in."),
+  ("#btn-looking", "Start looking!", "This button starts the capture. Click below: we press it for you, then you will see the loading screen and the tree of github.com.")
+], id='lk-tour-example') }}{% endblock %}

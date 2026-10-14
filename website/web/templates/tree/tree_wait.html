@@ -7,15 +7,27 @@
 
 {% block title %}Ongoing capture...{% endblock %}
 
+
+{% from 'macros/tour.html' import tour %}
+
 {% block head %}
 {{ super() }}
-<meta http-equiv="refresh" content="10;url={{url_for('tree', tree_uuid=tree_uuid, seed=seed)}}" />
+{# Without JavaScript; with it, js/tree_wait.js reloads (and waits while a tour is open) #}
+<noscript><meta http-equiv="refresh" content="10;url={{url_for('tree', tree_uuid=tree_uuid, seed=seed)}}" /></noscript>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('static', filename='js/tree_wait.js') }}"
+        {{get_sri('static', 'js/tree_wait.js')}}
+        nonce="{{ csp_nonce() }}"
+        crossorigin="anonymous"></script>
 {% endblock %}
 
 {% block main_class %}lk-container-narrow{% endblock %}
 
 {% block main %}
-<section class="lk-card lk-wait" aria-live="polite">
+<section class="lk-card lk-wait" aria-live="polite" data-lk-reload="{{ url_for('tree', tree_uuid=tree_uuid, seed=seed) }}">
   {{ loader('Capture in progress', size='lg') }}
   <h1 class="lk-wait-title">{{ message }}</h1>
   <p class="lk-wait-text">Lookyloo is looking at the page. This page refreshes by itself every 10 seconds
@@ -37,3 +49,13 @@
   <p class="lk-wait-link"><a href="{{ url_for('tree', tree_uuid=tree_uuid, seed=seed) }}">Check now</a></p>
 </section>
 {% endblock %}
+
+{# Tutorial of the page (js/tour.js, doc/ui/tour.md) #}
+{% block tour %}{{ tour([
+  (None, "The capture is running", "Lookyloo is opening the page in a real browser, on the server: it records every request, the screenshot, the cookies… It usually takes 10 to 30 seconds."),
+  (".lk-loader", "Lookyloo is looking", "The eyes say it is still working: queued, capturing, then building the tree."),
+  (".lk-wait-title", "Where it is", "The current step of the capture: waiting in the queue, ongoing, or being processed."),
+  (".lk-wait-text", "No need to reload", "This page checks by itself every 10 seconds and shows the tree as soon as it is ready (it waits while this tour is open)."),
+  (".lk-wait-link", "Check now", "Impatient? This link checks right away."),
+  (None, "Building the tree", "Lookyloo is still at work. Stay here: the tree opens by itself as soon as it is ready.", None, None, True)
+]) }}{% endblock %}

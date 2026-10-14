@@ -26,7 +26,7 @@
             const entry = pages[page];
             const url = entry.url || document.querySelector(entry.pick)?.getAttribute('href');
             if (url) {
-                session.set({ page });
+                session.set({ page, stage: entry.stage || null });
                 location.href = url;
                 return;
             }
@@ -39,8 +39,81 @@
         goToFullPage(0);
     }
     function stopFull() { session.clear(); }
-    // Left by the user (skip, Esc, click outside): the full tour stops too
+    // Stopped by the user (the Stop button): the full tour stops too
     function quit() { stopFull(); stop(); }
+    const pages_of = (full) => fullPages()[full.page] || {};
+
+    // A step with "type": the text is typed in its element, one character at a time
+    let typing = null;
+    function typeInto(step) {
+        clearInterval(typing);
+        const field = step.type && document.querySelector(step.selector);
+        if (!field) return;
+        field.value = '';
+        let i = 0;
+        typing = setInterval(() => {
+            field.value = step.type.slice(0, ++i);
+            field.dispatchEvent(new Event('input', { bubbles: true }));
+            if (i >= step.type.length) clearInterval(typing);
+        }, 70);
+    }
+
+    // The waiting step (loading page of the first capture): no buttons, the eyes of
+    // the loader, funny messages and a clock; the page is checked every 4 seconds and
+    // the tree opens as soon as it is built. The tour cannot be left meanwhile.
+    const WAITING_MESSAGES = [
+        'Knocking on the door of the website…',
+        'Opening the page in a real browser…',
+        'Writing down every request, even the tiny ones…',
+        'Counting the cookies (not eating them)…',
+        'Following every redirect, wherever it goes…',
+        'Taking a screenshot, smile!',
+        'Asking each host where it lives…',
+        'Planting the tree, branch by branch…',
+        'Watering the tree…',
+        'Almost there, the leaves are coming…',
+    ];
+    let waiting = null;
+    function showWaiting(step) {
+        clearInterval(waiting?.messages);
+        clearInterval(waiting?.clock);
+        clearInterval(waiting?.check);
+        card.querySelector('.lk-tour-waiting')?.remove();
+        card.classList.toggle('is-waiting', Boolean(step.waiting));
+        if (!step.waiting) { waiting = null; return; }
+        const full = session.get();
+        if (full) session.set({ page: full.page, stage: 'waiting' });
+        const box = document.createElement('div');
+        box.className = 'lk-tour-waiting';
+        const eyes = document.querySelector('.lk-wait .lk-loader')?.cloneNode(true);
+        if (eyes) box.appendChild(eyes);
+        const message = document.createElement('p');
+        message.className = 'lk-tour-waiting-message';
+        message.setAttribute('aria-live', 'polite');
+        const clock = document.createElement('p');
+        clock.className = 'lk-tour-waiting-clock';
+        box.append(message, clock);
+        card.querySelector('.lk-tour-actions').before(box);
+        const started = Date.now();
+        let i = 0;
+        const tick = () => {
+            message.textContent = WAITING_MESSAGES[i++ % WAITING_MESSAGES.length];
+        };
+        tick();
+        const clockTick = () => { clock.textContent = `${Math.round((Date.now() - started) / 1000)} s`; };
+        clockTick();
+        waiting = {
+            messages: setInterval(() => { tick(); }, 2600),
+            clock: setInterval(clockTick, 1000),
+            check: setInterval(async () => {
+                try {
+                    const response = await fetch(location.href, { cache: 'no-store', credentials: 'same-origin' });
+                    if ((await response.text()).includes('id="tree_js"')) location.reload();
+                } catch (error) { /* next time */ }
+            }, 4000),
+        };
+        place();
+    }
     const SEEN_KEY = 'lk-tour-seen';
     const storage = {
         get: (key) => { try { return localStorage.getItem(key); } catch (e) { return null; } },
@@ -53,8 +126,15 @@
     let spotlight = null;
     let card = null;
 
+    // Stages of the last page of the full tour: 'example' (the home page, the first
+    // capture filled in), 'wait' (its loading page), 'wait-seen' (tour of the loading
+    // page done, it keeps reloading), then the tree of the capture (its own tour)
+    const onWaitPage = () => Boolean(document.querySelector('.lk-wait'));
+    const onTreePage = () => Boolean(document.getElementById('tree_js'));
+
     function readSteps() {
-        const data = document.getElementById('lk-tour');
+        const example = session.get()?.stage === 'example' && document.getElementById('lk-tour-example');
+        const data = example || document.getElementById('lk-tour');
         if (!data) return [];
         try { return JSON.parse(data.textContent) || []; } catch (e) { return []; }
     }
@@ -100,7 +180,7 @@
     function build() {
         overlay = document.createElement('div');
         overlay.className = 'lk-tour-overlay';
-        overlay.addEventListener('click', quit);
+        // A click outside the card does nothing: only the Stop button ends the tour
         spotlight = document.createElement('div');
         spotlight.className = 'lk-tour-spotlight';
         card = document.createElement('div');
@@ -117,7 +197,8 @@
         text.className = 'lk-tour-text';
         const actions = document.createElement('div');
         actions.className = 'lk-tour-actions';
-        const skip = button(session.get() ? 'Stop the full tour' : 'Skip the tour', 'btn btn-sm btn-link lk-tour-skip', quit);
+        const skip = button(session.get() ? 'Stop the full tour' : 'Stop the tour', 'btn btn-sm btn-link lk-tour-skip', quit);
+        skip.dataset.role = 'stop';
         const previous = button('Previous', 'btn btn-sm btn-outline-secondary', () => go(index - 1));
         const next = button('Next', 'btn btn-sm btn-primary', () => go(index + 1));
         previous.dataset.role = 'previous';
@@ -141,7 +222,9 @@
 
     function keys(event) {
         if (!card) return;
-        if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); quit(); }
+        // Esc does not stop it either (only the Stop button); it is kept from the page
+        if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); }
+        else if (card.classList.contains('is-waiting')) return;
         else if (event.key === 'ArrowRight') { event.preventDefault(); go(index + 1); }
         else if (event.key === 'ArrowLeft') { event.preventDefault(); go(index - 1); }
     }
@@ -200,22 +283,39 @@
         const full = session.get();
         if (to >= list.length) {
             stop();
-            if (full) goToFullPage(full.page + 1);
+            if (!full) return;
+            if (full.stage === 'example') {
+                // The first capture: the URL typed (whole, even if Next came fast), the button pressed
+                const entry = pages_of(full);
+                const field = document.querySelector('#singleCaptureField');
+                if (field) field.value = entry.example;
+                const submit = document.querySelector(entry.submit);
+                session.set({ page: full.page, stage: 'wait' });
+                if (submit?.form) submit.form.requestSubmit(submit); else session.clear();
+            } else if (full.stage) {
+                session.clear();   // the tree of the first capture: the end of the full tour
+            } else {
+                goToFullPage(full.page + 1);
+            }
             return;
         }
         index = Math.max(0, to);
         const step = list[index];
         const pages = fullPages();
         card.querySelector('.lk-tour-progress').textContent = full
-            ? `Full tour · page ${full.page + 1} / ${pages.length} · ${index + 1} / ${list.length}`
+            ? (full.stage ? `Full tour · your first capture · ${index + 1} / ${list.length}`
+                          : `Full tour · page ${full.page + 1} / ${pages.length} · ${index + 1} / ${list.length}`)
             : `Tutorial · ${index + 1} / ${list.length}`;
         card.querySelector('h2').textContent = step.title;
         card.querySelector('.lk-tour-text').textContent = step.text;
         card.querySelector('[data-role="previous"]').disabled = index === 0;
-        const next_page = full && pages[full.page + 1];
-        card.querySelector('[data-role="next"]').textContent = index < list.length - 1 ? 'Next'
+        const next_page = full && !full.stage && pages[full.page + 1];
+        const last_label = full?.stage === 'example' ? `Capture ${new URL(pages[full.page].example).hostname} →`
             : next_page ? `Next page: ${next_page.label} →` : 'Finish';
+        card.querySelector('[data-role="next"]').textContent = index < list.length - 1 ? 'Next' : last_label;
         openMenu(step.open);
+        typeInto(step);
+        showWaiting(step);
         const element = target(step);
         // Entry of an opened menu: the whole menu stays readable above the veil,
         // the entry gets its own outline (the spotlight goes under the menu)
@@ -251,6 +351,8 @@
 
     function stop() {
         const was_running = Boolean(card);
+        clearInterval(typing);
+        if (waiting) { clearInterval(waiting.messages); clearInterval(waiting.clock); clearInterval(waiting.check); waiting = null; }
         openMenu(null);
         document.querySelectorAll('.lk-tour-target').forEach(node => node.classList.remove('lk-tour-target'));
         document.body.classList.remove('lk-tour-running');
@@ -274,7 +376,20 @@
     function autoStart() {
         steps = readSteps();
         // Full tour going on: the tour of this page starts at once
-        if (session.get()) {
+        const full = session.get();
+        if (full?.stage) {
+            if (full.stage === 'waiting' && onWaitPage()) {
+                // Reloaded while the capture runs: straight back to the waiting card
+                setTimeout(() => { start(); go(available().length - 1); }, 300);
+                return;
+            } else if (full.stage !== 'example' && !onWaitPage() && !onTreePage()) {
+                session.clear();   // left the first capture for another page
+                return;
+            }
+            if (steps.length) setTimeout(start, 300);
+            return;
+        }
+        if (full) {
             if (steps.length) setTimeout(start, 300);
             else goToFullPage(session.get().page + 1);   // a page without a tour: the next one
             return;

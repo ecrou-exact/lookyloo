@@ -75,3 +75,25 @@ body.lk-tour-running g.node .node-capture { opacity: 1; }
   .lk-tour-card { animation: none; }
   .lk-tour-spotlight { transition: none; }
 }
+
+/* Waiting step (js/tour.js, showWaiting): no buttons, the eyes, funny messages, a clock */
+.lk-tour-card.is-waiting .lk-tour-actions { display: none; }
+.lk-tour-waiting { display: flex; flex-direction: column; align-items: center; gap: var(--lk-space-2); margin: var(--lk-space-3) 0 var(--lk-space-1); text-align: center; }
+.lk-tour-waiting .lk-loader { transform: scale(1.3); margin: var(--lk-space-2) 0; }
+.lk-tour-waiting-message {
+  margin: 0;
+  min-height: 2.6em;
+  font-weight: var(--lk-font-weight-medium);
+  color: var(--lk-color-accent);
+  animation: lk-tour-wiggle 2.6s ease-in-out infinite;
+}
+.lk-tour-waiting-clock { margin: 0; font-family: var(--lk-font-mono); font-size: var(--lk-font-size-xs); color: var(--lk-color-muted); }
+@keyframes lk-tour-wiggle {
+  0%, 100% { transform: translateY(0) rotate(0); opacity: 1; }
+  10% { transform: translateY(-3px) rotate(-1.5deg); }
+  20% { transform: translateY(0) rotate(1.5deg); }
+  30% { transform: rotate(0); }
+  90% { opacity: 1; }
+  96% { opacity: 0.2; }
+}
+@media (prefers-reduced-motion: reduce) { .lk-tour-waiting-message { animation: none; } }

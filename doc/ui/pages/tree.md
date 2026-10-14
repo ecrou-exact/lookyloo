@@ -431,10 +431,8 @@ element gets `src` (same origin), `max-height="60vh"`, and a `download` name.
 
 The OpenSSL commands to check a trusted timestamp by hand are vitrine
 `<vt-terminal>` elements (commands after `$`, a copy button per command).
-The certificate and "download all" messages are only shown when the capture has
-trusted timestamps. Without them, the table (`.lk-forensic-table.is-without-timestamps`)
-only shows the files and their download link: the two timestamp columns are
-hidden.
+The table always has its trusted timestamp and validation columns
+(*Unavailable* / *N/A* when there is none).
 
 The **Ollama report** (Extras) sends the redirects, the page as Markdown (cut at
 8000 characters) and, when the model can read images (`vision` in its

@@ -7,8 +7,7 @@
 <p class="lk-modal-note">{{ icon('bi:info-circle') }} This capture was made without trusted timestamps (RFC 3161): every file can be downloaded, none of them is timestamped.</p>
 {% endif %}
 
-{# Without trusted timestamps, the two timestamp columns are hidden (css/components/vitrine.css) #}
-<table class="table lk-forensic-table{% if no_timestamps %} is-without-timestamps{% endif %}">
+<table class="table lk-forensic-table">
   <thead>
     <tr>
       <th scope="col">File</th>
@@ -220,14 +219,12 @@
 </table>
 
 {% if not error %}
-{% if not no_timestamps %}
 <div class="alert alert-info" role="alert">
   <a href="{{url_for('all_trusted_timestamp', tree_uuid=tree_uuid, seed=seed)}}">Download</a> all the elements with trusted timestamps.
 </div>
 <div class="alert alert-info" role="alert">
   Trusted timestamps were validated with <a href="data:application/x-pem-file;base64,{{b64_certificate}}" download="certificates.pem">this certificate(s)</a>.
 </div>
-{% endif %}
 
 {# How to check a trusted timestamp by hand: vitrine <vt-terminal> (js/capture_components.js),
    a copy button per command #}

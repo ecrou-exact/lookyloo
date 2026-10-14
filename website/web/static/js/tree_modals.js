@@ -141,14 +141,27 @@ document.addEventListener("DOMContentLoaded", () => {
           }
           // Eyes while loading, also when the modal is opened again with other content
           curTarget.querySelector('.modal-body').innerHTML = lkLoader('Loading', 'md', true);
+          const body = curTarget.querySelector('.modal-body');
           fetch(remote)
-            .then(response => response.text())
+            .then(response => {
+                // A redirect is an error page of the site (e.g. a capture removed in the
+                // meantime): say it, rather than showing another page in the panel
+                if (!response.ok || response.redirected) throw new Error(response.status);
+                return response.text();
+            })
             .then(data => {
-                curTarget.querySelector('.modal-body').innerHTML = data;
+                body.innerHTML = data;
                 renderTables();
                 submitPandoraListener();
                 mispSelector();
                 document.getElementById("dlTreeAsSVG")?.addEventListener("click", downloadSvg);
+            })
+            .catch(() => {
+                const message = document.createElement('div');
+                message.className = 'alert alert-warning';
+                message.setAttribute('role', 'alert');
+                message.textContent = 'Unable to load this panel: the capture may have been removed, or is still being processed. Reload the page.';
+                body.replaceChildren(message);
             })
         });
     });

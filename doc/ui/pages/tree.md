@@ -403,6 +403,9 @@ the Capture menu.
   it shows. `remote_modal()` takes `icon_name` and `note` for it; the panels
   written in `tree/tree.html` call `panel_header()`. A panel opened from
   another one (e.g. **Hostname** from **Hostnames**) uses the icon of its list.
+- A panel whose content cannot be loaded (HTTP error, or a redirect: the site
+  sends one with a flashed message when the capture is gone, e.g. removed in
+  another tab) shows a warning in the panel, not the page it was redirected to.
 - Kept as a real modal: the note editor (`noteModal`, `KEPT_AS_MODALS`).
   Code can open a panel with `window.lkSidePanel.open(id)` (the screenshot of
   the tree does).

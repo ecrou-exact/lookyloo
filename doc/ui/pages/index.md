@@ -65,7 +65,8 @@ chip.
 The header shows the number of captures of the list (`#capture-total`,
 `total_captures` from `index_generic()`): the recent captures, not archived,
 counted in Valkey without loading them (`ZCARD recent_captures_public` for
-the public list, `recent_captures` minus the public ones for the hidden list).
+the public list, `recent_captures` minus the public ones for the hidden list). With a category filter, it is the number of captures of the category
+(`get_captures_category_count()`, as the list counts them).
 
 ## Hidden captures
 

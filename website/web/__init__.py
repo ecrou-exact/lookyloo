@@ -2301,8 +2301,12 @@ def index_generic(show_hidden: bool=False, show_error: bool=True, category: str 
         mastodon_domain = get_config('mastobot', 'domain')
         mastodon_botname = get_config('mastobot', 'botname')
     # Captures of the list (the recent ones, not archived): public, or hidden ones
-    public_count = lookyloo.redis.zcard('recent_captures_public')
-    total_captures = lookyloo.redis.zcard('recent_captures') - public_count if show_hidden else public_count
+    if category:
+        # The captures of the category, as counted by the list (get_index)
+        total_captures = get_indexing(flask_login.current_user).get_captures_category_count(category)
+    else:
+        public_count = lookyloo.redis.zcard('recent_captures_public')
+        total_captures = lookyloo.redis.zcard('recent_captures') - public_count if show_hidden else public_count
     return render_template('home/index.html', public_domain=lookyloo.public_domain,
                            show_hidden=show_hidden,
                            total_captures=total_captures,

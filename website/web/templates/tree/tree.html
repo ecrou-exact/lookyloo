@@ -411,6 +411,14 @@
           <div><span class="lk-link-swatch"></span>other</div>
           <div>Thicker: more bytes loaded from the host.</div>
         </li>
+        {# Groups by network (js/tree.js, setupGroups): a halo per AS behind the cards #}
+        <li><hr class="dropdown-divider"></li>
+        <li><h6 class="dropdown-header">Group by network</h6></li>
+        <li><button type="button" class="dropdown-item lk-heat-item" data-tree-groups="off" aria-pressed="false">
+          <span>Off</span></button></li>
+        <li><button type="button" class="dropdown-item lk-heat-item" data-tree-groups="asn" aria-pressed="false">
+          <span>By AS (network operator)</span><small>A coloured halo behind the hosts of the same AS: the biggest networks of the capture (hosting, CDN…) show at a glance.</small></button></li>
+        <li class="lk-group-legend" id="tree-group-legend" hidden><ul></ul></li>
         {# Heat map (js/tree.js, setupHeat): the cards tinted by a measure of the host #}
         <li><hr class="dropdown-divider"></li>
         <li><h6 class="dropdown-header">Colour the nodes by</h6></li>

@@ -1102,6 +1102,21 @@ path.link.is-link-hover { stroke: var(--lk-color-accent); stroke-opacity: 1; fil
 .node-bookmark { font-size: 15px; }
 
 /* Main path: root -> redirects -> node of the rendered page (always shown) */
+/* Groups by network (js/tree.js, applyGroups): a halo behind the card, one colour per AS */
+rect.node-group-halo { stroke: none; pointer-events: none; }
+.lk-group-1 { fill: var(--lk-color-tree-group-1); background: var(--lk-color-tree-group-1); }
+.lk-group-2 { fill: var(--lk-color-tree-group-2); background: var(--lk-color-tree-group-2); }
+.lk-group-3 { fill: var(--lk-color-tree-group-3); background: var(--lk-color-tree-group-3); }
+.lk-group-4 { fill: var(--lk-color-tree-group-4); background: var(--lk-color-tree-group-4); }
+.lk-group-5 { fill: var(--lk-color-tree-group-5); background: var(--lk-color-tree-group-5); }
+.lk-group-6 { fill: var(--lk-color-tree-group-6); background: var(--lk-color-tree-group-6); }
+.lk-group-legend { padding: var(--lk-space-1) var(--lk-space-3) var(--lk-space-2); font-size: var(--lk-font-size-xs); color: var(--lk-color-muted); }
+.lk-group-legend[hidden] { display: none; }
+.lk-group-legend ul { list-style: none; margin: var(--lk-space-1) 0 0; padding: 0; }
+.lk-group-legend li { display: flex; align-items: center; gap: var(--lk-space-2); font-family: var(--lk-font-mono); }
+.lk-group-swatch { display: inline-block; width: 14px; height: 14px; border-radius: 4px; }
+.lk-group-count { margin-left: auto; }
+
 /* Risk badge of a node (js/tree.js, RISKS): top left corner of the card */
 g.node-risk { cursor: help; }
 g.node-risk circle { stroke: var(--lk-color-surface); stroke-width: 2px; }

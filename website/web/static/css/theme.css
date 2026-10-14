@@ -93,6 +93,13 @@
   --lk-color-tree-link-script: #2B4BEE;
   --lk-color-tree-link-style: #0C8599;
   --lk-color-tree-link-image: #2F9E44;
+  /* Groups by network (Display > Group by network): one colour per AS, the 6 biggest */
+  --lk-color-tree-group-1: rgba(43, 75, 238, 0.22);
+  --lk-color-tree-group-2: rgba(47, 158, 68, 0.24);
+  --lk-color-tree-group-3: rgba(217, 72, 15, 0.22);
+  --lk-color-tree-group-4: rgba(156, 54, 181, 0.22);
+  --lk-color-tree-group-5: rgba(12, 133, 153, 0.24);
+  --lk-color-tree-group-6: rgba(230, 119, 0, 0.26);
   /* Heat map of the nodes (Display > Colour the nodes): the hottest card */
   --lk-color-tree-heat: #F03E3E;
 
@@ -183,6 +190,12 @@
   --lk-color-tree-link-style: #3BC9DB;
   --lk-color-tree-link-image: #69DB7C;
   --lk-color-tree-heat: #E03131;
+  --lk-color-tree-group-1: rgba(124, 147, 255, 0.30);
+  --lk-color-tree-group-2: rgba(105, 219, 124, 0.28);
+  --lk-color-tree-group-3: rgba(255, 138, 76, 0.30);
+  --lk-color-tree-group-4: rgba(218, 119, 242, 0.30);
+  --lk-color-tree-group-5: rgba(59, 201, 219, 0.28);
+  --lk-color-tree-group-6: rgba(255, 212, 59, 0.28);
 
   --lk-tag-blue: #93B4FF;    --lk-tag-blue-bg: #1A2747;
   --lk-tag-teal: #5ED3C4;    --lk-tag-teal-bg: #12302D;

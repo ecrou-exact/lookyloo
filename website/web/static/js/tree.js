@@ -110,6 +110,17 @@ const RISKS = [
     {key: 'mixed_content', level: 'warning', label: 'HTTPS page loading plain HTTP content'},
     {key: 'redirect_to_nothing', level: 'warning', label: 'redirects to a URL missing in the capture'},
 ];
+// Groups by network: 'off' or 'asn', remembered; GROUP_COLOURS biggest AS get a colour
+let group_mode = 'off';
+try { if (localStorage.getItem('lk-tree-groups') === 'asn') group_mode = 'asn'; } catch (e) { /* default */ }
+const GROUP_COLOURS = 6;
+// Names of a few well-known networks, for the legend (no lookup: the others show their number)
+const KNOWN_AS = {
+    '15169': 'Google', '396982': 'Google Cloud', '13335': 'Cloudflare', '16509': 'Amazon', '14618': 'Amazon',
+    '8075': 'Microsoft', '8068': 'Microsoft', '32934': 'Meta', '20940': 'Akamai', '16625': 'Akamai',
+    '54113': 'Fastly', '24940': 'Hetzner', '16276': 'OVH', '14061': 'DigitalOcean', '13414': 'X (Twitter)',
+    '36459': 'GitHub', '2635': 'Automattic', '46489': 'Twitch', '19551': 'Incapsula', '209242': 'Cloudflare',
+};
 // Measures of the heat map (applyHeat)
 const HEAT = {
     size: { label: 'Bytes received', value: d => tree_stats[d.data.uuid]?.size || 0, format: formatBytes, stats: true },
@@ -332,6 +343,7 @@ try {
   setupReplay();
   setupLinkStyle();
   setupHeat();
+  setupGroups();
   setupControlsCompact();
   setupZoom();
   setupShortcutsHelp();
@@ -1578,6 +1590,78 @@ function hideLinkInfo(d) {
     d3.select('#tooltip').classed('is-link-info', false).style('opacity', 0);
 }
 
+// ****************** Groups by network (AS) ******************
+
+// AS numbers of the IPs of a host (ipasn of the tree dump: {ip: {asn, prefix}})
+function hostAsn(d) {
+    const asns = Object.values(d.data.ipasn || {}).map(info => info?.asn).filter(Boolean);
+    return asns.length ? String(asns[0]) : null;
+}
+
+// A halo behind each card, coloured by the AS of the host (the GROUP_COLOURS biggest
+// AS of the capture, at least 2 hosts each); the legend in the Display menu
+function applyGroups() {
+    node_container.selectAll('g.node rect.node-group-halo').remove();
+    const legend = document.getElementById('tree-group-legend');
+    tree_viewport.classList.toggle('lk-tree-groups', group_mode === 'asn');
+    if (group_mode !== 'asn') {
+        if (legend) legend.hidden = true;
+        return;
+    }
+    const counts = d3.rollup(allNodes(tree_root).filter(hostAsn), v => v.length, hostAsn);
+    const biggest = [...counts].filter(([, n]) => n > 1).sort((a, b) => b[1] - a[1]).slice(0, GROUP_COLOURS);
+    const colour = new Map(biggest.map(([asn], i) => [asn, i + 1]));
+    node_container.selectAll('g.node').each(function(d) {
+        const index = colour.get(hostAsn(d));
+        if (!index) return;
+        d3.select(this).insert('rect', ':first-child')
+            .attr('class', `node-group-halo lk-group-${index}`)
+            .attr('x', -8).attr('y', -38)
+            .attr('rx', 14)
+            .attr('width', (d.node_width || 0) + 16)
+            .attr('height', node_height + 21);
+    });
+    if (legend) {
+        legend.hidden = false;
+        const list = legend.querySelector('ul');
+        list.textContent = '';
+        if (!biggest.length) {
+            const li = document.createElement('li');
+            li.textContent = 'No network has more than one host here.';
+            list.appendChild(li);
+        }
+        biggest.forEach(([asn, n], i) => {
+            const li = document.createElement('li');
+            const swatch = document.createElement('span');
+            swatch.className = `lk-group-swatch lk-group-${i + 1}`;
+            li.append(swatch, KNOWN_AS[asn] ? `AS${asn} · ${KNOWN_AS[asn]}` : `AS${asn}`);
+            const count = document.createElement('span');
+            count.className = 'lk-group-count';
+            count.textContent = `${n} hosts`;
+            li.appendChild(count);
+            list.appendChild(li);
+        });
+    }
+}
+
+function setupGroups() {
+    const items = document.querySelectorAll('[data-tree-groups]');
+    const show = () => items.forEach(item => {
+        const on = item.dataset.treeGroups === group_mode;
+        item.setAttribute('aria-pressed', on ? 'true' : 'false');
+        item.classList.toggle('active', on);
+    });
+    items.forEach(item => item.addEventListener('click', (event) => {
+        event.stopPropagation();   // the menu stays open: the legend shows
+        group_mode = item.dataset.treeGroups;
+        try { localStorage.setItem('lk-tree-groups', group_mode); } catch (e) { /* not kept */ }
+        show();
+        applyGroups();
+    }));
+    show();
+    applyGroups();
+}
+
 function riskReasons(d) {
     return RISKS.filter(risk => nodeHas(d, risk.key));
 }
@@ -2692,6 +2776,7 @@ function update(root, computed_node_width=0) {
   // New links (expand, layout) get their type and width
   if (link_style === 'meaning' && tree_entry_done) applyLinkStyle();
   if (heat_measure !== 'none' && tree_entry_done) applyHeat();
+  if (group_mode === 'asn' && tree_entry_done) applyGroups();
   // Nodes shown again after an expand keep the filters
   if (active_filters.size > 0 || search_text || focus_uuid || compare_only_new) applyTreeFilter();
 }

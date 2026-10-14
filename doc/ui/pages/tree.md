@@ -636,3 +636,14 @@ sent (POST), plain HTTP, mixed content or a redirect to a URL missing in the
 capture. It shows the number of reasons (`!` for one); hovering it lists them.
 Front only: what the dump does not have (age of the domain, password field in
 a form) is not part of it.
+
+## Groups by network
+
+*Display* > *Group by network* > *By AS* (`setupGroups()` / `applyGroups()` in
+`js/tree.js`, remembered in `localStorage`: `lk-tree-groups`): a coloured halo
+behind each card (`rect.node-group-halo`) whose host is in one of the 6 biggest
+networks (AS, from the `ipasn` of the tree dump) of the capture with at least
+2 hosts. The legend under the choice lists them, with their number of hosts;
+a few well-known networks are named (`KNOWN_AS`, a fixed list in the file, no
+lookup). Colours: `--lk-color-tree-group-1` … `-6` (light and dark,
+`css/theme.css`).

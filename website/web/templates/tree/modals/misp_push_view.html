@@ -50,7 +50,7 @@ Nothing to see here.
     {% if misp_settings.existing_event %}
     <p>There is already an <a href="{{misp_settings.existing_event}}">event on your MISP instance</a> with this lookyloo capture.</p>
     <div class="form-check">
-      <input class="form-check-input" type="checkbox" name="force_push" onchange="document.getElementById('btn-misp-push-{{name}}').disabled = !this.checked;"></input>
+      <input class="form-check-input" type="checkbox" name="force_push" data-lk-enables="btn-misp-push-{{name}}"></input>
       <label for="force_push" class="form-check-label">Tick this box if you want to push anyway</label>
     </div>
     {% endif %}

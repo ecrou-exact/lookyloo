@@ -143,3 +143,10 @@ theme) becomes `christmas`.
 To add a theme: its tokens under `[data-lk-theme="name"][data-bs-theme="light|dark"]`
 in `css/theme.css`, its base in `NAMED_THEMES` (`js/theme_toggle.js`) and an
 entry in the theme menu of `partials/header.html`.
+
+### Added during the capture page redesign
+
+| Token | Use |
+|---|---|
+| `--lk-color-tree-card-shadow` | shadow under the cards of the tree (light / dark) |
+| `--lk-mask-solid` | opaque colour of the CSS masks (only its alpha counts; not themed) |

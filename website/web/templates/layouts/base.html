@@ -108,6 +108,7 @@
     {% if overrides_js %}
     <script src="{{  overrides_js[0] }}"
             integrity="{{ overrides_js[1] }}"
+            nonce="{{ csp_nonce() }}"
             crossorigin="anonymous"></script>
     {% endif %}
     {% endblock %}

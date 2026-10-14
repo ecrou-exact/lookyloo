@@ -174,6 +174,13 @@ document.addEventListener("DOMContentLoaded", () => {
       };
     }, false);
 
+    // A checkbox that enables a button (data-lk-enables="<id>"), e.g. "push anyway" in
+    // the MISP push panel: in the loaded fragments, no inline handler (CSP)
+    document.addEventListener('change', (event) => {
+        const target = event.target.dataset?.lkEnables;
+        if (target) document.getElementById(target)?.toggleAttribute('disabled', !event.target.checked);
+    });
+
     // Actions > Download > Tree as PNG
     document.getElementById("tree-download-png")?.addEventListener("click", downloadSvg);
 

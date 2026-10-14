@@ -860,7 +860,7 @@ path.link {
   fill: var(--lk-color-surface);
   stroke: var(--lk-color-rule-strong);
   stroke-width: 1px;
-  filter: drop-shadow(0 1px 1.5px rgba(0, 0, 0, 0.08));
+  filter: drop-shadow(0 1px 1.5px var(--lk-color-tree-card-shadow));
   transition: stroke var(--lk-transition-fast);
 }
 .node_data:hover .node-card { stroke: var(--lk-color-accent); }

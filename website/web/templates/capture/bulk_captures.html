@@ -16,6 +16,7 @@
 {% if preview %}
 <script src="{{ url_for('static', filename='js/confirm_delete.js') }}"
         {{ get_sri('static', 'js/confirm_delete.js') }}
+        nonce="{{ csp_nonce() }}"
         crossorigin="anonymous"></script>
 {% endif %}
 <script nonce="{{ csp_nonce() }}">

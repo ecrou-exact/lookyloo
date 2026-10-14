@@ -86,6 +86,7 @@
   --lk-color-tree-pattern: rgba(43, 75, 238, 0.10);   /* dots / grid / columns over the canvas */
   --lk-color-tree-link: #C3CAD5;
   --lk-color-tree-icon-bg: transparent;
+  --lk-color-tree-card-shadow: rgba(0, 0, 0, 0.08);
 
   /* Tag tints (category tags, css/components/tag.css): text + background */
   --lk-tag-blue: #1D4ED8;    --lk-tag-blue-bg: #E6EDFD;
@@ -167,6 +168,7 @@
   --lk-color-tree-link: #3E4350;
   /* The node icons are PNGs drawn for light backgrounds: light chips in dark mode */
   --lk-color-tree-icon-bg: #E9EAEE;
+  --lk-color-tree-card-shadow: rgba(0, 0, 0, 0.45);
 
   --lk-tag-blue: #93B4FF;    --lk-tag-blue-bg: #1A2747;
   --lk-tag-teal: #5ED3C4;    --lk-tag-teal-bg: #12302D;
@@ -182,6 +184,8 @@
 
 /* Theme-independent tokens */
 :root {
+  /* Opaque colour of the CSS masks (only its alpha counts) */
+  --lk-mask-solid: #000;
   /* Typography. Geist / Geist Mono are self-hosted (fonts.css). */
   --lk-font-sans: "Geist", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --lk-font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;

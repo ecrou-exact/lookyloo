@@ -674,3 +674,10 @@ of the view is a **breadcrumb** (`#tree-view-from-crumbs`, `showCrumbs()` in
 `js/tree.js`): *Whole tree (root)* › each ancestor › the host, from the whole
 capture; a click on a step shows the tree from there, the first one the whole
 tree.
+
+## Visibility in the capture bar
+
+The capture bar always shows the visibility of the capture (Public, Unlisted or
+Private, `visibility_badge(info, target='visibilityModal')`, same badge as the
+capture lists); it is a button that opens the *Visibility and sharing* panel.
+It replaces the former "Private" flag, which said nothing for the other two.

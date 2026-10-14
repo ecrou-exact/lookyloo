@@ -283,6 +283,36 @@ def capture_verdict(categories: Iterable[str]) -> str | None:
     return None
 
 
+# Visibility of a capture: icon, label and what it means (badge on the capture lists
+# for logged-in users and on the capture page, doc/ui/pages/index.md)
+VISIBILITY = {
+    'public': ('bi:globe2', 'Public', 'Public: listed on the index, anyone can open it'),
+    'unlisted': ('bi:eye-slash', 'Unlisted', 'Unlisted: not on the public index, anyone with the link can open it'),
+    'private': ('bi:lock-fill', 'Private', 'Private: only with its secret link, or for logged-in users'),
+}
+
+
+def capture_visibility(cache: Any) -> str:
+    '''public, unlisted (no_index) or private.'''
+    if getattr(cache, 'private', False):
+        return 'private'
+    if getattr(cache, 'no_index', False):
+        return 'unlisted'
+    return 'public'
+
+
+def visibility_badge(cache: Any, target: str | None=None) -> Markup:
+    '''The visibility of a capture as a small badge; with target, a button opening that panel.'''
+    visibility = capture_visibility(cache)
+    icon_name, label, title = VISIBILITY[visibility]
+    if target:
+        return Markup('<button type="button" class="lk-visibility lk-visibility-{v}" data-bs-toggle="modal" '
+                      'data-bs-target="#{target}" title="{title}. Click to change it.">{icon} {label}</button>').format(
+            v=visibility, target=target, title=title, icon=icon(icon_name), label=label)
+    return Markup('<span class="lk-visibility lk-visibility-{v}" title="{title}">{icon} {label}</span>').format(
+        v=visibility, title=title, icon=icon(icon_name), label=label)
+
+
 CATEGORY_TAG = re.compile(r'^(?P<namespace>[^:]+):(?P<family>[^=]+)="?(?P<value>[^"]*)"?$')
 
 
@@ -515,6 +545,7 @@ app.jinja_env.globals.update(
      'icon': icon,
      'category_tag': category_tag,
      'capture_verdict': capture_verdict,
+     'visibility_badge': visibility_badge,
      'generic_type': mimetype_to_generic,
      'hash_icon': hash_icon_render,
      'tz_info': get_tz_info,
@@ -3451,6 +3482,8 @@ index_capture_template = app.jinja_env.from_string(source='''
     {% if verdict == 'malicious' %}
     <span class="lk-verdict lk-verdict-malicious" title="Categorized as malicious">{{ icon('bi:exclamation-octagon-fill') }} Malicious</span>
     {% endif %}
+    {# Logged-in users see every visibility mixed (hidden list, categories): say which #}
+    {% if visibility %}{{ visibility }}{% endif %}
   </div>
   <div class="lk-capture-url">{{ shorten_string(url, with_copy_button=True) }}</div>
   <ul class="lk-capture-facts">
@@ -3548,7 +3581,8 @@ def index_row(cache: CaptureCache) -> dict[str, Any]:
                                                    if i == 0 or hop['host'] != hops[i - 1]['host']],
                                             error=cache.error,
                                             categories=categories,
-                                            verdict=capture_verdict(categories))),
+                                            verdict=capture_verdict(categories),
+                                            visibility=visibility_badge(cache) if flask_login.current_user.is_authenticated else None)),
                  'filter': escape(f'{title} {" ".join(cache.redirects) if cache.redirects else cache.url}')},
         'capture_time': cache.timestamp.isoformat(),
     }

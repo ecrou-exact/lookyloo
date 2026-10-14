@@ -57,3 +57,23 @@ a.lk-tag:hover {
   color: var(--lk-color-muted);
   overflow-wrap: anywhere;
 }
+
+/* Visibility of a capture (visibility_badge() in website/web/__init__.py): public,
+   unlisted or private; a button on the capture page (opens the visibility panel) */
+.lk-visibility {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  padding: 1px var(--lk-space-2);
+  border: 1px solid transparent;
+  border-radius: var(--lk-radius-pill);
+  font-size: var(--lk-font-size-xs);
+  font-weight: var(--lk-font-weight-medium);
+  line-height: 1.6;
+  white-space: nowrap;
+}
+button.lk-visibility { cursor: pointer; }
+button.lk-visibility:hover { border-color: currentColor; }
+.lk-visibility-public { background: var(--lk-color-success-soft); color: var(--lk-color-success); }
+.lk-visibility-unlisted { background: var(--lk-color-warning-soft); color: var(--lk-color-warning); }
+.lk-visibility-private { background: var(--lk-color-accent-soft); color: var(--lk-color-accent); }

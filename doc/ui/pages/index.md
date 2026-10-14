@@ -85,3 +85,16 @@ row is shown while the tour runs (`js/capture_list_demo.js`: built with DOM
 APIs, marked **Example**, the same classes as the real rows), and removed when
 it ends: the page listens to the `lk-tour:before-start` / `lk-tour:stop` events
 of `js/tour.js`.
+
+## Visibility badge
+
+For logged-in users, each row of the capture lists (index, hidden captures,
+categories, latest captures of the home page) shows the visibility of the
+capture next to its title: **Public** (green, globe), **Unlisted** (orange,
+eye crossed out: not on the public index, open to anyone with the link) or
+**Private** (accent, lock: only with its secret link, or logged in). Admins see
+the visibilities mixed (hidden list, categories), anonymous users only see
+public captures, so they get no badge. `visibility_badge()` /
+`capture_visibility()` in `website/web/__init__.py` (from `private` and
+`no_index` of the capture cache), styles `.lk-visibility-*` in
+`css/components/tag.css`.

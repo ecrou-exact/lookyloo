@@ -181,7 +181,8 @@
         {% if info.redirects|length > 1 %}
         <li>{{ icon('bi:signpost-split') }} {{ info.redirects|length - 1 }} redirect{{ 's' if info.redirects|length > 2 }}</li>
         {% endif %}
-        {% if info.private %}<li class="lk-capture-flag">{{ icon('bi:lock') }} Private</li>{% endif %}
+        {# Public, unlisted or private: a click opens the visibility panel (Actions) #}
+        <li>{{ visibility_badge(info, target='visibilityModal') }}</li>
         {% if verdict == 'malicious' %}
         <li class="lk-capture-flag lk-capture-flag-danger">{{ icon('bi:exclamation-octagon-fill') }} Malicious</li>
         {% endif %}
@@ -931,7 +932,7 @@
    once the tree is drawn (data-lk-tour-auto="manual") #}
 {% block tour %}{{ tour([
   (None, "The capture of a page", "This page shows everything the browser loaded for the captured URL, as a tree: each box is a host (a domain), each line goes from the host that loaded it."),
-  (".lk-capture-identity", "What was captured", "The title and the URL of the page, when it was captured, how many redirects it went through, and its categories."),
+  (".lk-capture-identity", "What was captured", "The title and the URL of the page, when it was captured, how many redirects it went through, its visibility (public, unlisted or private: click it to change it) and its categories."),
   (".lk-capture-thumb", "Screenshot", "Click the thumbnail to see the screenshot of the page as the browser rendered it."),
   (".lk-tree-search", "Search in the tree", "Type a hostname or an IP: the matching hosts stay lit, the others fade. Enter goes to the next match; / from anywhere focuses this field."),
   ("#capture-menu-btn", "Capture menu", "Everything that was recorded during the capture. Each entry opens a panel at the right of the tree: the tree stays usable, a link inside a panel opens the next one (Back returns), its edge can be dragged to resize it, Esc closes it."),

@@ -1726,7 +1726,6 @@ function setupMinimap() {
     if (!container) return;
     const show = () => {
         container.classList.toggle('is-folded', !minimap_open);
-        map.hidden = !minimap_open;
         toggle.setAttribute('aria-expanded', minimap_open ? 'true' : 'false');
         const label = minimap_open ? 'Hide the map of the tree' : 'Show the map of the tree';
         toggle.title = label;

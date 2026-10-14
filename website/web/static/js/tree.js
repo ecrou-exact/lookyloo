@@ -1488,7 +1488,8 @@ async function applyHeat() {
     }
     const all = allNodes(tree_root);
     const max = d3.max(all, measure.value) || 1;
-    const tint = d3.scaleSqrt().domain([0, max]).range([0, 75]);
+    // At most 40 %: the text of the card stays readable; the hottest get a border too
+    const tint = d3.scaleSqrt().domain([0, max]).range([0, 40]);
     heat_max = max;
     node_container.selectAll('g.node').style('--lk-heat', d => `${tint(measure.value(d)).toFixed(1)}%`);
     tree_viewport.classList.add('lk-tree-heat');

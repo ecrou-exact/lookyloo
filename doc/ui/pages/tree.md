@@ -582,7 +582,7 @@ requests of the host), **time of the first call** (from `/json/<uuid>/tree_stats
 or **number of URLs** (from the tree dump). Each card is tinted from the
 surface to `--lk-color-tree-heat` (light and dark tokens), the highest value of
 the whole capture being the hottest (square-root scale, so the small values
-still show): `--lk-heat` (0% to 75%) on each `g.node`, used by a `color-mix()`
+still show): `--lk-heat` (0% to 40%, so the text of the card stays readable; the border gets the tint too) on each `g.node`, used by a `color-mix()`
 on `.lk-tree-heat g.node .node-card` (a focused card keeps its accent fill). The
 scale (0 and the maximum, formatted) shows under the choices in the menu, which
 scrolls when it is taller than the screen.

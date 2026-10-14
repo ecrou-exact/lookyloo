@@ -1015,6 +1015,7 @@ path.link.is-link-hover { stroke: var(--lk-color-accent); stroke-opacity: 1; fil
    --lk-color-tree-heat, --lk-heat (0% to 75%) is set on each node */
 .lk-tree-heat g.node:not(.is-focused) .node-card {
   fill: color-mix(in srgb, var(--lk-color-tree-heat) var(--lk-heat, 0%), var(--lk-color-surface));
+  stroke: color-mix(in srgb, var(--lk-color-tree-heat) calc(var(--lk-heat, 0%) * 2.2), var(--lk-color-rule));
 }
 .lk-tree-bg-menu .lk-heat-item { flex-direction: column; align-items: flex-start; gap: 0; white-space: normal; }
 .lk-heat-item small { font-size: var(--lk-font-size-xs); color: var(--lk-color-muted); line-height: 1.35; }
@@ -1028,7 +1029,7 @@ path.link.is-link-hover { stroke: var(--lk-color-accent); stroke-opacity: 1; fil
   height: 8px;
   margin: var(--lk-space-1) 0;
   border-radius: 4px;
-  background: linear-gradient(90deg, var(--lk-color-surface), color-mix(in srgb, var(--lk-color-tree-heat) 75%, var(--lk-color-surface)));
+  background: linear-gradient(90deg, var(--lk-color-surface), color-mix(in srgb, var(--lk-color-tree-heat) 40%, var(--lk-color-surface)));
   border: 1px solid var(--lk-color-rule);
 }
 .lk-heat-scale { display: flex; justify-content: space-between; font-family: var(--lk-font-mono); }

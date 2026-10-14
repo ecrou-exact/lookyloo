@@ -482,7 +482,7 @@
       {{ panel_header('mispExportModal', 'MISP export', 'bi:box-arrow-up-right', 'The capture as a MISP event (JSON), ready to import in MISP.') }}
       <div class="modal-body">
         <p class="lk-misp-export-status" id="misp-export-status" role="status"></p>
-        <vt-json id="misp-export-json" class="lk-vitrine lk-misp-export-json" variant="full" view="tree" depth="2"
+        <vt-json id="misp-export-json" class="lk-vitrine lk-misp-export-json" variant="full" view="tree" depth="2" max-height="60vh"
                  label="MISP event" hidden></vt-json>
       </div>
       <div class="modal-footer">

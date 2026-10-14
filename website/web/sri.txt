@@ -15,7 +15,7 @@
     "css/components/pivot.css": "adhNEc5uKJdJop6r8SlVcY4HKMeojRgMfuiOW8kVVHMyFP+wC+FbpJU1HKXS0hgybzVEA5kL01kUPy6YCWETdQ==",
     "css/components/tag.css": "muWugd8ebg27jVfO7y7xmyDeRUrLhNwm2WRcjD5ylooIfBM5hcXQjflU/qfFX0T4ffzdXM2G/ofxuoshirtocw==",
     "css/components/tour.css": "WLPTLbwZwEpeih6uvd4/LhfnCOle4DTOawghisJhwEG37M4sSSARW1TaxDOG9iDu21khAXsQA0nIYcgiUeDPtw==",
-    "css/components/vitrine.css": "iant1HTY+dcB15RDElWCJ3KBG63aYwVdxw7+M8dcJFtMYGs6csrd9g5dEUsvI6D5aQLOl2221uJ1aMVwxxfNIQ==",
+    "css/components/vitrine.css": "KWeob4c3Qc1+cr70HW8OboFk+aBuS11huqUZ2l6Je2DKahPX2ZlfgY+wnWEcFXp7ghFccI7QtED0DP5GVsvUuA==",
     "css/fonts.css": "YkmJF7yPUzmtnkwkZlI0ujgdyUceBsN1o7ZzUa7JA6inI2t6Xzsr5p7AnMxlb72AAseh7cD0shhAnFDVl2G+Sg==",
     "css/home.css": "LFQcFCYr9zE/tR8ZypI+WwBB27Z9bmCXiHE5T0/1l0SylokEuHVAvBKLoVbiplw8+PXwuIH3TfkQcUqqTw3Nbg==",
     "css/index.css": "LdRB80VGxjYjzW/RmwhKJ9297pTK9aiSu0fL6G1WRVcKD0Sp5KZicXYNv4BAaAcg8u3Y8qXiMLQkNjdmgSx1Aw==",

@@ -1095,12 +1095,46 @@ function viewFrom(d) {
     const pill = document.getElementById('tree-view-from');
     if (pill) {
         pill.hidden = false;
-        document.getElementById('tree-view-from-name').textContent = d.data.idna || d.data.name;
+        showCrumbs(d.data.uuid);
     }
     redraw(view_root);
     refreshLegend(view_root);
     setupAttention(view_root);
     applyTreeFilter();
+}
+
+// Breadcrumb of the view: whole tree › ancestors › this host; a click on a step shows
+// the tree from there (the first one: the whole tree)
+function showCrumbs(uuid) {
+    const crumbs = document.getElementById('tree-view-from-crumbs');
+    if (!crumbs) return;
+    crumbs.textContent = '';
+    const node = allNodes(tree_root).find(n => n.data.uuid === uuid);
+    const path = node ? node.ancestors().reverse() : [];
+    const step = (label, action, current=false) => {
+        const item = document.createElement(current ? 'strong' : 'button');
+        item.textContent = label;
+        if (!current) {
+            item.type = 'button';
+            item.className = 'lk-crumb';
+            item.addEventListener('click', action);
+        } else {
+            item.setAttribute('aria-current', 'location');
+        }
+        return item;
+    };
+    path.forEach((ancestor, i) => {
+        if (i > 0) {
+            const separator = document.createElement('span');
+            separator.className = 'lk-crumb-sep';
+            separator.textContent = '›';
+            separator.setAttribute('aria-hidden', 'true');
+            crumbs.appendChild(separator);
+        }
+        const name = ancestor.data.idna || ancestor.data.name;
+        if (i === 0) crumbs.appendChild(step(`Whole tree (${name})`, clearView));
+        else crumbs.appendChild(step(name, () => viewFrom(ancestor), i === path.length - 1));
+    });
 }
 
 function clearView() {
@@ -2386,6 +2420,13 @@ function update(root, computed_node_width=0) {
             node_data.append('rect')
               .attr('class', 'node-card')
               .on('click', (event, d) => replay ? replayGoToNode(d) : toggleNeighbours(d))
+              // Double click: the tree from this host only (not on the root of the view)
+              .on('dblclick', (event, d) => {
+                  if (replay || !d.parent) return;
+                  event.preventDefault();
+                  clearNeighbours();
+                  viewFrom(d);
+              })
               .attr("rx", 8)
               .attr("ry", 8)
               .attr('x', 0)

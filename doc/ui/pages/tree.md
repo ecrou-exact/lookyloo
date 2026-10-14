@@ -661,3 +661,12 @@ lookup). Colours: `--lk-color-tree-group-1` … `-6` (light and dark,
   folded ancestors are unfolded, then `LocateNode()` centres it and makes it
   glow). The list follows the tree shown (whole capture or view from a node:
   `setupRiskList()` is called by `setupAttention()`).
+
+### Double click and breadcrumb
+
+A **double click** on a card shows the tree from that host (same as its *view
+from here* button; not on the root of the view, not during a replay). The pill
+of the view is a **breadcrumb** (`#tree-view-from-crumbs`, `showCrumbs()` in
+`js/tree.js`): *Whole tree (root)* › each ancestor › the host, from the whole
+capture; a click on a step shows the tree from there, the first one the whole
+tree.

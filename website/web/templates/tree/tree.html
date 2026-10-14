@@ -535,7 +535,9 @@
 
   {# Shown while the tree is viewed from one of its nodes (js/tree.js, viewFrom) #}
   <div class="lk-tree-focus lk-tree-view-from" id="tree-view-from" role="status" hidden>
-    {{ icon('bi:diagram-2') }}<span>Tree from <strong id="tree-view-from-name"></strong></span>
+    {{ icon('bi:diagram-2') }}<span class="lk-crumbs-label">Tree from</span>
+    {# Breadcrumb (js/tree.js, showCrumbs): whole tree › … › this host, each step clickable #}
+    <nav class="lk-crumbs" id="tree-view-from-crumbs" aria-label="Path of the view"></nav>
     <button type="button" id="tree-view-from-clear" title="Show the whole tree" aria-label="Show the whole tree">{{ icon('bi:x-lg') }}</button>
   </div>
 
@@ -975,7 +977,7 @@
   ("g.node .icons_list", "What it loaded", "The icons tell what this host sent: scripts, images, cookies, redirects… with how many. Click an icon to light up every host that has it."),
   ("g.node .node-capture:not(.node-note):not(.node-view)", "New capture from a host", "The camera captures this host again (https://host/), with the settings of this capture: same browser, cookies and user agent. The new capture opens in a new tab."),
   ("g.node .node-note", "Note on a host", "Admins: the pencil opens a note on this host, written in Markdown with a preview. A host with a note keeps the pencil, in yellow."),
-  ("g.node .node-view", "View from a host", "Hover a card and click this icon: the tree is drawn from this host, as if it were the start, with only what it loaded. The pill at the top left shows it; its ✕ brings the whole tree back."),
+  ("g.node .node-view", "View from a host (or double click)", "Hover a card and click this icon, or double click the card: the tree is drawn from this host, with only what it loaded. The pill at the top shows the path from the start of the capture: click a step to go back up, or Whole tree."),
   ("circle.node", "Fold a branch", "Click a circle to hide or show the hosts loaded by this one."),
   ("path.link.is-main-path", "The path to the page", "In colour: the redirects from the URL you gave to the page the browser finally showed. Hover any link for its details: from which host to which, its type, the bytes and the time of the call."),
   (".lk-tree-controls", "Tree tools", "Replay the capture, draw the tree from left to right, from top to bottom or as a circle, fold or unfold everything, compare with another capture, notes, zoom, display (background, links, heat map), full screen."),

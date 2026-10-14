@@ -617,6 +617,20 @@ g.node.is-replay-arrived .node-card { animation: lk-replay-arrive 900ms ease-out
   g.node.is-replay-arrived .node-card { animation: none; }
 }
 
+/* Breadcrumb of the view from a node (js/tree.js, showCrumbs) */
+.lk-crumbs { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 2px var(--lk-space-1); max-width: min(60vw, 46rem); }
+.lk-crumb {
+  padding: 0 var(--lk-space-1);
+  border: 0;
+  border-radius: var(--lk-radius-sm);
+  background: none;
+  color: var(--lk-color-accent);
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.lk-crumb:hover { background: var(--lk-color-accent-soft); }
+.lk-crumb-sep { color: var(--lk-color-muted); }
 /* Pill of "view the tree from a node": first line; the neighbours pill goes under it */
 .lk-tree-view-from { top: calc(var(--lk-space-3) + 40px); }
 .lk-tree-view-from:not([hidden]) ~ #tree-focus { top: calc(var(--lk-space-3) + 80px); }

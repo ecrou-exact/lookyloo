@@ -38,10 +38,18 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}"
       {{get_sri('static', 'css/home.css')}}
       crossorigin="anonymous">
+<link rel="stylesheet"
+      {{get_sri('static', 'vendor/vitrine/vitrine.css')}}
+      href="{{ url_for('static', filename='vendor/vitrine/vitrine.css') }}">
 {% endblock %}
 
 {% block scripts %}
 {{ super() }}
+{# Vitrine <vt-timeline>: the redirect chain of the rows #}
+<script src="{{ url_for('static', filename='js/capture_list_components.js') }}"
+        {{get_sri('static', 'js/capture_list_components.js')}}
+        nonce="{{ csp_nonce() }}"
+        crossorigin="anonymous" type="module"></script>
 <script src="{{ url_for('static', filename='js/home.js') }}"
         {{get_sri('static', 'js/home.js')}}
         nonce="{{ csp_nonce() }}"

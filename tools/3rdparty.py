@@ -79,9 +79,9 @@ GEIST_FILES = {'package/dist/fonts/geist-sans/Geist-Variable.woff2': 'Geist-Vari
                'package/dist/fonts/geist-mono/GeistMono-Variable.woff2': 'GeistMono-Variable.woff2',
                'package/LICENSE.txt': 'OFL.txt'}
 # Vitrine: source tarball of a pinned commit, built with Node
-VITRINE_COMMIT = '7c379edba7ffb89abcae01b0806f20ed43dbc627'
+VITRINE_COMMIT = 'cbbec10d7673434b5f7564f22ae41605fde09520'
 VITRINE_TARBALL = f'https://codeload.github.com/ecrou-exact/vitrine/tar.gz/{VITRINE_COMMIT}'
-VITRINE_SHA256 = 'baad470e885837d27e8f820b3df9f936047003ac864be4542c4d48ed90ba550a'
+VITRINE_SHA256 = '2428ff217494daaff19965defbd85be48cd94399f60e49a74266fa2d6bed346b'
 # What the website needs from vitrine's dist/
 VITRINE_KEEP = ('esm', 'languages', 'syntax-themes', 'vendor', 'vitrine.css')
 

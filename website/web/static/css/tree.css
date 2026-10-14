@@ -1117,6 +1117,49 @@ rect.node-group-halo { stroke: none; pointer-events: none; }
 .lk-group-swatch { display: inline-block; width: 14px; height: 14px; border-radius: 4px; }
 .lk-group-count { margin-left: auto; }
 
+/* List of the hosts worth a look (js/tree.js, setupRiskList) */
+.lk-tree-risks {
+  position: absolute;
+  top: calc(var(--lk-space-3) + 80px);
+  left: var(--lk-space-4);
+  z-index: 1021;
+  width: min(26rem, calc(100% - 2 * var(--lk-space-4)));
+  max-height: 60%;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--lk-color-rule);
+  border-radius: var(--lk-radius-md);
+  background: var(--lk-color-surface);
+  box-shadow: var(--lk-shadow-md);
+}
+.lk-tree-risks[hidden] { display: none; }
+.lk-tree-risks header { display: flex; align-items: center; gap: var(--lk-space-2); padding: var(--lk-space-2) var(--lk-space-3); border-bottom: 1px solid var(--lk-color-rule); }
+.lk-tree-risks h2 { margin: 0; font-size: var(--lk-font-size-sm); font-weight: var(--lk-font-weight-medium); display: inline-flex; align-items: center; gap: var(--lk-space-1); }
+.lk-risks-count { color: var(--lk-color-muted); font-size: var(--lk-font-size-xs); margin-left: auto; }
+.lk-risks-close { border: 0; background: none; color: var(--lk-color-muted); padding: 2px; display: inline-flex; }
+.lk-risks-close:hover { color: var(--lk-color-ink); }
+.lk-risks-hint { margin: var(--lk-space-1) var(--lk-space-3) 0; color: var(--lk-color-muted); font-size: var(--lk-font-size-xs); }
+.lk-tree-risks ul { list-style: none; margin: 0; padding: var(--lk-space-1); overflow-y: auto; }
+.lk-risk-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: var(--lk-space-2);
+  width: 100%;
+  padding: var(--lk-space-1) var(--lk-space-2);
+  border: 0;
+  border-radius: var(--lk-radius-sm);
+  background: none;
+  color: var(--lk-color-ink);
+  text-align: left;
+}
+.lk-risk-row:hover, .lk-risk-row:focus-visible { background: var(--lk-color-surface-2); }
+.lk-risk-row .lk-risk-dot { grid-row: span 2; margin-top: 4px; }
+.lk-risk-host { font-family: var(--lk-font-mono); font-size: var(--lk-font-size-sm); overflow-wrap: anywhere; }
+.lk-risk-reasons { grid-column: 2; color: var(--lk-color-muted); font-size: var(--lk-font-size-xs); }
+.lk-risk-dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; flex: none; }
+.lk-risk-dot.is-danger { background: var(--lk-color-danger); }
+.lk-risk-dot.is-warning { background: var(--lk-color-warning); }
+
 /* Risk badge of a node (js/tree.js, RISKS): top left corner of the card */
 g.node-risk { cursor: help; }
 g.node-risk circle { stroke: var(--lk-color-surface); stroke-width: 2px; }

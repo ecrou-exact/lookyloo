@@ -913,6 +913,7 @@ function setupAttention(root) {
         container.appendChild(chip);
     });
     container.hidden = !container.children.length;
+    setupRiskList(root);
 }
 
 // ****************** Entry animation ******************
@@ -948,6 +949,8 @@ function animateTreeEntry(root) {
 // Does the node have this icon? Same test as icon_list(): true, a non-empty
 // string, a number > 0 or a non-empty list.
 function nodeHas(d, key) {
+    // Level of the risk badge (legend "Worth a look"): its worst reason
+    if (key.startsWith('risk:')) return riskLevel(d) === key.slice(5);
     // Type of the link to the node (legend "Links"): the root has none
     if (key.startsWith('link:')) return Boolean(d.parent) && linkType(d) === key.slice(5);
     const value = d.data[key];
@@ -1725,6 +1728,7 @@ function setupMinimap() {
     const toggle = document.getElementById('tree-minimap-toggle');
     if (!container) return;
     const show = () => {
+        // (an SVG element has no `hidden` property: the class hides it, css/tree.css)
         container.classList.toggle('is-folded', !minimap_open);
         toggle.setAttribute('aria-expanded', minimap_open ? 'true' : 'false');
         const label = minimap_open ? 'Hide the map of the tree' : 'Show the map of the tree';
@@ -1763,6 +1767,76 @@ function setupMinimap() {
 
 function riskReasons(d) {
     return RISKS.filter(risk => nodeHas(d, risk.key));
+}
+// 'danger', 'warning' or null
+function riskLevel(d) {
+    const reasons = riskReasons(d);
+    if (!reasons.length) return null;
+    return reasons.some(r => r.level === 'danger') ? 'danger' : 'warning';
+}
+
+// Show a node, even in a folded branch: its ancestors are unfolded first, then it is
+// located (js/tree_modals.js, LocateNode: centred, glowing)
+function goToNode(d) {
+    let unfolded = false;
+    d.ancestors().slice(1).forEach(a => {
+        if (a._children) { a.children = a._children; a._children = null; unfolded = true; }
+    });
+    if (unfolded) update(currentRoot());
+    setTimeout(() => window.LocateNode?.(d.data.uuid), unfolded && !reduce_motion ? 350 : 0);
+}
+
+// "Worth a look" chip and list: every host with a risk badge, red first; a click
+// goes to the node
+function setupRiskList(root) {
+    const panel = document.getElementById('tree-risks');
+    const alerts = document.getElementById('tree-alerts');
+    if (!panel || !alerts) return;
+    const risky = allNodes(root).filter(d => riskReasons(d).length)
+        .sort((a, b) => (riskLevel(a) === 'danger' ? 0 : 1) - (riskLevel(b) === 'danger' ? 0 : 1));
+    alerts.querySelector('.lk-tree-alert-risks')?.remove();
+    if (!risky.length) { panel.hidden = true; return; }
+    const chip = document.createElement('button');
+    chip.type = 'button';
+    const danger = risky.filter(d => riskLevel(d) === 'danger').length;
+    chip.className = `lk-tree-alert lk-tree-alert-risks lk-tree-alert-${danger ? 'danger' : 'warning'}`;
+    chip.setAttribute('aria-expanded', 'false');
+    chip.setAttribute('aria-controls', 'tree-risks');
+    chip.title = 'The hosts with a risk badge: click to list them';
+    const number = document.createElement('strong');
+    number.textContent = risky.length;
+    chip.append(number, ' worth a look');
+    alerts.prepend(chip);
+    alerts.hidden = false;
+
+    const list = panel.querySelector('ul');
+    list.textContent = '';
+    risky.forEach(d => {
+        const li = document.createElement('li');
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'lk-risk-row';
+        const dot = document.createElement('span');
+        dot.className = `lk-risk-dot is-${riskLevel(d)}`;
+        const host = document.createElement('span');
+        host.className = 'lk-risk-host';
+        host.textContent = d.data.idna || d.data.name;
+        const reasons = document.createElement('span');
+        reasons.className = 'lk-risk-reasons';
+        reasons.textContent = riskReasons(d).map(r => r.label).join(' · ')
+            + (d.parent ? ` — via ${d.parent.data.idna || d.parent.data.name}` : '');
+        button.append(dot, host, reasons);
+        button.addEventListener('click', () => goToNode(d));
+        li.appendChild(button);
+        list.appendChild(li);
+    });
+    panel.querySelector('.lk-risks-count').textContent = `${risky.length} hosts, ${danger} red`;
+    const open = (on) => {
+        panel.hidden = !on;
+        chip.setAttribute('aria-expanded', on ? 'true' : 'false');
+    };
+    chip.addEventListener('click', () => open(panel.hidden));
+    panel.querySelector('.lk-risks-close').onclick = () => open(false);
 }
 
 function controlsStatus(message) {
@@ -2055,7 +2129,8 @@ function refreshLegend(root) {
         button.querySelector('.lk-legend-count').textContent = count;
         button.disabled = count === 0;
         if (count === 0 && active_filters.delete(button.dataset.key)) button.setAttribute('aria-pressed', 'false');
-        button.title = count ? `${button.dataset.title}: ${count} links` : button.dataset.title;
+        const unit = button.dataset.key.startsWith('link:') ? 'links' : 'nodes';
+        button.title = count ? `${button.dataset.title}: ${count} ${unit}` : button.dataset.title;
     });
     document.querySelectorAll('.lk-legend-item:not([data-link])').forEach(button => {
         const key = button.dataset.key;

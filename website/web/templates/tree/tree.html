@@ -522,6 +522,16 @@
   {# Points of attention of the capture: one chip per kind found, a click filters
      the tree on it (js/tree.js, setupAttention). Hidden when there are none. #}
   <div class="lk-tree-alerts" id="tree-alerts" aria-label="Points of attention" hidden></div>
+  {# Hosts with a risk badge (js/tree.js, setupRiskList), opened by the "worth a look" chip #}
+  <section class="lk-tree-risks" id="tree-risks" aria-labelledby="tree-risks-title" hidden>
+    <header>
+      <h2 id="tree-risks-title">{{ icon('bi:exclamation-triangle') }} Worth a look</h2>
+      <span class="lk-risks-count"></span>
+      <button type="button" class="lk-risks-close" title="Close" aria-label="Close the list">{{ icon('bi:x-lg') }}</button>
+    </header>
+    <p class="lk-risks-hint">Click a host to go to it in the tree.</p>
+    <ul></ul>
+  </section>
 
   {# Shown while the tree is viewed from one of its nodes (js/tree.js, viewFrom) #}
   <div class="lk-tree-focus lk-tree-view-from" id="tree-view-from" role="status" hidden>
@@ -966,6 +976,7 @@
   ("#removeCapture", "Remove capture", "Delete the capture from this instance (a confirmation is asked).", "#admin-menu-btn"),
   ("#report-capture-btn", "Report a suspicious capture", "Send this capture to the team behind this Lookyloo instance, with your e-mail and a comment: they may look at it."),
   ("#capture_fold", "Fold the bar", "Too much space taken? Fold this bar to one line, the tree gets the room."),
+  (".lk-tree-alert-risks", "Worth a look", "The hosts with a risk badge (red: malicious, bare IP, download; orange: POST, plain HTTP…). Click to list them with their reasons, then click one to go to it. The legend filters them too."),
   ("#tree-alerts", "Points of attention", "What an analyst checks first: data sent (POST), downloads, plain HTTP, third-party hosts… Click a chip to light up the hosts concerned."),
   ("g.node .node-card", "A host", "Each card is a host. Click its name for its details (URLs, IPs, certificates); click the card itself to light up its neighbours (its ✕ pill, Esc or a click on the background shows everything again); hover it for its network information (IPs, DNS zone, hosting) and its tools."),
   ("g.node .icons_list", "What it loaded", "The icons tell what this host sent: scripts, images, cookies, redirects… with how many. Click an icon to light up every host that has it."),

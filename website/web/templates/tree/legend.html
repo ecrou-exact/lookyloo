@@ -58,6 +58,21 @@
       </li>
       {% endfor %}
     </ul>
+    {# Risk badges (js/tree.js, RISKS): the worst level of the reasons of a node, and the bare IP hosts #}
+    <h3 class="lk-legend-section">Worth a look</h3>
+    <ul class="lk-legend-list" id="legend-risks">
+      {% for key, label, title in [('risk:danger', 'Danger (red badge)', 'Hosts with a red badge: known malicious content, bare IP address or downloaded file'),
+                                   ('risk:warning', 'Warning (orange badge)', 'Hosts whose worst reason is orange: POST, plain HTTP, mixed content, redirect to nowhere'),
+                                   ('hostname_is_ip', 'Bare IP address', 'Hosts called by their IP address, without a domain name')] %}
+      <li>
+        <button type="button" class="lk-legend-item" data-key="{{ key }}" data-link title="{{ title }}" aria-pressed="false">
+          <span class="lk-risk-dot {{ 'is-danger' if key != 'risk:warning' else 'is-warning' }}" aria-hidden="true"></span>
+          <span class="lk-legend-label">{{ label }}</span>
+          <span class="lk-legend-count" aria-label="nodes"></span>
+        </button>
+      </li>
+      {% endfor %}
+    </ul>
     {# Links: the link to a node is the type of what that host serves (js/tree.js, linkType);
        the keys are "link:<type>", the matching nodes are the ends of those links #}
     <h3 class="lk-legend-section">Links</h3>

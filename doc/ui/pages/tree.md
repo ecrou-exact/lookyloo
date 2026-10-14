@@ -657,3 +657,17 @@ screen. Click or drag in it: that point goes to the middle of the tree area
 (the drag of the tree itself is not started). It follows the scroll, the zoom
 and every change of the tree (`refreshMinimap()`, one redraw per frame). The
 map button folds it (remembered: `lk-tree-minimap`). Hidden on phones.
+
+### Worth a look: filter and list
+
+- **Filter**: the legend has a *Worth a look* section: *Danger* (red badge),
+  *Warning* (the worst reason is orange) and *Bare IP address*
+  (`risk:danger`, `risk:warning`, `hostname_is_ip`; `riskLevel()` in
+  `nodeHas()`), combined with the other entries (Any / All).
+- **List**: the first chip of the points of attention, *N worth a look*
+  (`.lk-tree-alert-risks`, red when one is red), opens `#tree-risks`: every
+  host with a badge, red first, with its reasons and its parent ("via …", two
+  hosts can have the same name). A click goes to the node (`goToNode()`: its
+  folded ancestors are unfolded, then `LocateNode()` centres it and makes it
+  glow). The list follows the tree shown (whole capture or view from a node:
+  `setupRiskList()` is called by `setupAttention()`).

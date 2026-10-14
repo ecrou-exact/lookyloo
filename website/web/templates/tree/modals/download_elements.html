@@ -219,43 +219,33 @@
 </table>
 
 {% if not error %}
+{% if not no_timestamps %}
 <div class="alert alert-info" role="alert">
   <a href="{{url_for('all_trusted_timestamp', tree_uuid=tree_uuid, seed=seed)}}">Download</a> all the elements with trusted timestamps.
 </div>
 <div class="alert alert-info" role="alert">
   Trusted timestamps were validated with <a href="data:application/x-pem-file;base64,{{b64_certificate}}" download="certificates.pem">this certificate(s)</a>.
 </div>
+{% endif %}
 
-<div class="alert alert-primary" role="alert">
- When a trusted timestamp is listed above, it has been validated, but you can also validate the file manually:
-</div>
-<pre>
-  <code>openssl ts -CAfile certificates.pem -verify [timestamp_response].tsr -in png.tsr -data [element]</code>
-</pre>
-<div>
-  Example:
-  <pre>
-    <code>openssl ts -CAfile certificates.pem -verify -in screenshot.png.tsr -data screenshot.png</code>
-    <samp>
+{# How to check a trusted timestamp by hand: vitrine <vt-terminal> (js/capture_components.js),
+   a copy button per command #}
+<div class="lk-tsr-help">
+  <h6 class="lk-file-viewer-title">{{ icon('bi:terminal') }} Check a trusted timestamp yourself</h6>
+  <p class="lk-modal-note">A timestamp listed above has been validated, but you can validate a file yourself with OpenSSL, using the certificate(s) above:</p>
+  <vt-terminal class="lk-vitrine lk-tsr-terminal" variant="full" label="Verify a file" download="false" fullscreen="false">
+    <template>
+$ openssl ts -CAfile certificates.pem -verify -in [element].tsr -data [element]
+$ openssl ts -CAfile certificates.pem -verify -in screenshot.png.tsr -data screenshot.png
 Using configuration from /usr/lib/ssl/openssl.cnf
 Verification: OK
-    </samp>
-  </pre>
-</div>
-
-<hr/>
-
-<div class="alert alert-primary" role="alert">
- You can also show the content of the TSR file:
-</div>
-<pre>
-  <code>openssl ts -reply -in [timestamp_response].tsr -text</code>
-</pre>
-<div>
-  Example:
-  <pre>
-    <code>openssl ts -reply -in screenshot.png.tsr -text</code>
-    <samp>
+    </template>
+  </vt-terminal>
+  <p class="lk-modal-note">Show what a timestamp response (TSR) contains:</p>
+  <vt-terminal class="lk-vitrine lk-tsr-terminal" variant="full" label="Read a TSR file" download="false" fullscreen="false">
+    <template>
+$ openssl ts -reply -in [element].tsr -text
+$ openssl ts -reply -in screenshot.png.tsr -text
 Using configuration from /usr/lib/ssl/openssl.cnf
 Status info:
 Status: Granted.
@@ -269,16 +259,16 @@ Hash Algorithm: sha512
 Message data:
     0000 - 0f 64 63 e9 4d 96 be 05-40 1d 83 fa cb dd c1 62   .dc.M...@......b
     0010 - 08 bf 0b 2e e3 07 df e8-6b a9 bf 35 b0 8f bc 58   ........k..5...X
-    0020 - 26 4b 8c e9 0f 6e f6 27-82 1a 81 df b9 16 9f 99   &K...n.'........
-    0030 - ed d7 33 a8 c7 1e 3d e3-1a 3e 6f e2 5c d3 70 8e   ..3...=..>o.\.p.
+    0020 - 26 4b 8c e9 0f 6e f6 27-82 1a 81 df b9 16 9f 99   &amp;K...n.'........
+    0030 - ed d7 33 a8 c7 1e 3d e3-1a 3e 6f e2 5c d3 70 8e   ..3...=..&gt;o.\.p.
 Serial number: 0x086A1AC06DF0A3FAC191E2DDF676350C62664899
 Time stamp: Sep  8 12:48:07 2025 GMT
 Accuracy: unspecified
 Ordering: no
 Nonce: 0xDFF7090FF0BF7057
 TSA: unspecified
-    </samp>
-  </pre>
+    </template>
+  </vt-terminal>
 </div>
 {% endif %}
 

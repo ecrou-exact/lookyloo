@@ -4,6 +4,7 @@
 import { configure } from './vitrine_setup.js';
 import '../vendor/vitrine/esm/vt-json.js';
 import '../vendor/vitrine/esm/vt-code.js';
+import '../vendor/vitrine/esm/vt-terminal.js';
 
 // MISP exports embed the resources of the capture: allow vitrine's maximum (50 MiB)
 const MAX_JSON = 52428800;

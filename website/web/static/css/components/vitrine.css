@@ -48,3 +48,6 @@
 .lk-file-viewer-choices { display: flex; flex-wrap: wrap; gap: var(--lk-space-2); margin-bottom: var(--lk-space-3); }
 .lk-file-viewer-choices [aria-pressed="true"] { background: var(--lk-color-accent); border-color: var(--lk-color-accent); color: var(--lk-color-surface); }
 .lk-file-viewer-content { display: block; }
+/* OpenSSL commands to check a trusted timestamp (download_elements.html) */
+.lk-tsr-help { margin-top: var(--lk-space-4); }
+.lk-tsr-terminal { display: block; margin-bottom: var(--lk-space-3); }

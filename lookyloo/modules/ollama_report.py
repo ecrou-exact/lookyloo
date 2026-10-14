@@ -13,6 +13,11 @@ from ..helpers import get_useragent_for_requests, global_proxy_for_requests
 
 # NOTE: it is slow, and hallucinate a lot, good luck.
 
+# Context of the model, in tokens (Ollama's default is small: the start of the
+# conversation, with the URLs, would be cut), and the part of the page sent.
+DEFAULT_NUM_CTX = 8192
+MAX_MARKDOWN = 8000
+
 
 class OllamaReport():
 
@@ -35,6 +40,14 @@ class OllamaReport():
             return False
         return True
 
+    def _model_sees_images(self) -> bool:
+        '''The model can read images (a vision model, e.g. qwen2.5vl, llava).'''
+        try:
+            return 'vision' in (self.client.show(self.model).capabilities or [])
+        except Exception as e:
+            self.logger.info(f'Unable to get the capabilities of {self.model}: {e}')
+            return False
+
     def get_report(self, ai_export: dict[str, Any]) -> str | None:
         '''Submit a AI export to Ollama and get the report.'''
         if not self.available:
@@ -44,10 +57,15 @@ class OllamaReport():
         if redirects := ai_export.get('redirects'):
             messages.append({"role": "user", "content": f"A chain of redirects to the screenshot submited next {redirects}"})
         if md := ai_export.get('html_as_markdown'):
+            if len(md) > MAX_MARKDOWN:
+                md = md[:MAX_MARKDOWN] + '\n[… the rest of the page is cut]'
             messages.append({"role": "user", "content": f"This is the HTML content of the rendered page turned into a markdown document\n {md}"})
-        if s := ai_export.get('screenshot'):
-            # Ollama takes the images as a list of base64 strings ("images")
+        if (s := ai_export.get('screenshot')) and self._model_sees_images():
+            # Ollama takes the images as a list of base64 strings, without the data: prefix
+            if s.startswith('data:'):
+                s = s.split(',', 1)[1]
             messages.append({"role": "user", "content": "This is the screenshot of the page. What is on it?", "images": [s]})
         messages.append({"role": "user", "content": "What kind of website is it? Assign a MISP taxonomy."})
-        response = self.client.chat(model=self.model, messages=messages)
+        response = self.client.chat(model=self.model, messages=messages,
+                                    options={'num_ctx': self.config.get('num_ctx') or DEFAULT_NUM_CTX})
         return response.message.content

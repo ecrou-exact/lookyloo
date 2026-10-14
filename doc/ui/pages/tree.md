@@ -429,6 +429,18 @@ and the hashes in `<vt-code>`, the HTML as Markdown in `<vt-markdown>`
 `js/capture_components.js`). A file is loaded only when it is chosen: the
 element gets `src` (same origin), `max-height="60vh"`, and a `download` name.
 
+The OpenSSL commands to check a trusted timestamp by hand are vitrine
+`<vt-terminal>` elements (commands after `$`, a copy button per command).
+The certificate and "download all" messages are only shown when the capture has
+trusted timestamps.
+
+The **Ollama report** (Extras) sends the redirects, the page as Markdown (cut at
+8000 characters) and, when the model can read images (`vision` in its
+capabilities), the screenshot. The context of the model is raised to 8192
+tokens (`num_ctx` in the `Ollama` settings of `config/modules.json`), or the
+start of the conversation would be cut. On a CPU, a report takes minutes:
+gunicorn stops a request after 300 s.
+
 On the rendered node, the favicon and the screenshot thumbnail have a frame
 (`.node-favicon-chip`, `.node-thumb-frame`, `THUMB_PAD` in `js/tree.js`), so
 they show on every background.

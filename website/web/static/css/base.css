@@ -54,3 +54,7 @@ table td p {
 .lk-logo {
   filter: var(--lk-logo-filter);
 }
+
+/* UI mode (js/ui_mode.js, doc/ui/modes.md): what the lower modes do not show */
+html[data-lk-mode="simple"] [data-lk-min-mode="analyst"],
+html:not([data-lk-mode="full"]) [data-lk-min-mode="full"] { display: none !important; }

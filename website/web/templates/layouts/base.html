@@ -10,6 +10,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    {# UI mode (simple / analyst / full) before the first paint: doc/ui/modes.md #}
+    <script src='{{ url_for('static', filename='js/ui_mode.js') }}'
+            {{get_sri('static', 'js/ui_mode.js')}}
+            nonce="{{ csp_nonce() }}"
+            crossorigin="anonymous"></script>
     {# Applies the stored / OS colour theme before the first paint #}
     <script src='{{ url_for('static', filename='js/theme_toggle.js') }}'
             {{get_sri('static', 'js/theme_toggle.js')}}

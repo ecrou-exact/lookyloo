@@ -132,10 +132,16 @@
         try { return JSON.parse(data.textContent) || []; } catch (e) { return []; }
     }
 
+    // Hidden by the UI mode (data-lk-min-mode, css/base.css), even inside a closed menu
+    function hiddenByMode(element) {
+        const marked = element.closest('[data-lk-min-mode]');
+        return Boolean(marked) && getComputedStyle(marked).display === 'none';
+    }
+
     function target(step) {
         if (!step.selector) return null;
         const element = document.querySelector(step.selector);
-        if (!element) return null;
+        if (!element || hiddenByMode(element)) return null;
         // An entry of a menu opened by the step is hidden until the menu opens
         if (step.open) return document.querySelector(step.open) ? element : null;
         const box = element.getBoundingClientRect();

@@ -1515,3 +1515,19 @@ circle.node.is-collapsed { fill: var(--lk-color-tree-node); }
   font-size: var(--lk-font-size-xs);
   text-align: center;
 }
+
+/* Simple mode (doc/ui/modes.md): the card keeps the camera only */
+html[data-lk-mode="simple"] g.node .node-note,
+html[data-lk-mode="simple"] g.node .node-view { display: none; }
+/* Simple mode: no "worth a look" (risk badges, chip, list): analyst and full */
+html[data-lk-mode="simple"] g.node-risk,
+html[data-lk-mode="simple"] .lk-tree-alert-risks,
+html[data-lk-mode="simple"] #tree-risks { display: none !important; }
+
+/* Mode of the tree (tree/tree.html, js/ui_mode.js) */
+.lk-mode-menu { width: 20rem; }
+.lk-mode-choice { display: flex; align-items: flex-start; gap: var(--lk-space-2); white-space: normal; }
+.lk-mode-choice .lk-icon { margin-top: 0.2em; flex: none; }
+.lk-mode-choice span { display: flex; flex-direction: column; }
+.lk-mode-choice small { color: var(--lk-color-muted); line-height: 1.35; }
+.lk-mode-choice.active small, .lk-mode-choice:active small { color: inherit; opacity: 0.85; }

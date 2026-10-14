@@ -60,18 +60,23 @@ let focus_path = new Set();
 // Orientation of the tree: 'horizontal' (root on the left), 'vertical' (root at
 // the top) or 'radial' (root in the centre, one ring per depth), switched with the
 // tree controls and remembered (localStorage).
-const ORIENTATIONS = ['horizontal', 'vertical', 'radial'];
+// UI mode (js/ui_mode.js, doc/ui/modes.md): the higher modes add features
+const uiAtLeast = (mode) => (window.lkMode ? window.lkMode.atLeast(mode) : true);
+// Simple mode: left to right only; vertical from analyst, radial in full mode
+const ORIENTATIONS = uiAtLeast('full') ? ['horizontal', 'vertical', 'radial']
+    : uiAtLeast('analyst') ? ['horizontal', 'vertical'] : ['horizontal'];
 let orientation = 'horizontal';
 try {
     const saved = localStorage.getItem('lk-tree-orientation');
     if (ORIENTATIONS.includes(saved)) orientation = saved;
 } catch (e) { /* storage unavailable */ }
 // Label of the orientation button: the orientation that comes next
-const NEXT_ORIENTATION_LABEL = {
-    horizontal: 'Draw the tree from top to bottom',
-    vertical: 'Draw the tree as a circle, the root in the centre',
-    radial: 'Draw the tree from left to right',
+const ORIENTATION_LABEL = {
+    horizontal: 'Draw the tree from left to right',
+    vertical: 'Draw the tree from top to bottom',
+    radial: 'Draw the tree as a circle, the root in the centre',
 };
+const nextOrientation = () => ORIENTATIONS[(ORIENTATIONS.indexOf(orientation) + 1) % ORIENTATIONS.length];
 // Size and timings of the hosts (/json/<uuid>/tree_stats), loaded once by the modes that need them
 let tree_stats = null;
 // Replay of the capture (replayCapture): running animation frame, null when stopped
@@ -90,13 +95,13 @@ const REPLAY_MAX_GAP = 600;   // ms of the capture: longer waits are shortened i
 // Links: 'plain' or 'meaning' (coloured by type, as thick as the bytes), remembered
 let link_style = 'plain';
 const LINK_TYPES = ['redirect', 'iframe', 'script', 'style', 'image', 'other'];
-try { if (localStorage.getItem('lk-tree-links') === 'meaning') link_style = 'meaning'; } catch (e) { /* default */ }
+try { if (uiAtLeast('full') && localStorage.getItem('lk-tree-links') === 'meaning') link_style = 'meaning'; } catch (e) { /* default */ }
 // Heat map of the nodes: 'none', 'size', 'duration', 'arrival' or 'urls', remembered
 const HEAT_MEASURES = ['none', 'size', 'duration', 'arrival', 'urls'];
 let heat_measure = 'none';
 try {
     const saved = localStorage.getItem('lk-tree-heat');
-    if (HEAT_MEASURES.includes(saved)) heat_measure = saved;
+    if (uiAtLeast('full') && HEAT_MEASURES.includes(saved)) heat_measure = saved;
 } catch (e) { /* default */ }
 // Highest value of the heat map measure shown (applyHeat), for the node info panel
 let heat_max = 0;
@@ -112,7 +117,7 @@ const RISKS = [
 ];
 // Groups by network: 'off' or 'asn', remembered; GROUP_COLOURS biggest AS get a colour
 let group_mode = 'off';
-try { if (localStorage.getItem('lk-tree-groups') === 'asn') group_mode = 'asn'; } catch (e) { /* default */ }
+try { if (uiAtLeast('full') && localStorage.getItem('lk-tree-groups') === 'asn') group_mode = 'asn'; } catch (e) { /* default */ }
 const GROUP_COLOURS = 6;
 // Names of a few well-known networks, for the legend (no lookup: the others show their number)
 const KNOWN_AS = {
@@ -822,6 +827,7 @@ function placeNextTo(floating, anchor) {
 
 function showNodeInfo(event, d) {
     clearTimeout(info_timer);
+    if (!uiAtLeast('analyst')) return;   // network details on hover: analyst mode
     const panel = document.getElementById('tree-node-info');
     if (!panel) return;
     const card = event.currentTarget.querySelector('.node-card');
@@ -1599,6 +1605,7 @@ function moveTooltip(event) {
 }
 // d: the child node; the link goes from its parent to it
 async function showLinkInfo(event, d) {
+    if (!uiAtLeast('analyst')) return;   // details of a link: analyst mode
     node_container.selectAll('path.link').classed('is-link-hover', l => l === d);
     const tooltip = d3.select('#tooltip').classed('is-link-info', true);
     const render = () => {
@@ -1814,7 +1821,7 @@ function relayout() {
 // The button shows the current orientation, and says which one comes next
 function showOrientation() {
     const button = document.getElementById('tree-orientation');
-    const label = NEXT_ORIENTATION_LABEL[orientation];
+    const label = ORIENTATION_LABEL[nextOrientation()];
     button.title = label;
     button.setAttribute('aria-label', label);
     button.classList.toggle('is-vertical', orientation === 'vertical');
@@ -1851,7 +1858,7 @@ function setupTreeControls() {
     if (!orientation_button) return;
     showOrientation();
     orientation_button.addEventListener('click', () => {
-        orientation = ORIENTATIONS[(ORIENTATIONS.indexOf(orientation) + 1) % ORIENTATIONS.length];
+        orientation = nextOrientation();
         try { localStorage.setItem('lk-tree-orientation', orientation); } catch (e) { /* not remembered */ }
         showOrientation();
         relayout();

@@ -359,24 +359,40 @@
       <span class="lk-compact-off">{{ icon('bi:chevron-bar-right') }}</span>
       <span class="lk-compact-on">{{ icon('bi:chevron-bar-left') }}</span>
     </button>
+    {# Mode of the tree (js/ui_mode.js, doc/ui/modes.md): how many of the tree tools show #}
+    <div class="dropdown lk-tree-mode">
+      <button type="button" id="lk-mode-menu-btn" data-bs-toggle="dropdown" aria-expanded="false"
+              title="Mode of the tree: how many tools it shows" aria-label="Mode of the tree">{{ icon('bi:sliders') }}<span class="lk-tree-control-label" id="lk-mode-current">Simple</span></button>
+      <div class="dropdown-menu dropdown-menu-end lk-mode-menu" id="lk-mode-menu" aria-labelledby="lk-mode-menu-btn">
+        <h6 class="dropdown-header">Mode of the tree</h6>
+        {% for value, label, help, icon_name in [
+          ('simple', 'Simple', 'The tree as it always was: the hosts, what they loaded, the path to the page.', 'bi:circle'),
+          ('analyst', 'Analyst', 'Plus risk badges and worth a look, orientation, filters by link and risk, compare, notes, replay, details on hover.', 'bi:circle-half'),
+          ('full', 'Full', 'Everything, with the experimental views: radial tree, heat map, links by type, networks.', 'bi:circle-fill'),
+        ] %}
+        <button type="button" class="dropdown-item lk-mode-choice" data-lk-mode-choice="{{ value }}" aria-pressed="false">
+          {{ icon(icon_name) }}<span><strong>{{ label }}</strong><small>{{ help }}</small></span></button>
+        {% endfor %}
+      </div>
+    </div>
     {# The icon shows the current orientation (js/tree.js, showOrientation) #}
-    <button type="button" id="tree-orientation" title="Draw the tree from top to bottom" aria-label="Draw the tree from top to bottom">
+    <button type="button" data-lk-min-mode="analyst" id="tree-orientation" title="Draw the tree from top to bottom" aria-label="Draw the tree from top to bottom">
       <span class="lk-orientation-horizontal">{{ icon('bi:arrow-left-right') }}</span>
       <span class="lk-orientation-vertical">{{ icon('bi:arrow-down-up') }}</span>
       <span class="lk-orientation-radial">{{ icon('bi:bullseye') }}</span>
       <span class="lk-tree-control-label">Orientation</span>
     </button>
     {# Replay of the capture: the hosts appear in the order they were loaded (js/tree.js, replayCapture) #}
-    <button type="button" id="tree-replay" title="Replay the capture: the hosts appear in the order they were loaded" aria-label="Replay the capture" aria-pressed="false">
+    <button type="button" data-lk-min-mode="analyst" id="tree-replay" title="Replay the capture: the hosts appear in the order they were loaded" aria-label="Replay the capture" aria-pressed="false">
       <span class="lk-replay-play">{{ icon('bi:play-circle') }}<span class="lk-tree-control-label">Replay</span></span>
       <span class="lk-replay-stop">{{ icon('bi:stop-circle') }}<span class="lk-tree-control-label">Stop</span></span>
     </button>
     <button type="button" id="tree-collapse-all" title="Collapse every node" aria-label="Collapse every node">{{ icon('bi:arrows-collapse') }}<span class="lk-tree-control-label">Collapse all</span></button>
     <button type="button" id="tree-expand-all" title="Expand every node" aria-label="Expand every node">{{ icon('bi:arrows-expand') }}<span class="lk-tree-control-label">Expand all</span></button>
-    <button type="button" id="tree-compare-toggle" title="Compare with another capture" aria-label="Compare with another capture"
+    <button type="button" data-lk-min-mode="analyst" id="tree-compare-toggle" title="Compare with another capture" aria-label="Compare with another capture"
             aria-expanded="false" aria-controls="tree-compare">{{ icon('bi:intersect') }}<span class="lk-tree-control-label">Compare</span></button>
     {% if current_user.is_authenticated %}
-    <button type="button" id="tree-notes-toggle" title="Your notes on this capture" aria-label="Your notes on this capture"
+    <button type="button" data-lk-min-mode="analyst" id="tree-notes-toggle" title="Your notes on this capture" aria-label="Your notes on this capture"
             aria-expanded="false" aria-controls="tree-notes">{{ icon('bi:journal-text') }}<span class="lk-tree-control-label">Notes</span><span class="lk-notes-count" id="tree-notes-count" hidden></span></button>
     {% endif %}
     {# Zoom (js/tree.js, setupZoom): also Ctrl + wheel, Ctrl + 0 / + / - #}
@@ -397,13 +413,13 @@
           <span class="lk-tree-bg-swatch lk-tree-bg-{{ value }}" aria-hidden="true"></span>{{ label }}</button></li>
         {% endfor %}
         {# Links (js/tree.js, setupLinkStyle): plain, or coloured by type and as thick as the bytes loaded #}
-        <li><hr class="dropdown-divider"></li>
-        <li><h6 class="dropdown-header">Links</h6></li>
-        <li><button type="button" class="dropdown-item" data-tree-links="plain" aria-pressed="false">
+        <li data-lk-min-mode="full"><hr class="dropdown-divider"></li>
+        <li data-lk-min-mode="full"><h6 class="dropdown-header">Links</h6></li>
+        <li data-lk-min-mode="full"><button type="button" class="dropdown-item" data-tree-links="plain" aria-pressed="false">
           <span class="lk-link-swatch" aria-hidden="true"></span>Plain</button></li>
-        <li><button type="button" class="dropdown-item" data-tree-links="meaning" aria-pressed="false">
+        <li data-lk-min-mode="full"><button type="button" class="dropdown-item" data-tree-links="meaning" aria-pressed="false">
           <span class="lk-link-swatch link-script" aria-hidden="true"></span>Type &amp; size</button></li>
-        <li class="lk-link-legend" id="tree-link-legend" hidden>
+        <li class="lk-link-legend" id="tree-link-legend" data-lk-min-mode="full" hidden>
           <div><span class="lk-link-swatch link-redirect"></span>redirect</div>
           <div><span class="lk-link-swatch link-iframe"></span>iframe</div>
           <div><span class="lk-link-swatch link-script"></span>script</div>
@@ -413,16 +429,16 @@
           <div>Thicker: more bytes loaded from the host.</div>
         </li>
         {# Groups by network (js/tree.js, setupGroups): a halo per AS behind the cards #}
-        <li><hr class="dropdown-divider"></li>
-        <li><h6 class="dropdown-header">Group by network</h6></li>
-        <li><button type="button" class="dropdown-item lk-heat-item" data-tree-groups="off" aria-pressed="false">
+        <li data-lk-min-mode="full"><hr class="dropdown-divider"></li>
+        <li data-lk-min-mode="full"><h6 class="dropdown-header">Group by network</h6></li>
+        <li data-lk-min-mode="full"><button type="button" class="dropdown-item lk-heat-item" data-tree-groups="off" aria-pressed="false">
           <span>Off</span></button></li>
-        <li><button type="button" class="dropdown-item lk-heat-item" data-tree-groups="asn" aria-pressed="false">
+        <li data-lk-min-mode="full"><button type="button" class="dropdown-item lk-heat-item" data-tree-groups="asn" aria-pressed="false">
           <span>By AS (network operator)</span><small>A coloured halo behind the hosts of the same AS: the biggest networks of the capture (hosting, CDN…) show at a glance.</small></button></li>
-        <li class="lk-group-legend" id="tree-group-legend" hidden><ul></ul></li>
+        <li class="lk-group-legend" id="tree-group-legend" data-lk-min-mode="full" hidden><ul></ul></li>
         {# Heat map (js/tree.js, setupHeat): the cards tinted by a measure of the host #}
-        <li><hr class="dropdown-divider"></li>
-        <li><h6 class="dropdown-header">Colour the nodes by</h6></li>
+        <li data-lk-min-mode="full"><hr class="dropdown-divider"></li>
+        <li data-lk-min-mode="full"><h6 class="dropdown-header">Colour the nodes by</h6></li>
         {% for value, label, help in [
           ('none', 'Nothing', 'Plain cards.'),
           ('size', 'Bytes received', 'Weight of everything this host sent (pages, scripts, images…). Heavy hosts stand out.'),
@@ -430,10 +446,10 @@
           ('arrival', 'Time of the first call', 'When the browser first contacted this host, since the start of the capture. Hosts called late stand out (loaded after the page, often by scripts).'),
           ('urls', 'Number of URLs', 'How many URLs were loaded from this host. Busy hosts stand out.'),
         ] %}
-        <li><button type="button" class="dropdown-item lk-heat-item" data-tree-heat="{{ value }}" data-help="{{ help }}" aria-pressed="false">
+        <li data-lk-min-mode="full"><button type="button" class="dropdown-item lk-heat-item" data-tree-heat="{{ value }}" data-help="{{ help }}" aria-pressed="false">
           <span>{{ label }}</span><small>{{ help }}</small></button></li>
         {% endfor %}
-        <li class="lk-heat-legend" id="tree-heat-legend" hidden>
+        <li class="lk-heat-legend" id="tree-heat-legend" data-lk-min-mode="full" hidden>
           <span class="lk-heat-help">The redder the card, the higher its value, compared with the highest of this capture. Hover a node: its value.</span>
           <span class="lk-heat-gradient" aria-hidden="true"></span>
           <span class="lk-heat-scale"><span id="tree-heat-min">0</span><span id="tree-heat-max"></span></span>

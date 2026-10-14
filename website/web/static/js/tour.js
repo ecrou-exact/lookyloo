@@ -193,6 +193,8 @@
     }
 
     function start() {
+        // The page can prepare itself (e.g. an example row on an empty list, js/capture_list_demo.js)
+        document.dispatchEvent(new CustomEvent('lk-tour:before-start'));
         steps = readSteps();
         if (!available().length) return;
         stop();
@@ -205,6 +207,7 @@
     }
 
     function stop() {
+        const was_running = Boolean(card);
         openMenu(null);
         document.querySelectorAll('.lk-tour-target').forEach(node => node.classList.remove('lk-tour-target'));
         document.body.classList.remove('lk-tour-running');
@@ -213,6 +216,7 @@
         document.removeEventListener('keydown', keys, true);
         window.removeEventListener('resize', place);
         window.removeEventListener('scroll', place, true);
+        if (was_running) document.dispatchEvent(new CustomEvent('lk-tour:stop'));
     }
 
     function showMode() {

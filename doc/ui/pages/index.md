@@ -73,3 +73,14 @@ the public list, `recent_captures` minus the public ones for the hidden list).
 unlisted (`no_index`) or private. `get_index(public=False)` gets every capture,
 then keeps those (`cached.no_index or cached.private`), so a capture is never
 in both lists.
+
+## Tutorial
+
+The tour of the page (`{% block tour %}` in `home/index.html`) explains the
+filters (search, rows per page, category, public / hidden) and every part of a
+capture row (screenshot, title, verdict, URL, redirects and warnings,
+categories, date), on the first row of the list. On an empty list, an example
+row is shown while the tour runs (`js/capture_list_demo.js`: built with DOM
+APIs, marked **Example**, the same classes as the real rows), and removed when
+it ends: the page listens to the `lk-tour:before-start` / `lk-tour:stop` events
+of `js/tour.js`.

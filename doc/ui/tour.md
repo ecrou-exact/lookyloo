@@ -60,3 +60,10 @@ they are visible while a tour runs.
 Files: `js/tour.js`, `css/components/tour.css` (veil colour: `--lk-tour-veil`
 in `css/theme.css`), `macros/tour.html`, the `tour` block of `layouts/base.html`,
 the Tutorial menu in `partials/header.html`.
+
+## Events
+
+`js/tour.js` sends `lk-tour:before-start` on `document` before it reads the
+steps (a page can add what the tour needs, e.g. the example row of the list of
+captures, `js/capture_list_demo.js`), and `lk-tour:stop` when a running tour
+ends.

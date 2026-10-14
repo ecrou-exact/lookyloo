@@ -76,9 +76,28 @@
 
 {# Tutorial of the page (js/tour.js, doc/ui/tour.md) #}
 {% block tour %}{{ tour([
-  (None, "Recent captures", "Every public capture of this instance, newest first. Each row opens the tree of the capture."),
-  (".lk-segmented", "What to show", "Choose the captures to list: all of them, or only some kinds."),
-  (".lk-recent-filters", "Filters", "Narrow the list, for instance to one category. A filter in use shows here, with a way to remove it."),
-  ("#IndexTable", "The list", "Search, sort and page through the captures. The page and the search stay in the address, so you can share the view."),
+  (None, "Captures", "Every capture of this instance, newest first. Each row is one capture: a click on its title opens its tree."),
+  ("#capture-total", "How many", "The number of captures in this list (the recent ones; older captures are archived)."),
+  (".lk-segmented", "Public or hidden", "Administrators: the public captures, or the hidden ones (unlisted and private)."),
+  ("#IndexTable_wrapper .dt-search", "Filter", "Type a part of a title or of a URL: only the matching captures stay. The filter stays in the address, so you can share the view."),
+  ("#IndexTable_wrapper .dt-length", "Rows per page", "How many captures each page shows."),
+  (".lk-recent-filters", "Category filter", "The list shows only one category: the cross removes the filter."),
+  ("#IndexTable .lk-thumb", "Screenshot", "The page as the browser rendered it. It is blurred, the page may be shocking: click it to see it."),
+  ("#IndexTable .lk-capture-title", "Title", "The title of the page. Click it to open the capture: its tree, and everything that was recorded."),
+  ("#IndexTable .lk-verdict", "Verdict", "Shown when the capture was categorized as malicious."),
+  ("#IndexTable .lk-capture-url", "URL", "The URL that was captured, with a button to copy it."),
+  ("#IndexTable .lk-capture-facts", "What happened", "The redirects to the final page (or none), and the warnings: a downloaded file, an error…"),
+  ("#IndexTable .lk-capture-tags", "Categories", "The categories of the capture (phishing, legitimate service…). Click one to list only the captures of that category."),
+  ("#IndexTable thead th.text-end", "When", "When the capture was made: how long ago, and the exact date."),
+  ("#IndexTable_wrapper .dt-paging", "Pages", "Go through the older captures."),
   ("#lk-tour-menu-btn", "The tutorial, any time", "This button starts the tour of the page you are on. Turn the tutorial mode on to get the tour of each page the first time you open it.")
 ]) }}{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+{# Example row while the tour runs on an empty list #}
+<script src="{{ url_for('static', filename='js/capture_list_demo.js') }}"
+        {{get_sri('static', 'js/capture_list_demo.js')}}
+        nonce="{{ csp_nonce() }}"
+        crossorigin="anonymous"></script>
+{% endblock %}

@@ -361,6 +361,7 @@
     <button type="button" id="tree-orientation" title="Draw the tree from top to bottom" aria-label="Draw the tree from top to bottom">
       <span class="lk-orientation-horizontal">{{ icon('bi:arrow-left-right') }}</span>
       <span class="lk-orientation-vertical">{{ icon('bi:arrow-down-up') }}</span>
+      <span class="lk-orientation-radial">{{ icon('bi:bullseye') }}</span>
       <span class="lk-tree-control-label">Orientation</span>
     </button>
     <button type="button" id="tree-collapse-all" title="Collapse every node" aria-label="Collapse every node">{{ icon('bi:arrows-collapse') }}<span class="lk-tree-control-label">Collapse all</span></button>
@@ -899,7 +900,7 @@
   ("path.link.is-main-path", "The path to the page", "In colour: the redirects from the URL you gave to the page the browser finally showed."),
   (".lk-tree-controls", "Tree tools", "Draw the tree from left to right or from top to bottom, fold or unfold everything, compare with another capture, change the background, full screen, zoom."),
   ("#tree-controls-compact", "Icons only", "Hide the labels of these tools to keep only their icons, or show them again. Your choice is remembered."),
-  ("#tree-orientation", "Orientation", "Draw the tree from left to right, or from top to bottom when it is very wide. The icon shows the current way; your choice is remembered."),
+  ("#tree-orientation", "Orientation", "Draw the tree from left to right, from top to bottom when it is very wide, or as a circle with the root in the centre. The icon shows the current way; your choice is remembered."),
   ("#tree-collapse-all", "Collapse all", "Fold every branch: only the first level stays. Then open the branches you are interested in."),
   ("#tree-expand-all", "Expand all", "Unfold the branches again, level after level, up to 400 hosts to keep the page fast; a message says when some stay folded."),
   ("#tree-compare-toggle", "Compare", "Compare with another capture (an older one of the same URL, for instance): the new hosts are outlined in green, the hosts gone are listed."),

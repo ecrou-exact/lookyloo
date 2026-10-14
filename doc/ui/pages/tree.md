@@ -218,7 +218,14 @@ The buttons at the top right of the tree (`setupTreeControls()` in `js/tree.js`)
   Links go from the right of the parent to the left of the child, or from its
   bottom to the top of the child; the expand / collapse circle follows (right
   side of the card, or middle of its bottom edge), and the favicon / thumbnail
-  of the rendered node move aside (`placeNodeParts()`). The button shows the current orientation (⇄ / ⇅).
+  of the rendered node move aside (`placeNodeParts()`). The button shows the current orientation (⇄ / ⇅ / ◎).
+  **Radial** (third click): the root in the centre, one ring per depth
+  (`tree.size([2π, radius])`, x = angle, y = radius; `polarPoint()` turns them
+  into coordinates around `radial_center`, and the card is centred on its
+  point). The rings are spaced for the widest card and long enough for all the
+  leaves; links (`radialLink()`) go from card centre to card centre, under the
+  cards, curved along the rings; faint circles mark the depths (`g.tree-rings`,
+  thicker bands with the *columns* background).
 - **Collapse all**: every node but the root is collapsed (the first level stays
   visible).
 - **Background** (palette): plain, dots, grid or depth columns (one band out

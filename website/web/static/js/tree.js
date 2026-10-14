@@ -49,12 +49,23 @@ let search_index = -1;   // match centred by the previous / next buttons
 // Node focused by a click on its card: it and its neighbours (parent, children) stay lit
 let focus_uuid = null;
 
-// Orientation of the tree: 'horizontal' (root on the left) or 'vertical' (root at
-// the top), switched with the tree controls and remembered (localStorage).
+// Orientation of the tree: 'horizontal' (root on the left), 'vertical' (root at
+// the top) or 'radial' (root in the centre, one ring per depth), switched with the
+// tree controls and remembered (localStorage).
+const ORIENTATIONS = ['horizontal', 'vertical', 'radial'];
 let orientation = 'horizontal';
 try {
-    if (localStorage.getItem('lk-tree-orientation') === 'vertical') orientation = 'vertical';
+    const saved = localStorage.getItem('lk-tree-orientation');
+    if (ORIENTATIONS.includes(saved)) orientation = saved;
 } catch (e) { /* storage unavailable */ }
+// Label of the orientation button: the orientation that comes next
+const NEXT_ORIENTATION_LABEL = {
+    horizontal: 'Draw the tree from top to bottom',
+    vertical: 'Draw the tree as a circle, the root in the centre',
+    radial: 'Draw the tree from left to right',
+};
+// Radial: centre of the rings (coordinates of node_container), set by update()
+const radial_center = { x: 0, y: 0 };
 // Vertical: height of a depth row (card + thumbnail of the rendered node + gap)
 const VERTICAL_ROW = 190;
 let tree_root = null;
@@ -129,10 +140,22 @@ function centerInViewport(element, smooth=true) {
 }
 window.centerInViewport = centerInViewport;   // also used by js/tree_modals.js (LocateNode)
 
-// Position of a node on screen (d3.tree gives x = breadth, y = depth)
+// Radial: point at this angle (radians, 0 = top, clockwise) and distance of the centre
+function polarPoint(angle, radius) {
+    return [radial_center.x + radius * Math.sin(angle), radial_center.y - radius * Math.cos(angle)];
+}
+// Middle of the card of a node, relative to its position (cards are drawn from y = -30)
+const CARD_MIDDLE = (node_height + 5) / 2 - 30;
+
+// Position of a node on screen (d3.tree gives x = breadth, y = depth;
+// radial: x = angle, y = radius, and the card is centred on its point)
 function nodePos(d, previous=false) {
     const x = previous ? d.x0 : d.x;
     const y = previous ? d.y0 : d.y;
+    if (orientation === 'radial') {
+        const [px, py] = polarPoint(x || 0, y || 0);
+        return [px - (d.node_width || 0) / 2, py - CARD_MIDDLE];
+    }
     return orientation === 'horizontal' ? [y, x] : [x, y];
 }
 // Parts of a node that move with the orientation: the expand / collapse circle
@@ -154,6 +177,28 @@ function placeNodeParts(selection) {
         node.select('#favicon').attr('x', favicon_x);
         node.select('.node-favicon-chip').attr('x', favicon_x - 3);
     });
+}
+
+// Radial link: from the middle of the parent card to the middle of the child card
+// (under the cards), curved along the rings
+function radialLink(d) {
+    const p = d.parent;
+    const middle = (p.y + d.y) / 2;
+    const points = [polarPoint(p.x, p.y), polarPoint(p.x, middle), polarPoint(d.x, middle), polarPoint(d.x, d.y)];
+    return `M${points[0]}C${points[1]} ${points[2]} ${points[3]}`;
+}
+
+// Radial: a faint circle per depth behind the tree (none in the other orientations)
+function drawRings(count, ring) {
+    let rings = main_svg.select('g.tree-rings');
+    if (rings.empty()) {
+        rings = node_container.insert('g', ':first-child').attr('class', 'tree-rings');
+    }
+    rings.selectAll('circle')
+        .data(d3.range(1, count + 1))
+        .join('circle')
+        .attr('cx', radial_center.x).attr('cy', radial_center.y)
+        .attr('r', i => i * ring);
 }
 
 function nodeTransform(d, previous=false) {
@@ -1094,12 +1139,14 @@ function relayout() {
     }, reduce_motion ? 0 : 350);
 }
 
+// The button shows the current orientation, and says which one comes next
 function showOrientation() {
     const button = document.getElementById('tree-orientation');
-    const label = orientation === 'horizontal' ? 'Draw the tree from top to bottom' : 'Draw the tree from left to right';
+    const label = NEXT_ORIENTATION_LABEL[orientation];
     button.title = label;
     button.setAttribute('aria-label', label);
     button.classList.toggle('is-vertical', orientation === 'vertical');
+    button.classList.toggle('is-radial', orientation === 'radial');
 }
 
 // Tree controls with their labels, or icons only: remembered (localStorage)
@@ -1129,7 +1176,7 @@ function setupTreeControls() {
     if (!orientation_button) return;
     showOrientation();
     orientation_button.addEventListener('click', () => {
-        orientation = orientation === 'horizontal' ? 'vertical' : 'horizontal';
+        orientation = ORIENTATIONS[(ORIENTATIONS.indexOf(orientation) + 1) % ORIENTATIONS.length];
         try { localStorage.setItem('lk-tree-orientation', orientation); } catch (e) { /* not remembered */ }
         showOrientation();
         relayout();
@@ -1195,6 +1242,7 @@ function tipY(event) { return document.fullscreenElement ? event.clientY : event
 function applyBackground() {
     BACKGROUNDS.forEach(name => tree_viewport.classList.toggle(`lk-tree-bg-${name}`, name === background_choice));
     tree_viewport.classList.toggle('is-vertical', orientation === 'vertical');
+    tree_viewport.classList.toggle('is-radial', orientation === 'radial');
     document.querySelectorAll('[data-tree-background]').forEach(item => {
         const on = item.dataset.treeBackground === background_choice;
         item.setAttribute('aria-pressed', on ? 'true' : 'false');
@@ -1601,17 +1649,31 @@ function update(root, computed_node_width=0) {
       // One column per depth, one line per node
       svgWidth = Math.max((max_depth + 1) * computed_node_width, node_width);
       svgHeight = Math.max(root.descendants().length * node_height, min_height);
-      tree.size([svgHeight, svgWidth]);
+      tree.size([svgHeight, svgWidth]).separation((a, b) => a.parent === b.parent ? 1 : 2);
       pageWidth = svgWidth + (margin.right + margin.left) * 2;
       pageHeight = svgHeight + margin.top + margin.bottom;
       pattern.attr('width', computed_node_width * 2).attr('height', pageHeight);
       pattern.select('rect').attr('width', computed_node_width).attr('height', pageHeight);
       setColumnsGeometry(computed_node_width, margin.left);
+    } else if (orientation === 'radial') {
+      // One ring per depth; the rings are far enough apart for the widest card, and
+      // the outer ones long enough for all the leaves
+      const leaves = root.leaves().length;
+      const ring = Math.max(computed_node_width * 0.8,
+                            leaves * (node_height + 16) / (2 * Math.PI * (max_depth + 1)));
+      const radius = (max_depth + 1) * ring;
+      tree.size([2 * Math.PI, radius])
+          .separation((a, b) => (a.parent === b.parent ? 1 : 2) / Math.max(a.depth, 1));
+      pageWidth = 2 * radius + 2 * computed_node_width + margin.left + margin.right;
+      pageHeight = 2 * radius + 2 * node_height + margin.top + margin.bottom;
+      radial_center.x = pageWidth / 2 - margin.left;
+      radial_center.y = pageHeight / 2 - margin.top;
+      drawRings(max_depth + 1, ring);
     } else {
       // One row per depth, one column (the widest card) per leaf
       svgWidth = Math.max(root.leaves().length * computed_node_width, min_width);
       svgHeight = Math.max((max_depth + 1) * VERTICAL_ROW, min_height);
-      tree.size([svgWidth, svgHeight]);
+      tree.size([svgWidth, svgHeight]).separation((a, b) => a.parent === b.parent ? 1 : 2);
       pageWidth = svgWidth + margin.left + margin.right + computed_node_width;
       pageHeight = svgHeight + margin.top + margin.bottom + VERTICAL_ROW;
       pattern.attr('width', pageWidth).attr('height', VERTICAL_ROW * 2);
@@ -1631,6 +1693,7 @@ function update(root, computed_node_width=0) {
     pattern.attr('x', orientation === 'horizontal' ? margin.left : 0)
            .attr('y', orientation === 'horizontal' ? 0 : margin.top - 40 - VERTICAL_ROW / 4);
 
+    if (orientation !== 'radial') drawRings(0, 0);
     tree_page.width = pageWidth;
     tree_page.height = pageHeight;
     sizeTreeSvg();
@@ -2085,7 +2148,8 @@ function update(root, computed_node_width=0) {
   // Creates a curved (diagonal) path from parent to the child nodes:
   // horizontal: right side of the parent -> left side of the child,
   // vertical: bottom of the parent -> top of the child (cards are drawn from y = -30)
-  let diagonal = orientation === 'horizontal'
+  let diagonal = orientation === 'radial' ? radialLink
+      : orientation === 'horizontal'
       ? d3.linkHorizontal()
           .source(d => [d.y, d.x])
           .target(d => [d.parent.y + d.parent.node_width, d.parent.x])

@@ -437,13 +437,25 @@ body.lk-capture-page > .lk-footer { flex: none; display: block; width: 100%; }
 #tree-fullscreen[hidden] { display: none; }
 
 /* The tree area in full screen: the whole screen, the page background */
+/* Radial: no depth bands, the rings of the SVG (g.tree-rings) show the depths */
+.lk-tree-viewport.lk-tree-bg-columns.is-radial { background-image: none; }
+g.tree-rings circle {
+  fill: none;
+  stroke: var(--lk-color-tree-pattern);
+  stroke-width: 2px;
+}
+.lk-tree-viewport.lk-tree-bg-columns.is-radial g.tree-rings circle { stroke-width: 28px; }
+
 .lk-tree-area:fullscreen { height: 100vh; width: 100vw; background: var(--lk-color-tree-canvas); }
 .lk-tree-area:fullscreen #tooltip { position: fixed !important; }
 
 /* Orientation button: the icon of the current orientation */
 #tree-orientation .lk-orientation-vertical,
-#tree-orientation.is-vertical .lk-orientation-horizontal { display: none; }
-#tree-orientation.is-vertical .lk-orientation-vertical { display: inline-flex; }
+#tree-orientation .lk-orientation-radial,
+#tree-orientation.is-vertical .lk-orientation-horizontal,
+#tree-orientation.is-radial .lk-orientation-horizontal { display: none; }
+#tree-orientation.is-vertical .lk-orientation-vertical,
+#tree-orientation.is-radial .lk-orientation-radial { display: inline-flex; }
 #tree-orientation span { display: inline-flex; }
 /* Icons only (#tree-controls-compact) */
 .lk-tree-controls > .lk-tree-controls-compact { color: var(--lk-color-muted); }

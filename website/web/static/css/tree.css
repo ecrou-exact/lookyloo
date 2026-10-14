@@ -1174,6 +1174,38 @@ rect.node-group-halo { stroke: none; pointer-events: none; }
 .lk-risk-dot.is-danger { background: var(--lk-color-danger); }
 .lk-risk-dot.is-warning { background: var(--lk-color-warning); }
 
+/* ? of the list: the rules, on hover or focus */
+.lk-risks-help { position: relative; display: inline-flex; }
+.lk-risks-help-btn {
+  width: 20px; height: 20px; padding: 0;
+  border: 1px solid var(--lk-color-rule); border-radius: 50%;
+  background: var(--lk-color-surface); color: var(--lk-color-muted);
+  font-size: var(--lk-font-size-xs); font-weight: 700; line-height: 1; cursor: help;
+}
+.lk-risks-help-btn:hover, .lk-risks-help-btn:focus-visible { color: var(--lk-color-accent); border-color: var(--lk-color-accent); }
+.lk-risks-rules {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: -6px;
+  z-index: 2;
+  width: 19rem;
+  padding: var(--lk-space-2) var(--lk-space-3);
+  border-radius: var(--lk-radius-sm);
+  background: var(--lk-color-ink);
+  color: var(--lk-color-surface);
+  font-size: var(--lk-font-size-xs);
+  line-height: 1.45;
+  box-shadow: var(--lk-shadow-md);
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity var(--lk-transition-fast);
+}
+.lk-risks-help:hover .lk-risks-rules,
+.lk-risks-help-btn:focus-visible + .lk-risks-rules { visibility: visible; opacity: 1; }
+.lk-risks-rules ul { list-style: none; margin: var(--lk-space-1) 0; padding: 0; }
+.lk-risks-rules li { display: flex; align-items: center; gap: var(--lk-space-2); }
+.lk-risks-rules .lk-risk-dot { width: 9px; height: 9px; }
+
 /* Risk badge of a node (js/tree.js, RISKS): top left corner of the card */
 g.node-risk { cursor: help; }
 g.node-risk circle { stroke: var(--lk-color-surface); stroke-width: 2px; }

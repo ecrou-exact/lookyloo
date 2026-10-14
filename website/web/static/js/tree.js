@@ -1765,6 +1765,24 @@ function setupRiskList(root) {
         list.appendChild(li);
     });
     panel.querySelector('.lk-risks-count').textContent = `${risky.length} hosts, ${danger} red`;
+    // The rules, from RISKS: what the ? explains
+    const rules = panel.querySelector('.lk-risks-rules');
+    if (rules) {
+        rules.textContent = '';
+        const intro = document.createElement('span');
+        intro.textContent = 'Read from the capture itself (the tree data built from the HAR), no outside service. A host gets a badge when:';
+        const items = document.createElement('ul');
+        RISKS.forEach(risk => {
+            const li = document.createElement('li');
+            const dot = document.createElement('span');
+            dot.className = `lk-risk-dot is-${risk.level}`;
+            li.append(dot, risk.label);
+            items.appendChild(li);
+        });
+        const end = document.createElement('span');
+        end.textContent = 'Red if any reason is red. The number on the badge is the number of reasons.';
+        rules.append(intro, items, end);
+    }
     const open = (on) => {
         panel.hidden = !on;
         chip.setAttribute('aria-expanded', on ? 'true' : 'false');

@@ -527,6 +527,11 @@
     <header>
       <h2 id="tree-risks-title">{{ icon('bi:exclamation-triangle') }} Worth a look</h2>
       <span class="lk-risks-count"></span>
+      {# How a host gets a badge: the rules (js/tree.js, RISKS), shown on hover or focus #}
+      <span class="lk-risks-help">
+        <button type="button" class="lk-risks-help-btn" aria-describedby="tree-risks-rules" aria-label="How the hosts worth a look are found">?</button>
+        <span class="lk-risks-rules" id="tree-risks-rules" role="tooltip"></span>
+      </span>
       <button type="button" class="lk-risks-close" title="Close" aria-label="Close the list">{{ icon('bi:x-lg') }}</button>
     </header>
     <p class="lk-risks-hint">Click a host to go to it in the tree.</p>
@@ -971,7 +976,8 @@
   ("#removeCapture", "Remove capture", "Delete the capture from this instance (a confirmation is asked).", "#admin-menu-btn"),
   ("#report-capture-btn", "Report a suspicious capture", "Send this capture to the team behind this Lookyloo instance, with your e-mail and a comment: they may look at it."),
   ("#capture_fold", "Fold the bar", "Too much space taken? Fold this bar to one line, the tree gets the room."),
-  (".lk-tree-alert-risks", "Worth a look", "The hosts with a risk badge (red: malicious, bare IP, download; orange: POST, plain HTTP…). Click to list them with their reasons, then click one to go to it. The legend filters them too."),
+  (".lk-tree-alert-risks", "Worth a look", "The hosts with a risk badge, found in the data of the capture itself (no outside service): red for known malicious content, a bare IP address as host or a downloaded file; orange for data sent (POST), plain HTTP, mixed content or a redirect to nowhere. Click the chip to list them with their reasons, then a host to go to it; the ? in the list explains the rules."),
+  ("g.node-risk", "Risk badge", "On the card of a host worth a look: red or orange, the number of reasons (! for one). Hover it to read them."),
   ("#tree-alerts", "Points of attention", "What an analyst checks first: data sent (POST), downloads, plain HTTP, third-party hosts… Click a chip to light up the hosts concerned."),
   ("g.node .node-card", "A host", "Each card is a host. Click its name for its details (URLs, IPs, certificates); click the card itself to light up its neighbours (its ✕ pill, Esc or a click on the background shows everything again); hover it for its network information (IPs, DNS zone, hosting) and its tools."),
   ("g.node .icons_list", "What it loaded", "The icons tell what this host sent: scripts, images, cookies, redirects… with how many. Click an icon to light up every host that has it."),
@@ -998,7 +1004,7 @@
   ("#tree-fullscreen", "Full screen", "Only the tree, on the whole screen; Esc or the same button to leave."),
   (".lk-tree-zoom", "Zoom", "Zoom out, back to 100 %, zoom in. Ctrl + mouse wheel also zooms, around the pointer; Ctrl + 0 comes back to 100 %."),
   ("#tree-center", "Back to the tree", "Lost far from the tree? This button brings its centre back to the middle of the screen."),
-  ("#legend", "Legend & filter", "What every icon means, how many hosts have it, and a filter: click entries to light up the hosts that have them. The Links section filters by type of link (redirect, iframe, script…). With several entries, Any (OR) or All (AND)."),
+  ("#legend", "Legend & filter", "What every icon means, how many hosts have it, and a filter: click entries to light up the hosts that have them. The Worth a look section keeps the hosts with a red or orange badge, or the bare IP hosts; the Links section filters by type of link (redirect, iframe, script…). With several entries, Any (OR) or All (AND)."),
   ("#tree_viewport", "Move around", "Drag the tree with the mouse to move it anywhere around it, up to an edge that glows and springs back. The wheel scrolls inside the tree, then the page. Hover a card to see the path from the URL to it."),
   ("#tree-shortcuts-btn", "Keyboard shortcuts", "This small button (or ?) lists the keyboard shortcuts of the page: search, zoom, panel, notes."),
   ("#lk-tour-menu-btn", "The tutorial, any time", "This button starts the tour of the page you are on. Turn the tutorial mode on to get the tour of each page the first time you open it.")

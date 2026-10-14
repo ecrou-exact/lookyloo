@@ -51,7 +51,7 @@ page does it when the tree is drawn (`js/tree.js`).
 Home, recent captures, new capture, search, import a capture, categories,
 resources, cookies, favicons, HTTP headers hashes, API, and the capture page
 (the most detailed: capture bar, search, every entry of the menus, report,
-points of attention, a host card and its tools — new capture, note, view from
+points of attention and the hosts worth a look (chip, risk badge), a host card and its tools — new capture, note, view from
 here —, its icons, branches, the path to the page and the details of a link,
 every tree tool — replay and its player, orientation (with the radial layout),
 collapse / expand all, compare, notes, the Display menu: each background, the

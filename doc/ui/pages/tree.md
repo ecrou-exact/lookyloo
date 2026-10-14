@@ -661,6 +661,10 @@ lookup). Colours: `--lk-color-tree-group-1` … `-6` (light and dark,
   folded ancestors are unfolded, then `LocateNode()` centres it and makes it
   glow). The list follows the tree shown (whole capture or view from a node:
   `setupRiskList()` is called by `setupAttention()`).
+- **?** in the header of the list (`.lk-risks-help`): hovering or focusing it
+  shows how a host gets a badge, built from `RISKS` (so it never drifts from
+  the code): read from the tree data of the capture, no outside service; each
+  rule with its colour; red if any reason is red.
 
 ### Double click and breadcrumb
 

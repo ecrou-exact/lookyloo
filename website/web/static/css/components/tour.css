@@ -97,3 +97,16 @@ body.lk-tour-running g.node .node-capture { opacity: 1; }
   96% { opacity: 0.2; }
 }
 @media (prefers-reduced-motion: reduce) { .lk-tour-waiting-message { animation: none; } }
+
+/* Example rows of the tutorial on an empty list (js/tour_demo_rows.js, js/capture_list_demo.js) */
+.lk-tour-demo-badge {
+  margin-left: var(--lk-space-2);
+  padding: 0 var(--lk-space-2);
+  border: 1px dashed var(--lk-color-accent);
+  border-radius: var(--lk-radius-pill);
+  color: var(--lk-color-accent);
+  font-size: var(--lk-font-size-xs);
+  font-weight: var(--lk-font-weight-semibold);
+}
+.lk-tour-demo td { background: color-mix(in srgb, var(--lk-color-accent-soft) 55%, transparent); }
+.lk-tour-demo-icon { width: 32px; height: 32px; }

@@ -67,12 +67,3 @@
 
 /* Example row of the tutorial (js/capture_list_demo.js), on an empty list */
 .lk-tour-demo-thumb { display: block; width: 128px; height: 80px; background: var(--lk-color-surface-2); border: 1px dashed var(--lk-color-rule-strong); }
-.lk-tour-demo-badge {
-  margin-left: var(--lk-space-2);
-  padding: 0 var(--lk-space-2);
-  border: 1px dashed var(--lk-color-accent);
-  border-radius: var(--lk-radius-pill);
-  color: var(--lk-color-accent);
-  font-size: var(--lk-font-size-xs);
-  font-weight: var(--lk-font-weight-semibold);
-}

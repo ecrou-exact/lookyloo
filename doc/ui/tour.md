@@ -103,3 +103,14 @@ Favicons, HTTP headers hashes, API.
 - Steps in the macro: `(selector, title, text[, open[, type[, waiting]]])`.
 - Any element with `data-lk-tour-full` starts it (one listener on the document,
   so a button loaded later works too).
+
+## Example rows on empty lists
+
+A list with no row yet gets a made-up example row while its tour runs, marked
+*Example* (`.lk-tour-demo-badge`, tinted row `tr.lk-tour-demo`), removed when the
+tour stops (`lk-tour:before-start` / `lk-tour:stop`). The list of captures has
+its own (`js/capture_list_demo.js`); the global listings use
+`js/tour_demo_rows.js` (loaded by `layouts/base.html`): the table names its
+example with `data-lk-tour-demo` = `categories`, `resources`, `cookies`,
+`favicons` or `hhhashes`. Rows built with DOM APIs, with the classes of the real
+rows; a table with real rows is left alone.

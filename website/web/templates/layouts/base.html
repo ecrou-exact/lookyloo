@@ -84,6 +84,10 @@
             {{get_sri('static', 'js/tour.js')}}
             nonce="{{ csp_nonce() }}"
             crossorigin="anonymous"></script>
+    <script src='{{ url_for('static', filename='js/tour_demo_rows.js') }}'
+            {{get_sri('static', 'js/tour_demo_rows.js')}}
+            nonce="{{ csp_nonce() }}"
+            crossorigin="anonymous"></script>
     <script src='{{ url_for('static', filename='js/christmas.js') }}'
             {{get_sri('static', 'js/christmas.js')}}
             nonce="{{ csp_nonce() }}"

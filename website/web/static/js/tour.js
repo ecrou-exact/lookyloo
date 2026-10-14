@@ -8,6 +8,39 @@
 // or hidden are skipped. Doc: doc/ui/tour.md
 (() => {
     const MODE_KEY = 'lk-tour-mode';
+    // Full tour (every page, one after the other): {page: index in the list} in sessionStorage
+    const FULL_KEY = 'lk-tour-full';
+    const session = {
+        get: () => { try { return JSON.parse(sessionStorage.getItem(FULL_KEY)); } catch (e) { return null; } },
+        set: (value) => { try { sessionStorage.setItem(FULL_KEY, JSON.stringify(value)); } catch (e) { /* not kept */ } },
+        clear: () => { try { sessionStorage.removeItem(FULL_KEY); } catch (e) { /* nothing */ } },
+    };
+    function fullPages() {
+        try { return JSON.parse(document.getElementById('lk-tour-full-pages')?.textContent || '[]'); } catch (e) { return []; }
+    }
+    // Go to page `page` of the full tour (an entry with "pick" takes the first link of the
+    // current page matching it; none: the next page)
+    function goToFullPage(page) {
+        const pages = fullPages();
+        while (page < pages.length) {
+            const entry = pages[page];
+            const url = entry.url || document.querySelector(entry.pick)?.getAttribute('href');
+            if (url) {
+                session.set({ page });
+                location.href = url;
+                return;
+            }
+            page++;
+        }
+        session.clear();   // past the last page
+    }
+    function startFull() {
+        stop();
+        goToFullPage(0);
+    }
+    function stopFull() { session.clear(); }
+    // Left by the user (skip, Esc, click outside): the full tour stops too
+    function quit() { stopFull(); stop(); }
     const SEEN_KEY = 'lk-tour-seen';
     const storage = {
         get: (key) => { try { return localStorage.getItem(key); } catch (e) { return null; } },
@@ -67,7 +100,7 @@
     function build() {
         overlay = document.createElement('div');
         overlay.className = 'lk-tour-overlay';
-        overlay.addEventListener('click', stop);
+        overlay.addEventListener('click', quit);
         spotlight = document.createElement('div');
         spotlight.className = 'lk-tour-spotlight';
         card = document.createElement('div');
@@ -84,7 +117,7 @@
         text.className = 'lk-tour-text';
         const actions = document.createElement('div');
         actions.className = 'lk-tour-actions';
-        const skip = button('Skip the tour', 'btn btn-sm btn-link lk-tour-skip', stop);
+        const skip = button(session.get() ? 'Stop the full tour' : 'Skip the tour', 'btn btn-sm btn-link lk-tour-skip', quit);
         const previous = button('Previous', 'btn btn-sm btn-outline-secondary', () => go(index - 1));
         const next = button('Next', 'btn btn-sm btn-primary', () => go(index + 1));
         previous.dataset.role = 'previous';
@@ -108,7 +141,7 @@
 
     function keys(event) {
         if (!card) return;
-        if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); stop(); }
+        if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); quit(); }
         else if (event.key === 'ArrowRight') { event.preventDefault(); go(index + 1); }
         else if (event.key === 'ArrowLeft') { event.preventDefault(); go(index - 1); }
     }
@@ -164,14 +197,24 @@
 
     function go(to) {
         const list = available();
-        if (to >= list.length) { stop(); return; }
+        const full = session.get();
+        if (to >= list.length) {
+            stop();
+            if (full) goToFullPage(full.page + 1);
+            return;
+        }
         index = Math.max(0, to);
         const step = list[index];
-        card.querySelector('.lk-tour-progress').textContent = `Tutorial · ${index + 1} / ${list.length}`;
+        const pages = fullPages();
+        card.querySelector('.lk-tour-progress').textContent = full
+            ? `Full tour · page ${full.page + 1} / ${pages.length} · ${index + 1} / ${list.length}`
+            : `Tutorial · ${index + 1} / ${list.length}`;
         card.querySelector('h2').textContent = step.title;
         card.querySelector('.lk-tour-text').textContent = step.text;
         card.querySelector('[data-role="previous"]').disabled = index === 0;
-        card.querySelector('[data-role="next"]').textContent = index === list.length - 1 ? 'Finish' : 'Next';
+        const next_page = full && pages[full.page + 1];
+        card.querySelector('[data-role="next"]').textContent = index < list.length - 1 ? 'Next'
+            : next_page ? `Next page: ${next_page.label} →` : 'Finish';
         openMenu(step.open);
         const element = target(step);
         // Entry of an opened menu: the whole menu stays readable above the veil,
@@ -230,12 +273,18 @@
     // Tutorial mode on and this page not seen yet: start its tour
     function autoStart() {
         steps = readSteps();
+        // Full tour going on: the tour of this page starts at once
+        if (session.get()) {
+            if (steps.length) setTimeout(start, 300);
+            else goToFullPage(session.get().page + 1);   // a page without a tour: the next one
+            return;
+        }
         const page = document.body.dataset.lkTour || location.pathname;
         const seen = JSON.parse(storage.get(SEEN_KEY) || '{}');
         if (storage.get(MODE_KEY) === 'on' && steps.length && !seen[page]) setTimeout(start, 300);
     }
 
-    window.lkTour = { start, stop, autoStart };
+    window.lkTour = { start, stop, autoStart, startFull };
 
     document.addEventListener('DOMContentLoaded', () => {
         steps = readSteps();
@@ -244,6 +293,10 @@
             start_button.disabled = !steps.length;
             start_button.addEventListener('click', () => setTimeout(start, 50));
         }
+        // Every "full tour" button (Tutorial menu, home page of an empty instance, loaded later)
+        document.addEventListener('click', (event) => {
+            if (event.target.closest('[data-lk-tour-full]')) setTimeout(startFull, 50);
+        });
         document.getElementById('lk-tour-mode')?.addEventListener('change', (event) => {
             storage.set(MODE_KEY, event.target.checked ? 'on' : 'off');
             showMode();

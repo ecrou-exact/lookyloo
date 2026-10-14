@@ -69,3 +69,24 @@ the Tutorial menu in `partials/header.html`.
 steps (a page can add what the tour needs, e.g. the example row of the list of
 captures, `js/capture_list_demo.js`), and `lk-tour:stop` when a running tour
 ends.
+
+## Full tour
+
+*Tutorial* > *Full tour of Lookyloo* (or *Start the full tour* on the home page
+of an instance without public capture, `home/latest_captures.html`) visits
+every page with a tour, one after the other, from the home page: Home,
+Captures, a capture (the first one of the list; skipped when there is none),
+New capture, Import a capture, Search, Categories, Resources, Cookies,
+Favicons, HTTP headers hashes, API.
+
+- The list is in the Tutorial menu (`#lk-tour-full-pages`, JSON built with
+  `url_for` in `partials/header.html`); an entry with `pick` takes the first
+  link of the current page matching that selector.
+- The position is kept in `sessionStorage` (`lk-tour-full`: `{page}`): on each
+  page, `autoStart()` starts its tour at once (a page without a tour goes to the
+  next one). The progress reads "Full tour · page 3 / 12 · 5 / 65"; the last
+  step of a page says "Next page: <label> →" and goes there.
+- *Stop the full tour*, Esc or a click outside the card stop the whole tour
+  (`quit()`); the last page ends it (*Finish*).
+- Any element with `data-lk-tour-full` starts it (one listener on the document,
+  so a button loaded later works too).

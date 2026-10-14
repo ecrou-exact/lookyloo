@@ -22,4 +22,13 @@
 </table>
 {% else %}
 <p class="lk-latest-empty">No public capture yet. Be the first: paste a URL above.</p>
+{# New instance: the full tour of the site (js/tour.js, data-lk-tour-full) #}
+<div class="lk-tour-invite">
+  <span class="lk-tour-invite-icon" aria-hidden="true">{{ icon('bi:mortarboard') }}</span>
+  <div>
+    <h3>New to Lookyloo?</h3>
+    <p>Take the full tour: every page of the site, one after the other, explained step by step.</p>
+  </div>
+  <button type="button" class="btn btn-primary btn-lg" data-lk-tour-full>{{ icon('bi:signpost-2') }} Start the full tour</button>
+</div>
 {% endif %}

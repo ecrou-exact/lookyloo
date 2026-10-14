@@ -67,6 +67,24 @@
             <h6 class="dropdown-header">Tutorial</h6>
             <button type="button" class="dropdown-item d-flex align-items-center gap-2" id="lk-tour-start">
               {{ icon('bi:play-circle') }} Start the tour of this page</button>
+            {# Full tour (js/tour.js): every page, from the home page, one after the other #}
+            <button type="button" class="dropdown-item d-flex align-items-center gap-2" id="lk-tour-full" data-lk-tour-full>
+              {{ icon('bi:signpost-2') }} Full tour of Lookyloo</button>
+            {# Pages of the full tour, in order; "pick": the capture is the first one of the list before #}
+            <script type="application/json" id="lk-tour-full-pages">{{ [
+              {'label': 'Home', 'url': url_for('landing_page')},
+              {'label': 'Captures', 'url': url_for('index')},
+              {'label': 'A capture', 'pick': '.lk-capture-title'},
+              {'label': 'New capture', 'url': url_for('capture_web')},
+              {'label': 'Import a capture', 'url': url_for('submit_capture')},
+              {'label': 'Search', 'url': url_for('search')},
+              {'label': 'Categories', 'url': url_for('categories')},
+              {'label': 'Resources', 'url': url_for('ressources')},
+              {'label': 'Cookies', 'url': url_for('cookies_lookup')},
+              {'label': 'Favicons', 'url': url_for('favicons_lookup')},
+              {'label': 'HTTP headers hashes', 'url': url_for('hhhashes_lookup')},
+              {'label': 'API', 'url': url_for('api_reference')},
+            ] | tojson }}</script>
             <div class="dropdown-divider"></div>
             <div class="form-check form-switch">
               <input class="form-check-input" type="checkbox" role="switch" id="lk-tour-mode">

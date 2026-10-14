@@ -3462,12 +3462,22 @@ index_capture_template = app.jinja_env.from_string(source='''
   {% if hops|length > 1 %}
   <details class="lk-route-details">
     <summary>Show the redirect chain <span class="lk-route-count">{{ hops|length }} steps</span></summary>
-    {# Vitrine <vt-timeline> (js/capture_list_components.js): one event per step, in order.
-       The URLs are titles (text, never links: hostile URLs); the JSON is escaped by tojson. #}
-    <vt-timeline class="lk-vitrine lk-route-timeline" order="oldest" group="none" durations="false"
-                 markdown="false" label="Redirect chain">
-      <template>{{ timeline|tojson }}</template>
-    </vt-timeline>
+    <ol class="lk-route">
+      {% for hop in hops %}
+      <li class="lk-route-step{% if loop.first %} is-first{% endif %}{% if loop.last %} is-last{% endif %}">
+        <div class="lk-route-head">
+          <span class="lk-route-label">{% if loop.first %}Start{% elif loop.last %}Final page{% else %}Redirect {{ loop.index0 }}{% endif %}</span>
+          {% if hop.new_host %}<span class="lk-route-badge">new host</span>{% endif %}
+          {% if hop.insecure %}<span class="lk-route-badge is-warning">{{ icon('bi:unlock') }} HTTP</span>{% endif %}
+        </div>
+        <div class="lk-route-url">
+          <span class="lk-route-text" title="{{ hop.url }}"><span class="lk-route-host">{{ hop.scheme_prefix }}{{ hop.host }}</span><span class="lk-route-path">{{ hop.rest }}</span></span>
+          <button type="button" class="lk-copy js-copy" data-bs-toggle="tooltip" data-copy="{{ hop.url }}"
+                  title="Copy the URL" data-bs-original-title="Copy the URL" aria-label="Copy the URL">{{ icon('bi:copy') }}</button>
+        </div>
+      </li>
+      {% endfor %}
+    </ol>
     <a class="lk-route-download" href="{{ url_for('redirects', tree_uuid=capture_uuid) }}">{{ icon('bi:download') }} Download the redirects</a>
   </details>
   {% endif %}
@@ -3479,27 +3489,6 @@ favicon_download_button_template = app.jinja_env.from_string(source='''
 <button type="button" class="btn btn-light downloadFaviconButton" data-mimetype="{{mimetype}}" data-b64favicon="{{b64_favicon}}" data-filename="favicon.ico">
   {{icon('bi:cloud-download', title="Download the favicon")}}
 </button>''')
-
-
-def redirect_timeline(hops: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    '''The redirect chain as <vt-timeline> events (no time: the cache has none, the
-    written order is kept): start, each redirect, final page.'''
-    events: list[dict[str, Any]] = []
-    for i, hop in enumerate(hops):
-        if i == 0:
-            label, kind = 'Start', 'info'
-        elif i == len(hops) - 1:
-            label, kind = 'Final page', 'success'
-        else:
-            label, kind = f'Redirect {i}', 'warning'
-        tags = [label]
-        if hop['new_host']:
-            tags.append('new host')
-        if hop['insecure']:
-            tags.append('HTTP')
-            kind = 'danger'
-        events.append({'title': hop['url'], 'kind': kind, 'tags': tags})
-    return events
 
 
 def redirect_hops(redirects: list[str]) -> list[dict[str, Any]]:
@@ -3534,7 +3523,6 @@ def index_row(cache: CaptureCache) -> dict[str, Any]:
                                             title=title,
                                             url=initial_url,
                                             hops=hops,
-                                            timeline=redirect_timeline(hops),
                                             trail=[hop['host'] for i, hop in enumerate(hops)
                                                    if i == 0 or hop['host'] != hops[i - 1]['host']],
                                             error=cache.error,

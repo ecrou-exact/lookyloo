@@ -15,9 +15,6 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}"
       {{get_sri('static', 'css/index.css')}}
       crossorigin="anonymous">
-<link rel="stylesheet"
-      {{get_sri('static', 'vendor/vitrine/vitrine.css')}}
-      href="{{ url_for('static', filename='vendor/vitrine/vitrine.css') }}">
 {% endblock %}
 
 {% block page_header %}
@@ -98,11 +95,6 @@
 
 {% block scripts %}
 {{ super() }}
-{# Vitrine <vt-timeline>: the redirect chain of the rows #}
-<script src="{{ url_for('static', filename='js/capture_list_components.js') }}"
-        {{get_sri('static', 'js/capture_list_components.js')}}
-        nonce="{{ csp_nonce() }}"
-        crossorigin="anonymous" type="module"></script>
 {# Example row while the tour runs on an empty list #}
 <script src="{{ url_for('static', filename='js/capture_list_demo.js') }}"
         {{get_sri('static', 'js/capture_list_demo.js')}}

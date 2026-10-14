@@ -85,15 +85,3 @@ row is shown while the tour runs (`js/capture_list_demo.js`: built with DOM
 APIs, marked **Example**, the same classes as the real rows), and removed when
 it ends: the page listens to the `lk-tour:before-start` / `lk-tour:stop` events
 of `js/tour.js`.
-
-## Redirect chain
-
-**Show the redirect chain** (a row with redirects) is a vitrine `<vt-timeline>`
-(`redirect_timeline()` and `index_row` in `website/web/__init__.py`, loaded by
-`js/capture_list_components.js` on the list and the home page): one event per
-step, in order (`order="oldest"`, no date: the cache has no time per redirect,
-so no durations), with the step (Start, Redirect n, Final page), *new host* and
-*HTTP* as tags, and a colour per kind (start: info, redirect: warning, final
-page: success, plain HTTP: danger). The URLs are titles, inserted as text by
-vitrine, never as links (hostile URLs); the events are JSON escaped by `tojson`
-in a `<template>`. **Download the redirects** stays under it.

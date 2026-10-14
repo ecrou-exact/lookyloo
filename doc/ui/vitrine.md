@@ -38,7 +38,6 @@ own modules (CSP `script-src-elem 'self'`), `tools/generate_sri.py` skips them.
 | Capture page: notes of the analyst (doc/ui/pages/tree.md) | `<vt-markdown>` (editor with preview, rendering) |
 | Capture page: MISP export (doc/ui/pages/tree.md) | `<vt-json>` |
 | Capture page: OpenSSL commands of the forensic acquisition (doc/ui/pages/tree.md) | `<vt-terminal>` |
-| Lists of captures and home page: redirect chain of a row (doc/ui/pages/index.md) | `<vt-timeline>` |
 | API reference `/api` (doc/ui/pages/api.md) | `<vt-openapi>`, `<vt-http>` |
 
 ## No external request

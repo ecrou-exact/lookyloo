@@ -651,13 +651,12 @@
         Image too big ({{ sizeof_fmt(screenshot_size) }}) to display in the browser, the screenshot below is cropped.
         <br>
       {% endif %}
-      {# Blur / Unblur the screenshot (js/tree_modals.js), whatever the default of the instance #}
-      <button type="button" class="btn btn-outline-primary" id="blurScreenshot" aria-pressed="{{ 'true' if blur_screenshot else 'false' }}">
-        {% if blur_screenshot %}{{ icon('bi:eye') }} Unblur{% else %}{{ icon('bi:eye-slash') }} Blur{% endif %}</button>
+      {# Blurred until the analyst unblurs it (js/tree_modals.js) #}
+      <button type="button" class="btn btn-outline-primary" id="blurScreenshot" aria-pressed="true">{{ icon('bi:eye') }} Unblur</button>
       <a href="{{ url_for('image', tree_uuid=tree_uuid, seed=seed) }}" role="button" class="btn btn-primary">{{ icon('bi:download') }} Download</a>
       <br>
       <br>
-      <img src="{{ url_for('image', tree_uuid=tree_uuid, width=1024 if screenshot_too_big else '', seed=seed) }}" class="img-fluid {{ 'blur' if blur_screenshot else '' }}" id="screenshot"/>
+      <img src="{{ url_for('image', tree_uuid=tree_uuid, width=1024 if screenshot_too_big else '', seed=seed) }}" class="img-fluid blur" id="screenshot"/>
       <br>
     </center>
     </div>

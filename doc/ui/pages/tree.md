@@ -399,7 +399,6 @@ the Capture menu.
 
 ### Screenshot panel
 
-**Capture → Page screenshot** (`#screenshotModal`) always has a **Blur / Unblur**
-button (`#blurScreenshot`, `js/tree_modals.js`): the screenshot starts blurred
-when the instance blurs them by default (`enable_default_blur_screenshot`), and
-can be blurred or unblurred either way.
+**Capture → Page screenshot** (`#screenshotModal`) is always blurred first, with a **Blur / Unblur**
+button (`#blurScreenshot`, `js/tree_modals.js`): the page captured may be
+shocking, the analyst unblurs it when they want to see it.

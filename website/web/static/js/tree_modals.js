@@ -167,8 +167,8 @@ document.addEventListener("DOMContentLoaded", () => {
       MarkAsKnown(treeUUID)
     });
 
-    // Blur / Unblur the screenshot: the icons of the button are in the sprite
-    // (bi:eye and bi:eye-slash, used in tree/tree.html)
+    // Blur / Unblur the screenshot (blurred at first, tree/tree.html)
+    const BLUR_ICONS = { blurred: 'bi:eye', clear: 'bi:eye-slash' };   // tools/build_icons.py reads them here
     document.getElementById("blurScreenshot")?.addEventListener("click", function () {
       const blurred = document.getElementById('screenshot').classList.toggle('blur');
       const sprite = this.querySelector('use')?.getAttribute('href')?.split('#')[0];
@@ -179,7 +179,7 @@ document.addEventListener("DOMContentLoaded", () => {
         svg.setAttribute('class', 'lk-icon');
         svg.setAttribute('aria-hidden', 'true');
         const use = document.createElementNS('http://www.w3.org/2000/svg', 'use');
-        use.setAttribute('href', `${sprite}#bi-${blurred ? 'eye' : 'eye-slash'}`);
+        use.setAttribute('href', `${sprite}#${(blurred ? BLUR_ICONS.blurred : BLUR_ICONS.clear).replace(':', '-')}`);
         svg.appendChild(use);
         this.appendChild(svg);
       }

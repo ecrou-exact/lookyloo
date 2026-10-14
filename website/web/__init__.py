@@ -2431,7 +2431,12 @@ def ressources() -> str:
             if not url_nodes:
                 continue
             url_node = url_nodes.pop()
-            ressource = lookyloo.get_ressource(capture_uuid, url_node, h)
+            try:
+                ressource = lookyloo.get_ressource(capture_uuid, url_node, h)
+            except LookylooException as e:
+                # Still in the index, but removed (or not in the cache any more): next capture
+                app.logger.info(f'Unable to get the resource {h} from {capture_uuid}: {e}')
+                continue
             if not ressource:
                 continue
             ressources.append((h, freq, context.get(h), capture_uuid, url_node, ressource[0], ressource[2]))

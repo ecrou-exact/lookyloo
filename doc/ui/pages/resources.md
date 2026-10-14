@@ -19,3 +19,11 @@ Columns:
 - **Captures**: number of captures with this resource (default sort).
 
 Search covers file name, mimetype, hash and context type (`data-search`).
+
+## Removed captures
+
+A resource is shown from the most recent capture where it can be loaded. A
+capture still in the index but removed since (or out of the cache) is skipped
+(`LookylooException` from `get_ressource()`), the next one is tried: before,
+the whole page failed and sent back to the home page with
+*"UUID … does not exists in the cache"*.

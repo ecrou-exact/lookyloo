@@ -40,24 +40,22 @@
         <span class="lk-search-field-icon">{{ icon('misp:attributes/url') }}</span>
         <div class="lk-search-field-body">
           <label for="url">URL part</label>
-          <p id="url-hint">Full URL, hostname, domain, suffix or TLD</p>
-          <input type="text" class="form-control" name="url" id="url" value="{{ values.get('url', '') }}" placeholder="https://example.com/login" aria-describedby="url-hint" autocomplete="off" spellcheck="false">
+          <input type="text" class="form-control" name="url" id="url" value="{{ values.get('url', '') }}" placeholder="Full URL, hostname, domain, suffix, or TLD" autocomplete="off" spellcheck="false">
         </div>
       </div>
       <div class="lk-search-field">
         <span class="lk-search-field-icon">{{ icon('misp:attributes/ip-dst') }}</span>
         <div class="lk-search-field-body">
-          <label for="ip">IP address</label>
-          <p id="ip-hint">IPv4 or IPv6 address seen in a capture</p>
-          <input type="text" class="form-control" name="ip" id="ip" value="{{ values.get('ip', '') }}" placeholder="203.0.113.42" aria-describedby="ip-hint" autocomplete="off" spellcheck="false">
+          <label for="ip">IP Address</label>
+          <input type="text" class="form-control" name="ip" id="ip" value="{{ values.get('ip', '') }}" placeholder="IP" autocomplete="off" spellcheck="false">
         </div>
       </div>
       <div class="lk-search-field">
         <span class="lk-search-field-icon">{{ icon('misp:attributes/sha256') }}</span>
         <div class="lk-search-field-body">
-          <label for="ressource">Resource</label>
-          <p id="ressource-hint">SHA512 of a file loaded by a page (script, image…): copy it from Analysis &gt; Resources of a capture, or from Explore &gt; Resources</p>
-          <input type="text" class="form-control" name="ressource" id="ressource" value="{{ values.get('ressource', '') }}" placeholder="Paste a SHA512, e.g. cf83e1357eefb8bd…"
+          <label for="ressource">Ressource</label>
+          <p id="ressource-hint">Copy it from Analysis &gt; Resources of a capture, or from Explore &gt; Resources</p>
+          <input type="text" class="form-control" name="ressource" id="ressource" value="{{ values.get('ressource', '') }}" placeholder="Sha512 of the ressource"
                  pattern="\s*[0-9a-fA-F]{128}\s*" title="Paste the whole SHA512 of the file" aria-describedby="ressource-hint" autocomplete="off" spellcheck="false">
         </div>
       </div>
@@ -65,25 +63,23 @@
         <span class="lk-search-field-icon">{{ icon('misp:attributes/cookie') }}</span>
         <div class="lk-search-field-body">
           <label for="cookie">Cookie name</label>
-          <p id="cookie-hint">Name of a cookie set by a page</p>
-          <input type="text" class="form-control" name="cookie" id="cookie" value="{{ values.get('cookie', '') }}" placeholder="_ga" aria-describedby="cookie-hint" autocomplete="off" spellcheck="false">
+          <input type="text" class="form-control" name="cookie" id="cookie" value="{{ values.get('cookie', '') }}" placeholder="Cookie name" autocomplete="off" spellcheck="false">
         </div>
       </div>
       <div class="lk-search-field">
         <span class="lk-search-field-icon">{{ icon('misp:attributes/sha1') }}</span>
         <div class="lk-search-field-body">
-          <label for="favicon_sha512">Favicon hash</label>
-          <p id="favicon_sha512-hint">SHA512 of a favicon: copy it from Analysis &gt; Favicons of a capture</p>
-          <input type="text" class="form-control" name="favicon_sha512" id="favicon_sha512" value="{{ values.get('favicon_sha512', '') }}" placeholder="Paste a SHA512, e.g. cf83e1357eefb8bd…"
+          <label for="favicon_sha512">Favicon SHA512</label>
+          <p id="favicon_sha512-hint">Copy it from Analysis &gt; Favicons of a capture</p>
+          <input type="text" class="form-control" name="favicon_sha512" id="favicon_sha512" value="{{ values.get('favicon_sha512', '') }}" placeholder="Sha512 of a favicon"
                  pattern="\s*[0-9a-fA-F]{128}\s*" title="Paste the whole SHA512 of the file" aria-describedby="favicon_sha512-hint" autocomplete="off" spellcheck="false">
         </div>
       </div>
       <div class="lk-search-field">
         <span class="lk-search-field-icon">{{ icon('bi:image') }}</span>
         <div class="lk-search-field-body">
-          <label for="favicon_file">Favicon file</label>
-          <p id="favicon_file-hint">Upload a favicon to find the captures using it</p>
-          <input class="form-control" type="file" id="favicon_file" name="favicon_file" aria-describedby="favicon_file-hint">
+          <label for="favicon_file">Favicon</label>
+          <input class="form-control" type="file" id="favicon_file" name="favicon_file">
         </div>
       </div>
   </div>

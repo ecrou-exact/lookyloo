@@ -25,7 +25,9 @@ holding anything but a SHA512 (e.g. `sha512`, the placeholder) led to
 - the hash fields also have a `pattern` (128 hexadecimal characters, spaces
   around allowed), so the browser warns before sending.
 
-The hash fields say where to copy a SHA512 from (Analysis > Resources or
-Favicons of a capture, Explore > Resources); their placeholder is the start of
-a real-looking hash ("Paste a SHA512, e.g. cf83e1357eefb8bd…"), not a word
-that could be taken for a value to type.
+Labels and placeholders are the ones of the official instance (the old
+`search.html`): *URL part*, *IP Address*, *Ressource* ("Sha512 of the
+ressource", its "Sha521" typo fixed), *Cookie name*, *Favicon SHA512*,
+*Favicon*. Only the two hash fields keep a hint under their label: where to
+copy a SHA512 from (Analysis > Resources or Favicons of a capture,
+Explore > Resources).

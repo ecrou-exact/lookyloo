@@ -64,6 +64,21 @@ const NEXT_ORIENTATION_LABEL = {
     vertical: 'Draw the tree as a circle, the root in the centre',
     radial: 'Draw the tree from left to right',
 };
+// Size and timings of the hosts (/json/<uuid>/tree_stats), loaded once by the modes that need them
+let tree_stats = null;
+// Replay of the capture (replayCapture): running animation frame, null when stopped
+let replay_frame = null;
+const REPLAY_FADE_MS = 300;    // fade in of a node, in ms of the replay
+const REPLAY_STEP_MS = 1000;   // back / forward, in ms of the capture
+let replay = null;   // {real, played, at: Map(uuid -> played ms), position, playing, last_frame}
+// Speed of the replay: 1 = the real time of the capture (0.5, 1 or 1.5), remembered
+const REPLAY_SPEEDS = [0.5, 1, 1.5];
+let replay_speed = 1;
+try {
+    const saved = parseFloat(localStorage.getItem('lk-tree-replay-speed'));
+    if (REPLAY_SPEEDS.includes(saved)) replay_speed = saved;
+} catch (e) { /* default */ }
+const REPLAY_MAX_GAP = 600;   // ms of the capture: longer waits are shortened in the replay
 // Radial: centre of the rings (coordinates of node_container), set by update()
 const radial_center = { x: 0, y: 0 };
 // Vertical: height of a depth row (card + thumbnail of the rendered node + gap)
@@ -275,6 +290,7 @@ try {
   setupAttention(root);
   setupTreeSearch();
   setupTreeControls();
+  setupReplay();
   setupControlsCompact();
   setupZoom();
   setupShortcutsHelp();
@@ -1122,6 +1138,166 @@ function setupZoom() {
     });
 }
 
+// ****************** Size and timings of the hosts, replay ******************
+
+async function loadTreeStats() {
+    if (tree_stats) return tree_stats;
+    const response = await fetch(document.getElementById('tree_js').dataset.stats);
+    if (!response.ok) throw new Error(`Response status: ${response.status}`);
+    tree_stats = await response.json();
+    return tree_stats;
+}
+
+// Time a host was first called, in ms since the start of the capture; never before its parent
+function arrivalTimes(root) {
+    const times = new Map();
+    root.each(d => {
+        const own = d.parent ? (tree_stats[d.data.uuid]?.start ?? 0) : 0;
+        times.set(d.data.uuid, Math.max(own, d.parent ? times.get(d.parent.data.uuid) : 0));
+    });
+    return times;
+}
+
+// Replay player (#tree-replay-clock, at the bottom of the tree area): the time of the
+// replay is driven frame by frame, so it can be paused, moved back or forward, or
+// moved with a click on its bar. Each node fades in when its host was first called.
+
+function replayRealAt(position) {
+    const { real, played } = replay;
+    const i = d3.bisectRight(played, position) - 1;
+    if (i < 0) return 0;
+    if (i >= played.length - 1) return real[real.length - 1];
+    const span = played[i + 1] - played[i];
+    return real[i] + (span ? (position - played[i]) / span * (real[i + 1] - real[i]) : 0);
+}
+function replayPlayedAt(real_time) {
+    const { real, played } = replay;
+    const i = d3.bisectRight(real, real_time) - 1;
+    if (i < 0) return 0;
+    if (i >= real.length - 1) return played[played.length - 1];
+    const span = real[i + 1] - real[i];
+    return played[i] + (span ? (real_time - real[i]) / span * (played[i + 1] - played[i]) : 0);
+}
+
+// Draw the state of the replay at its position (ms of the replay timeline)
+function renderReplay() {
+    const { at, position, played } = replay;
+    const total = played[played.length - 1];
+    const fade = d => Math.max(0, Math.min(1, (position - at.get(d.data.uuid)) / REPLAY_FADE_MS));
+    node_container.selectAll('g.node')
+        .attr('opacity', fade)
+        .classed('is-replay-arrived', d => { const age = position - at.get(d.data.uuid); return age >= 0 && age < 900; });
+    node_container.selectAll('path.link').attr('opacity', fade);
+    const clock = document.getElementById('tree-replay-clock');
+    clock.querySelector('.lk-replay-time').textContent = `${(replayRealAt(position) / 1000).toFixed(2)} s`;
+    clock.querySelector('.lk-replay-bar span').style.width = `${total ? Math.min(position / total, 1) * 100 : 100}%`;
+    clock.classList.toggle('is-playing', replay.playing);
+    const toggle = document.getElementById('tree-replay-toggle');
+    const label = replay.playing ? 'Pause' : 'Play';
+    toggle.title = label;
+    toggle.setAttribute('aria-label', label);
+}
+
+function replayFrame(now) {
+    if (!replay || !replay.playing) return;
+    const total = replay.played[replay.played.length - 1];
+    replay.position += (now - replay.last_frame) * replay_speed;
+    replay.last_frame = now;
+    if (replay.position >= total + REPLAY_FADE_MS) {
+        replay.position = total + REPLAY_FADE_MS;
+        replay.playing = false;   // at the end: paused, play starts again from the beginning
+    }
+    renderReplay();
+    if (replay.playing) replay_frame = requestAnimationFrame(replayFrame);
+}
+
+function playReplay() {
+    const total = replay.played[replay.played.length - 1];
+    if (replay.position >= total + REPLAY_FADE_MS) replay.position = 0;
+    replay.playing = true;
+    replay.last_frame = performance.now();
+    cancelAnimationFrame(replay_frame);
+    replay_frame = requestAnimationFrame(replayFrame);
+    renderReplay();
+}
+function pauseReplay() {
+    replay.playing = false;
+    cancelAnimationFrame(replay_frame);
+    renderReplay();
+}
+// Move by delta ms of the capture (back < 0, forward > 0)
+function seekReplay(delta) {
+    const total = replay.played[replay.played.length - 1];
+    const real_time = replayRealAt(replay.position) + delta;
+    replay.position = Math.max(0, Math.min(replayPlayedAt(real_time), total + REPLAY_FADE_MS));
+    replay.last_frame = performance.now();
+    renderReplay();
+}
+
+function stopReplay() {
+    if (!replay) return;
+    cancelAnimationFrame(replay_frame);
+    replay_frame = null;
+    replay = null;
+    node_container.selectAll('g.node').attr('opacity', null).classed('is-replay-arrived', false);
+    node_container.selectAll('path.link').attr('opacity', null);
+    document.getElementById('tree-replay-clock').hidden = true;
+    const button = document.getElementById('tree-replay');
+    button.classList.remove('is-playing');
+    button.setAttribute('aria-pressed', 'false');
+}
+
+// Start the replay of the hosts shown, from the beginning (the toolbar button stops it)
+async function replayCapture() {
+    if (replay) { stopReplay(); return; }
+    try {
+        await loadTreeStats();
+    } catch (error) {
+        controlsStatus('Unable to load the timings of the capture.');
+        return;
+    }
+    const times = arrivalTimes(currentRoot());
+    // Long waits with nothing new (a slow server) are shortened to REPLAY_MAX_GAP: the
+    // replay keeps a steady pace, the clock still shows the real time of the capture
+    const real = [...new Set(times.values())].sort((x, y) => x - y);
+    const played = [0];
+    for (let i = 1; i < real.length; i++) played.push(played[i - 1] + Math.min(real[i] - real[i - 1], REPLAY_MAX_GAP));
+    const played_of = new Map(real.map((t, i) => [t, played[i]]));
+    const at = new Map([...times].map(([uuid, t]) => [uuid, played_of.get(t)]));
+    replay = { real, played, at, position: 0, playing: false, last_frame: 0 };
+    const button = document.getElementById('tree-replay');
+    button.classList.add('is-playing');
+    button.setAttribute('aria-pressed', 'true');
+    document.getElementById('tree-replay-clock').hidden = false;
+    playReplay();
+}
+
+function setupReplay() {
+    document.getElementById('tree-replay').addEventListener('click', replayCapture);
+    document.getElementById('tree-replay-toggle').addEventListener('click', () => replay && (replay.playing ? pauseReplay() : playReplay()));
+    document.getElementById('tree-replay-back').addEventListener('click', () => replay && seekReplay(-REPLAY_STEP_MS));
+    document.getElementById('tree-replay-forward').addEventListener('click', () => replay && seekReplay(REPLAY_STEP_MS));
+    document.getElementById('tree-replay-stop').addEventListener('click', stopReplay);
+    // Click on the bar: go to that moment
+    const bar = document.querySelector('#tree-replay-clock .lk-replay-bar');
+    bar.addEventListener('click', (event) => {
+        if (!replay) return;
+        const box = bar.getBoundingClientRect();
+        replay.position = (event.clientX - box.left) / box.width * replay.played[replay.played.length - 1];
+        replay.last_frame = performance.now();
+        renderReplay();
+    });
+    // Speed: x0.5, x1 (real time) or x1.5, remembered; it applies at once
+    const speeds = document.querySelectorAll('[data-replay-speed]');
+    const showSpeed = () => speeds.forEach(b => b.setAttribute('aria-pressed', parseFloat(b.dataset.replaySpeed) === replay_speed ? 'true' : 'false'));
+    showSpeed();
+    speeds.forEach(b => b.addEventListener('click', () => {
+        replay_speed = parseFloat(b.dataset.replaySpeed);
+        try { localStorage.setItem('lk-tree-replay-speed', String(replay_speed)); } catch (e) { /* not kept */ }
+        showSpeed();
+    }));
+}
+
 function controlsStatus(message) {
     const status = document.getElementById('tree-controls-status');
     status.textContent = message;
@@ -1131,6 +1307,7 @@ function controlsStatus(message) {
 }
 
 function relayout() {
+    stopReplay();
     update(currentRoot());
     // Centre the root once the nodes have moved (300 ms transition)
     setTimeout(() => {
@@ -1154,6 +1331,9 @@ function setupControlsCompact() {
     const button = document.getElementById('tree-controls-compact');
     if (!button) return;
     const bar = button.closest('.lk-tree-controls');
+    // The chips of the points of attention stay clear of the bar, whatever its width
+    const area = bar.closest('.lk-tree-area');
+    new ResizeObserver(() => area.style.setProperty('--lk-tree-controls-width', `${bar.offsetWidth}px`)).observe(bar);
     const show = (compact) => {
         bar.classList.toggle('is-compact', compact);
         button.setAttribute('aria-pressed', compact ? 'true' : 'false');
@@ -1182,6 +1362,7 @@ function setupTreeControls() {
         relayout();
         applyBackground();
     });
+
 
     // Collapse every node but the root: the first level stays visible
     document.getElementById('tree-collapse-all').addEventListener('click', () => {

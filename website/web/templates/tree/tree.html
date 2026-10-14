@@ -40,6 +40,7 @@
           nonce="{{ csp_nonce() }}"
           crossorigin="anonymous" type="module"
           id="tree_js" data-remote="{{url_for('GenericAPI_tree_dump', capture_uuid=tree_uuid, seed=seed)}}"
+                       data-stats="{{url_for('GenericAPI_tree_stats', capture_uuid=tree_uuid, seed=seed)}}"
                        {% if urlnode_uuid %}data-urlnode="{{urlnode_uuid}}" {%endif%}>
   </script>
   {# Vitrine (notes editor, MISP export viewer), installed in static/vendor/ by tools/3rdparty.py #}
@@ -364,6 +365,11 @@
       <span class="lk-orientation-radial">{{ icon('bi:bullseye') }}</span>
       <span class="lk-tree-control-label">Orientation</span>
     </button>
+    {# Replay of the capture: the hosts appear in the order they were loaded (js/tree.js, replayCapture) #}
+    <button type="button" id="tree-replay" title="Replay the capture: the hosts appear in the order they were loaded" aria-label="Replay the capture" aria-pressed="false">
+      <span class="lk-replay-play">{{ icon('bi:play-circle') }}<span class="lk-tree-control-label">Replay</span></span>
+      <span class="lk-replay-stop">{{ icon('bi:stop-circle') }}<span class="lk-tree-control-label">Stop</span></span>
+    </button>
     <button type="button" id="tree-collapse-all" title="Collapse every node" aria-label="Collapse every node">{{ icon('bi:arrows-collapse') }}<span class="lk-tree-control-label">Collapse all</span></button>
     <button type="button" id="tree-expand-all" title="Expand every node" aria-label="Expand every node">{{ icon('bi:arrows-expand') }}<span class="lk-tree-control-label">Expand all</span></button>
     <button type="button" id="tree-compare-toggle" title="Compare with another capture" aria-label="Compare with another capture"
@@ -396,6 +402,24 @@
       <span class="lk-fullscreen-exit">{{ icon('bi:fullscreen-exit') }}<span class="lk-tree-control-label">Exit full screen</span></span>
     </button>
     <span class="lk-tree-controls-status" id="tree-controls-status" role="status" hidden></span>
+  </div>
+  {# Replay player (js/tree.js, setupReplay): back, play / pause, forward, stop, time
+     of the capture, bar (click: go to that moment), speed #}
+  <div class="lk-tree-replay-clock" id="tree-replay-clock" role="group" aria-label="Replay of the capture" hidden>
+    <button type="button" id="tree-replay-back" title="Back 1 s" aria-label="Back 1 second">{{ icon('bi:skip-backward-fill') }}</button>
+    <button type="button" id="tree-replay-toggle" title="Pause" aria-label="Pause">
+      <span class="lk-replay-pause">{{ icon('bi:pause-fill') }}</span>
+      <span class="lk-replay-resume">{{ icon('bi:play-fill') }}</span>
+    </button>
+    <button type="button" id="tree-replay-forward" title="Forward 1 s" aria-label="Forward 1 second">{{ icon('bi:skip-forward-fill') }}</button>
+    <button type="button" id="tree-replay-stop" title="Stop the replay" aria-label="Stop the replay">{{ icon('bi:stop-fill') }}</button>
+    <span class="lk-replay-time" role="status">0.00 s</span>
+    <span class="lk-replay-bar" title="Go to this moment"><span></span></span>
+    <span class="lk-replay-speeds" role="group" aria-label="Speed of the replay">
+      {% for speed, label in [('0.5', '×0.5'), ('1', '×1'), ('1.5', '×1.5')] %}
+      <button type="button" data-replay-speed="{{ speed }}" aria-pressed="false" title="{{ label }} the real time of the capture">{{ label }}</button>
+      {% endfor %}
+    </span>
   </div>
 
   {% if current_user.is_authenticated %}
@@ -900,6 +924,7 @@
   ("path.link.is-main-path", "The path to the page", "In colour: the redirects from the URL you gave to the page the browser finally showed."),
   (".lk-tree-controls", "Tree tools", "Draw the tree from left to right or from top to bottom, fold or unfold everything, compare with another capture, change the background, full screen, zoom."),
   ("#tree-controls-compact", "Icons only", "Hide the labels of these tools to keep only their icons, or show them again. Your choice is remembered."),
+  ("#tree-replay", "Replay", "Watch the capture again, sped up: each host appears when the browser first called it, with the time of the capture under the tree."),
   ("#tree-orientation", "Orientation", "Draw the tree from left to right, from top to bottom when it is very wide, or as a circle with the root in the centre. The icon shows the current way; your choice is remembered."),
   ("#tree-collapse-all", "Collapse all", "Fold every branch: only the first level stays. Then open the branches you are interested in."),
   ("#tree-expand-all", "Expand all", "Unfold the branches again, level after level, up to 400 hosts to keep the page fast; a message says when some stay folded."),

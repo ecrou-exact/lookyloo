@@ -495,3 +495,32 @@ each host node, `{size, start, end}`: the bytes of the response bodies of its
 URLs, and the first start / last end of its requests, in milliseconds since the
 first request of the capture. `js/tree.js` loads it once, only when a mode needs
 it (`loadTreeStats()`): replay, link thickness, heat map.
+
+## Replay of the capture
+
+**Replay** in the tree controls (`#tree-replay`, `setupReplay()` /
+`replayCapture()` in `js/tree.js`) plays the capture again: the hosts shown
+appear in the order the browser first called them, each with a short accent
+glow (`g.node.is-replay-arrived`). The toolbar button becomes **Stop**.
+
+- **When a host arrives**: from `/json/<uuid>/tree_stats` (section above), the
+  `start` of the host, i.e. the `startedDateTime` of its first request in the
+  HAR, minus the start of the first request of the capture. A host never
+  appears before its parent (`arrivalTimes()`).
+- **Timeline**: ×1 is the real time of the capture. Waits longer than
+  `REPLAY_MAX_GAP` (600 ms) with nothing new (a slow server) are shortened, so
+  the replay keeps a steady pace; the clock still shows the real time (the
+  conversion goes both ways: `replayRealAt()` / `replayPlayedAt()`).
+- **Player** (`#tree-replay-clock`, bottom of the tree area): back / forward
+  1 s of the capture, play / pause (at the end it pauses; play starts again
+  from the beginning), stop, the time of the capture, a bar (a click goes to
+  that moment) and the speed: ×0.5, ×1, ×1.5, remembered in `localStorage`
+  (`lk-tree-replay-speed`), applied at once.
+- The position is driven frame by frame (`requestAnimationFrame`,
+  `renderReplay()` sets the opacity of each node and link from its arrival),
+  not by D3 transitions, so it can be paused and moved. A new layout
+  (`relayout()`) stops it.
+
+The chips of the points of attention stay clear of the tree controls, whatever
+their width: `setupControlsCompact()` measures the bar (`ResizeObserver`) into
+`--lk-tree-controls-width`.

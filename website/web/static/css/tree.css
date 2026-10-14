@@ -430,6 +430,11 @@ body.lk-capture-page > .lk-footer { flex: none; display: block; width: 100%; }
 .lk-tree-controls > .dropdown > button:hover,
 .lk-tree-controls > .dropdown > button.show { background: var(--lk-color-surface-2); }
 /* Full screen button: enter / exit icon */
+#tree-replay > span { display: inline-flex; align-items: center; gap: var(--lk-space-1); }
+#tree-replay .lk-replay-stop,
+#tree-replay.is-playing .lk-replay-play { display: none; }
+#tree-replay.is-playing .lk-replay-stop { display: inline-flex; }
+#tree-replay.is-playing { color: var(--lk-color-accent); }
 #tree-fullscreen .lk-fullscreen-exit,
 #tree-fullscreen.is-fullscreen .lk-fullscreen-enter { display: none; }
 #tree-fullscreen.is-fullscreen .lk-fullscreen-exit { display: inline-flex; }
@@ -493,6 +498,74 @@ g.tree-rings circle {
 }
 .lk-tree-controls-status[hidden] { display: none; }
 
+/* Replay (js/tree.js, replayCapture): clock at the bottom of the tree area, and
+   a short glow on each host when it appears */
+.lk-tree-replay-clock {
+  position: absolute;
+  bottom: var(--lk-space-4);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: var(--lk-space-3);
+  padding: var(--lk-space-2) var(--lk-space-4);
+  border-radius: 999px;
+  background: var(--lk-color-ink);
+  color: var(--lk-color-surface);
+  box-shadow: var(--lk-shadow-md);
+  font-family: var(--lk-font-mono);
+  font-size: var(--lk-font-size-sm);
+  font-variant-numeric: tabular-nums;
+}
+.lk-tree-replay-clock[hidden] { display: none; }
+.lk-replay-bar {
+  width: 10rem;
+  height: 4px;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--lk-color-surface) 25%, transparent);
+  overflow: hidden;
+}
+#tree-replay-clock > button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+}
+#tree-replay-clock > button:hover { background: color-mix(in srgb, var(--lk-color-surface) 18%, transparent); }
+#tree-replay-toggle .lk-replay-resume,
+#tree-replay-clock:not(.is-playing) #tree-replay-toggle .lk-replay-pause { display: none; }
+#tree-replay-clock:not(.is-playing) #tree-replay-toggle .lk-replay-resume { display: inline-flex; }
+#tree-replay-toggle span { display: inline-flex; }
+.lk-replay-bar { cursor: pointer; }
+.lk-replay-speeds { display: inline-flex; gap: 2px; }
+.lk-replay-speeds button {
+  padding: 0 var(--lk-space-2);
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  opacity: 0.7;
+}
+.lk-replay-speeds button:hover { opacity: 1; }
+.lk-replay-speeds button[aria-pressed="true"] { background: var(--lk-color-accent); color: var(--lk-color-on-accent); opacity: 1; }
+.lk-replay-bar span { display: block; height: 100%; width: 0; background: var(--lk-color-accent); }
+@keyframes lk-replay-arrive {
+  from { stroke: var(--lk-color-accent); stroke-width: 4px; }
+  to { stroke-width: 1px; }
+}
+g.node.is-replay-arrived .node-card { animation: lk-replay-arrive 900ms ease-out; }
+@media (prefers-reduced-motion: reduce) {
+  g.node.is-replay-arrived .node-card { animation: none; }
+}
+
 /* Pill of "view the tree from a node": first line; the neighbours pill goes under it */
 .lk-tree-view-from { top: calc(var(--lk-space-3) + 40px); }
 .lk-tree-view-from:not([hidden]) ~ #tree-focus { top: calc(var(--lk-space-3) + 80px); }
@@ -533,7 +606,8 @@ g.tree-rings circle {
   position: absolute;
   top: var(--lk-space-3);
   left: var(--lk-space-4);
-  right: 9rem;   /* clear of the tree controls */
+  /* clear of the tree controls: their width is measured by js/tree.js (setupControlsCompact) */
+  right: calc(var(--lk-tree-controls-width, 9rem) + var(--lk-space-4) + var(--lk-space-2));
   z-index: 1020;
   display: flex;
   flex-wrap: wrap;

@@ -2704,7 +2704,7 @@ function update(root, computed_node_width=0) {
                                 .style('opacity', 1)
                                 .style('left', `${tipX(event) + 10}px`)
                                 .style('top', `${tipY(event) + 10}px`)
-                                .text('This node containts insecure requests');
+                                .text('This node contains insecure (plain HTTP) requests: also an orange reason of the risk badge');
                         })
                         .on('mouseout', (event, d) => d3.select('#tooltip').style('opacity', 0));
                 };
@@ -2733,7 +2733,7 @@ function update(root, computed_node_width=0) {
                                 .style('opacity', 1)
                                 .style('left', `${tipX(event) + 10}px`)
                                 .style('top', `${tipY(event) + 10}px`)
-                                .text('This node containts known malicious content');
+                                .text('This node contains known malicious content');
                         })
                         .on('mouseout', (event, d) => d3.select('#tooltip').style('opacity', 0));
                 } else if (d.data.legitimate) {

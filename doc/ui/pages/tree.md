@@ -516,6 +516,12 @@ glow (`g.node.is-replay-arrived`). The toolbar button becomes **Stop**.
   from the beginning), stop, the time of the capture, a bar (a click goes to
   that moment) and the speed: ×0.5, ×1, ×1.5, remembered in `localStorage`
   (`lk-tree-replay-speed`), applied at once.
+- **A click on a node** during the replay (`replayGoToNode()`, instead of the
+  neighbours focus) pauses at the moment it arrived: the clock shows its time,
+  the host and its time are written next to the bar (`.lk-replay-node`), a mark
+  shows the moment on the bar (`.lk-replay-mark`), and the node is outlined
+  (`g.node.is-replay-selected`) and centred. A node is fully shown at its
+  arrival time (it fades in during the `REPLAY_FADE_MS` before).
 - The position is driven frame by frame (`requestAnimationFrame`,
   `renderReplay()` sets the opacity of each node and link from its arrival),
   not by D3 transitions, so it can be paused and moved. A new layout

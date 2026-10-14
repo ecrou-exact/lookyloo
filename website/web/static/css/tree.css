@@ -556,11 +556,32 @@ g.tree-rings circle {
 }
 .lk-replay-speeds button:hover { opacity: 1; }
 .lk-replay-speeds button[aria-pressed="true"] { background: var(--lk-color-accent); color: var(--lk-color-on-accent); opacity: 1; }
-.lk-replay-bar span { display: block; height: 100%; width: 0; background: var(--lk-color-accent); }
+.lk-replay-bar { position: relative; overflow: visible; }
+.lk-replay-bar > .lk-replay-mark {
+  position: absolute;
+  top: -4px;
+  width: 3px;
+  height: 12px;
+  margin-left: -1px;
+  border-radius: 2px;
+  background: var(--lk-color-surface);
+}
+.lk-replay-bar > .lk-replay-mark[hidden] { display: none; }
+.lk-replay-time { white-space: nowrap; min-width: 4.5em; }
+.lk-replay-node {
+  max-width: 22rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--lk-color-accent-soft);
+}
+.lk-replay-node[hidden] { display: none; }
+.lk-replay-bar > span:first-child { display: block; height: 100%; width: 0; background: var(--lk-color-accent); }
 @keyframes lk-replay-arrive {
   from { stroke: var(--lk-color-accent); stroke-width: 4px; }
   to { stroke-width: 1px; }
 }
+g.node.is-replay-selected .node-card { stroke: var(--lk-color-accent); stroke-width: 3px; }
 g.node.is-replay-arrived .node-card { animation: lk-replay-arrive 900ms ease-out; }
 @media (prefers-reduced-motion: reduce) {
   g.node.is-replay-arrived .node-card { animation: none; }

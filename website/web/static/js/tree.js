@@ -1188,7 +1188,8 @@ function replayPlayedAt(real_time) {
 function renderReplay() {
     const { at, position, played } = replay;
     const total = played[played.length - 1];
-    const fade = d => Math.max(0, Math.min(1, (position - at.get(d.data.uuid)) / REPLAY_FADE_MS));
+    // Fades in during the REPLAY_FADE_MS before its arrival: fully shown at its time
+    const fade = d => Math.max(0, Math.min(1, (position - at.get(d.data.uuid)) / REPLAY_FADE_MS + 1));
     node_container.selectAll('g.node')
         .attr('opacity', fade)
         .classed('is-replay-arrived', d => { const age = position - at.get(d.data.uuid); return age >= 0 && age < 900; });
@@ -1239,14 +1240,40 @@ function seekReplay(delta) {
     renderReplay();
 }
 
+// Replay: a click on a node goes to the moment it arrived (paused there), its time
+// and a mark on the bar show it
+function replayGoToNode(d) {
+    const arrival = replay.at.get(d.data.uuid);
+    if (arrival === undefined) return;
+    pauseReplay();
+    replay.position = arrival;
+    const total = replay.played[replay.played.length - 1];
+    const clock = document.getElementById('tree-replay-clock');
+    const mark = clock.querySelector('.lk-replay-mark');
+    mark.style.left = `${total ? arrival / total * 100 : 0}%`;
+    mark.hidden = false;
+    const real_time = (replayRealAt(arrival) / 1000).toFixed(2);
+    const label = clock.querySelector('.lk-replay-node');
+    label.textContent = `${d.data.name} · ${real_time} s`;
+    label.hidden = false;
+    mark.title = label.textContent;
+    node_container.selectAll('g.node').classed('is-replay-selected', n => n === d);
+    renderReplay();
+    const node = document.getElementById(`node_${d.data.uuid}`);
+    if (node) centerInViewport(node.querySelector('.node-card') || node);
+}
+
 function stopReplay() {
     if (!replay) return;
     cancelAnimationFrame(replay_frame);
     replay_frame = null;
     replay = null;
-    node_container.selectAll('g.node').attr('opacity', null).classed('is-replay-arrived', false);
+    node_container.selectAll('g.node').attr('opacity', null).classed('is-replay-arrived', false).classed('is-replay-selected', false);
     node_container.selectAll('path.link').attr('opacity', null);
-    document.getElementById('tree-replay-clock').hidden = true;
+    const clock = document.getElementById('tree-replay-clock');
+    clock.hidden = true;
+    clock.querySelector('.lk-replay-mark').hidden = true;
+    clock.querySelector('.lk-replay-node').hidden = true;
     const button = document.getElementById('tree-replay');
     button.classList.remove('is-playing');
     button.setAttribute('aria-pressed', 'false');
@@ -1985,7 +2012,7 @@ function update(root, computed_node_width=0) {
 
             node_data.append('rect')
               .attr('class', 'node-card')
-              .on('click', (event, d) => toggleNeighbours(d))
+              .on('click', (event, d) => replay ? replayGoToNode(d) : toggleNeighbours(d))
               .attr("rx", 8)
               .attr("ry", 8)
               .attr('x', 0)

@@ -430,7 +430,9 @@
     <button type="button" id="tree-replay-forward" title="Forward 1 s" aria-label="Forward 1 second">{{ icon('bi:skip-forward-fill') }}</button>
     <button type="button" id="tree-replay-stop" title="Stop the replay" aria-label="Stop the replay">{{ icon('bi:stop-fill') }}</button>
     <span class="lk-replay-time" role="status">0.00 s</span>
-    <span class="lk-replay-bar" title="Go to this moment"><span></span></span>
+    <span class="lk-replay-bar" title="Go to this moment"><span></span><span class="lk-replay-mark" hidden></span></span>
+    {# Node clicked during the replay: its host and arrival time #}
+    <span class="lk-replay-node" hidden></span>
     <span class="lk-replay-speeds" role="group" aria-label="Speed of the replay">
       {% for speed, label in [('0.5', '×0.5'), ('1', '×1'), ('1.5', '×1.5')] %}
       <button type="button" data-replay-speed="{{ speed }}" aria-pressed="false" title="{{ label }} the real time of the capture">{{ label }}</button>
@@ -940,7 +942,7 @@
   ("path.link.is-main-path", "The path to the page", "In colour: the redirects from the URL you gave to the page the browser finally showed."),
   (".lk-tree-controls", "Tree tools", "Draw the tree from left to right or from top to bottom, fold or unfold everything, compare with another capture, change the background, full screen, zoom."),
   ("#tree-controls-compact", "Icons only", "Hide the labels of these tools to keep only their icons, or show them again. Your choice is remembered."),
-  ("#tree-replay", "Replay", "Watch the capture again, sped up: each host appears when the browser first called it, with the time of the capture under the tree."),
+  ("#tree-replay", "Replay", "Watch the capture again: each host appears when the browser first called it. The player under the tree pauses, goes back or forward, changes the speed; a click on a node goes to the moment it arrived."),
   ("#tree-background-btn", "Display", "The background of the tree, and the links: plain, or coloured by what the host serves (redirect, iframe, script, style, image) and as thick as the bytes it sent."),
   ("#tree-orientation", "Orientation", "Draw the tree from left to right, from top to bottom when it is very wide, or as a circle with the root in the centre. The icon shows the current way; your choice is remembered."),
   ("#tree-collapse-all", "Collapse all", "Fold every branch: only the first level stays. Then open the branches you are interested in."),

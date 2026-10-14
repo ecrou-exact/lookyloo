@@ -40,6 +40,12 @@ const active_filters = new Set();
 let tree_zoom = 1;
 const tree_page = { width: 0, height: 0 };
 const ZOOM_MIN = 0.2, ZOOM_MAX = 2.5;
+// Depth columns of the background (setColumnsGeometry)
+const columns_geometry = { size: 300, offset: 0 };
+// Free room around the tree, in layout units, on every side: the tree area can be
+// dragged far from the tree (#tree-center brings it back). Constant, so a zoom
+// keeps the point under the pointer in place.
+const PAN_ROOM = 2 * Math.max(tree_viewport.clientWidth, tree_viewport.clientHeight, 600);
 // Several icons chosen: the nodes with any of them ('or') or all of them ('and'), remembered
 let filter_mode = 'or';
 try { if (localStorage.getItem('lk-tree-filter-mode') === 'and') filter_mode = 'and'; } catch (e) { /* default */ }
@@ -1108,12 +1114,48 @@ function allNodes(root) {
 }
 
 // Size of the SVG for the zoom: the layout keeps its coordinates (viewBox)
+// With PAN_ROOM free around it; the page itself (for the PNG export) is in data-lk-page
 function sizeTreeSvg() {
     const { width, height } = tree_page;
-    main_svg.attr('viewBox', `0 0 ${width} ${height}`)
-            .attr('width', width * tree_zoom).attr('height', height * tree_zoom);
-    document.getElementById('tree_svg').style.width = `${Math.max(width * tree_zoom, min_width)}px`;
-    document.getElementById('tree_svg').style.height = `${Math.max(height * tree_zoom, min_height)}px`;
+    const full_width = width + 2 * PAN_ROOM, full_height = height + 2 * PAN_ROOM;
+    main_svg.attr('viewBox', `${-PAN_ROOM} ${-PAN_ROOM} ${full_width} ${full_height}`)
+            .attr('data-lk-page', `${width} ${height}`)
+            .attr('width', full_width * tree_zoom).attr('height', full_height * tree_zoom);
+    document.getElementById('tree_svg').style.width = `${full_width * tree_zoom}px`;
+    document.getElementById('tree_svg').style.height = `${full_height * tree_zoom}px`;
+    applyColumnsGeometry();
+}
+
+// The wheel scrolls inside the tree only: the free room around it is reached by
+// dragging (js/capture_page.js). Out there, the wheel can still come back.
+function wheelScroll(event) {
+    if (event.defaultPrevented) return;   // the page scrolls first (js/capture_page.js)
+    const unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? tree_viewport.clientHeight : 1;
+    let dx = event.deltaX * unit, dy = event.deltaY * unit;
+    if (event.shiftKey && !dx) { dx = dy; dy = 0; }
+    const clamp = (current, delta, start, size, view) => {
+        const low = start * tree_zoom;
+        const high = Math.max(low, (start + size) * tree_zoom - view);
+        const next = current + delta;
+        return Math.min(Math.max(next, Math.min(current, low)), Math.max(current, high));
+    };
+    const left = clamp(tree_viewport.scrollLeft, dx, PAN_ROOM, tree_page.width, tree_viewport.clientWidth);
+    const top = clamp(tree_viewport.scrollTop, dy, PAN_ROOM, tree_page.height, tree_viewport.clientHeight);
+    // At the bottom of the tree, going down: the page scrolls (the footer shows)
+    if (dy > 0 && !dx && Math.round(top) <= Math.round(tree_viewport.scrollTop)) return;
+    event.preventDefault();
+    tree_viewport.scrollLeft = left;
+    tree_viewport.scrollTop = top;
+}
+
+// Centre of the tree in the middle of the tree area
+function centerTree(smooth=true) {
+    const box = node_container.node().getBBox();
+    const view = tree_viewport.getBoundingClientRect();
+    const x = (box.x + box.width / 2 + margin.left + PAN_ROOM) * tree_zoom;
+    const y = (box.y + box.height / 2 + margin.top + PAN_ROOM) * tree_zoom;
+    tree_viewport.scrollTo({ left: x - view.width / 2, top: y - view.height / 2,
+                             behavior: smooth && !reduce_motion ? 'smooth' : 'auto' });
 }
 
 // Zoom, keeping the point under the pointer (or the centre of the view) in place
@@ -1158,8 +1200,9 @@ function setupZoom() {
     document.getElementById('tree-zoom-in')?.addEventListener('click', () => setZoom(tree_zoom * 1.2));
     document.getElementById('tree-zoom-out')?.addEventListener('click', () => setZoom(tree_zoom / 1.2));
     document.getElementById('tree-zoom-reset')?.addEventListener('click', () => setZoom(1));
+    document.getElementById('tree-center')?.addEventListener('click', () => centerTree());
     tree_viewport.addEventListener('wheel', (event) => {
-        if (!event.ctrlKey && !event.metaKey) return;
+        if (!event.ctrlKey && !event.metaKey) { wheelScroll(event); return; }
         event.preventDefault();   // not the zoom of the browser
         setZoom(tree_zoom * Math.exp(-event.deltaY * 0.0015), event.clientX, event.clientY);
     }, { passive: false });
@@ -1604,9 +1647,16 @@ function applyBackground() {
 }
 
 // Size and offset of the depth columns / rows, from the layout (update())
+// (layout units: drawn at the zoom, after the free room, by applyColumnsGeometry)
 function setColumnsGeometry(size, offset) {
-    tree_viewport.style.setProperty('--lk-tree-band', `${size}px`);
-    tree_viewport.style.setProperty('--lk-tree-band-offset', `${offset}px`);
+    columns_geometry.size = size;
+    columns_geometry.offset = offset;
+    applyColumnsGeometry();
+}
+function applyColumnsGeometry() {
+    const { size, offset } = columns_geometry;
+    tree_viewport.style.setProperty('--lk-tree-band', `${size * tree_zoom}px`);
+    tree_viewport.style.setProperty('--lk-tree-band-offset', `${(offset + PAN_ROOM) * tree_zoom}px`);
 }
 
 function setupBackground() {
@@ -2049,7 +2099,9 @@ function update(root, computed_node_width=0) {
       background = main_svg.insert('rect', ':first-child')
         .attr('class', 'tree-background');
     }
-    background.attr('y', 0).attr('width', pageWidth).attr('height', pageHeight);
+    // It covers the free room too: a click anywhere clears the focus
+    background.attr('x', -PAN_ROOM).attr('y', -PAN_ROOM)
+              .attr('width', pageWidth + 2 * PAN_ROOM).attr('height', pageHeight + 2 * PAN_ROOM);
     // Vertical rows start under the top margin, aligned on the cards
     pattern.attr('x', orientation === 'horizontal' ? margin.left : 0)
            .attr('y', orientation === 'horizontal' ? 0 : margin.top - 40 - VERTICAL_ROW / 4);

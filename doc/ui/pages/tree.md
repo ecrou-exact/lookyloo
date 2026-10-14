@@ -188,6 +188,27 @@ scrollbars. A press that doesn't move (less than 4 px) stays a normal click
 (card focus, hostname pop-up, icon filter, camera); the click that ends a drag
 is swallowed. Touch screens keep their native scrolling.
 
+**Free room around the tree.** The SVG has `PAN_ROOM` (two screens, in layout
+units, `js/tree.js`) of empty room on every side (`sizeTreeSvg()`: the viewBox
+starts at `-PAN_ROOM`; the background rect covers it too, so a click there
+still clears the focus). Only the drag goes there:
+
+- the tree area has **no scrollbars** (they would show the room);
+- the **wheel** scrolls inside the tree only (`wheelScroll()`): it stops at
+  the edges of the tree, can come back from the room, and at the bottom of
+  the tree going down it lets the page scroll (the footer shows; going up,
+  `js/capture_page.js` scrolls the page back first);
+- the **drag** goes up to the edge of the room. Past it, the tree follows the
+  mouse with resistance (up to 70 px, `stretch()`), that side of the tree area
+  glows (`.lk-tree-area.is-edge-{left,right,top,bottom}::after`), and it springs
+  back when the button is released (no pull with prefers-reduced-motion);
+- **⌖** (`#tree-center`, next to the zoom) brings the centre of the tree to the
+  middle of the area (`centerTree()`).
+
+The depth columns of the background follow the room and the zoom
+(`applyColumnsGeometry()`), and the PNG export keeps the tree only
+(`data-lk-page` on the SVG: its size without the room).
+
 ## Scrolling to a node
 
 Every "show this node" (search matches, bookmarks, located node, rendered

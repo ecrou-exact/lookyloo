@@ -46,6 +46,9 @@
 // scroll it (no need for the scrollbars). A press without movement stays a
 // normal click (card focus, hostname pop-up, icon filter); after a drag the
 // click is swallowed so nothing gets selected by accident.
+// The drag goes into the free room around the tree (js/tree.js, PAN_ROOM) up to
+// its edge: past it, the tree follows the mouse a little, with resistance, the
+// edge glows, and it springs back when the button is released.
 (() => {
     const viewport = document.getElementById('tree_viewport');
     if (!viewport) {
@@ -54,6 +57,22 @@
     const THRESHOLD = 4;   // pixels before a press becomes a drag
     let start = null;
     let dragged = false;
+    const area = viewport.closest('.lk-tree-area') || viewport;
+    const content = document.getElementById('tree_svg');
+    const reduce_motion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const MAX_STRETCH = 70;   // pixels the tree can be pulled past the edge
+    // Pulled past the edge by `over` pixels: less and less as it goes
+    const stretch = (over) => Math.sign(over) * MAX_STRETCH * (1 - Math.exp(-Math.abs(over) / 180));
+    const showEdge = (x, y) => {
+        area.classList.toggle('is-edge-left', x > 0);
+        area.classList.toggle('is-edge-right', x < 0);
+        area.classList.toggle('is-edge-top', y > 0);
+        area.classList.toggle('is-edge-bottom', y < 0);
+        if (content && !reduce_motion) {
+            content.style.transition = 'none';
+            content.style.transform = x || y ? `translate(${x}px, ${y}px)` : '';
+        }
+    };
 
     viewport.addEventListener('pointerdown', (event) => {
         if (event.pointerType !== 'mouse' || event.button !== 0) {
@@ -79,6 +98,10 @@
         }
         viewport.scrollLeft = start.left - dx;
         viewport.scrollTop = start.top - dy;
+        // What the scroll could not do: the edge is reached
+        const over_x = viewport.scrollLeft - (start.left - dx);
+        const over_y = viewport.scrollTop - (start.top - dy);
+        showEdge(Math.round(stretch(over_x)), Math.round(stretch(over_y)));
         event.preventDefault();
     });
 
@@ -88,6 +111,12 @@
         }
         start = null;
         viewport.classList.remove('is-panning');
+        // Spring back
+        area.classList.remove('is-edge-left', 'is-edge-right', 'is-edge-top', 'is-edge-bottom');
+        if (content && content.style.transform) {
+            content.style.transition = 'transform 420ms cubic-bezier(0.34, 1.56, 0.64, 1)';
+            content.style.transform = '';
+        }
         if (viewport.hasPointerCapture?.(event.pointerId)) {
             viewport.releasePointerCapture(event.pointerId);
         }

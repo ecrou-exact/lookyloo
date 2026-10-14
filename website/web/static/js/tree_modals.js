@@ -39,6 +39,13 @@ function inlineSvgStyles(source, copy) {
 const downloadSvg = () => {
     const svg = document.querySelector('#tree_svg > svg');
     const svgCopy = svg.cloneNode(true);
+    // The tree only, without the free room around it (js/tree.js, sizeTreeSvg)
+    const [page_width, page_height] = (svg.dataset.lkPage || '').split(' ').map(Number);
+    if (page_width && page_height) {
+        svgCopy.setAttribute('viewBox', `0 0 ${page_width} ${page_height}`);
+        svgCopy.setAttribute('width', page_width);
+        svgCopy.setAttribute('height', page_height);
+    }
     inlineSvgStyles(svg, svgCopy);
     const images = svgCopy.querySelectorAll('image');
     const promises = [];
@@ -72,8 +79,8 @@ const downloadSvg = () => {
         img.onload = function() {
             let canvas = document.createElement('canvas');
             // Size of the tree on the page (the detached copy can't resolve it)
-            canvas.width = parseFloat(svg.getAttribute('width'));
-            canvas.height = parseFloat(svg.getAttribute('height'));
+            canvas.width = parseFloat(svgCopy.getAttribute('width'));
+            canvas.height = parseFloat(svgCopy.getAttribute('height'));
             let ctx = canvas.getContext('2d');
             // Background of the tree area (css/tree.css), behind the exported tree
             ctx.fillStyle = getComputedStyle(document.getElementById('tree_viewport')).backgroundColor;

@@ -310,6 +310,36 @@ body.lk-capture-page > .lk-footer { flex: none; display: block; width: 100%; }
   outline: none;
   background: var(--lk-color-tree-canvas);
 }
+/* Edge of the free room reached while dragging (js/capture_page.js): a glow on
+   that side of the tree area, while the tree is pulled and springs back */
+.lk-tree-area::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  --lk-edge: color-mix(in srgb, var(--lk-color-accent) 55%, transparent);
+  box-shadow:
+    inset calc(var(--lk-edge-l, 0) * 36px) 0 32px -24px var(--lk-edge),
+    inset calc(var(--lk-edge-r, 0) * -36px) 0 32px -24px var(--lk-edge),
+    inset 0 calc(var(--lk-edge-t, 0) * 36px) 32px -24px var(--lk-edge),
+    inset 0 calc(var(--lk-edge-b, 0) * -36px) 32px -24px var(--lk-edge);
+  opacity: 0;
+  transition: opacity 250ms ease-out;
+}
+.lk-tree-area.is-edge-left::after,
+.lk-tree-area.is-edge-right::after,
+.lk-tree-area.is-edge-top::after,
+.lk-tree-area.is-edge-bottom::after { opacity: 1; transition-duration: 80ms; }
+.lk-tree-area.is-edge-left { --lk-edge-l: 1; }
+.lk-tree-area.is-edge-right { --lk-edge-r: 1; }
+.lk-tree-area.is-edge-top { --lk-edge-t: 1; }
+.lk-tree-area.is-edge-bottom { --lk-edge-b: 1; }
+
+/* No scrollbars: they would show the free room around the tree (js/tree.js,
+   PAN_ROOM); the wheel scrolls inside the tree, dragging goes anywhere */
+.lk-tree-viewport { scrollbar-width: none; }
+.lk-tree-viewport::-webkit-scrollbar { display: none; }
 /* Drag to scroll (js/capture_page.js) */
 .lk-tree-viewport { cursor: grab; }
 .lk-tree-viewport.is-panning { cursor: grabbing; user-select: none; }

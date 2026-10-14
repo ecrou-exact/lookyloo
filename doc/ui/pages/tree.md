@@ -624,3 +624,15 @@ on the first hover if needed) and its number of URLs. The link is outlined
 (`path.link.is-link-hover`; with *Type & size* it keeps its colour and glows).
 Links are thin: a wide transparent path over each one (`path.link-hit`, 14 px,
 `pointer-events: stroke`) catches the pointer; `path.link` itself ignores it.
+
+## Risk badges
+
+A round badge at the top left corner of a card (`g.node-risk`, `RISKS` and
+`riskReasons()` in `js/tree.js`) marks the hosts worth a look, from the fields
+of the tree dump: **red** (`.is-danger`, a slow pulse, none with
+prefers-reduced-motion) for known malicious content, a bare IP address as host
+(`hostname_is_ip`) or a downloaded file; **orange** (`.is-warning`) for data
+sent (POST), plain HTTP, mixed content or a redirect to a URL missing in the
+capture. It shows the number of reasons (`!` for one); hovering it lists them.
+Front only: what the dump does not have (age of the domain, password field in
+a form) is not part of it.

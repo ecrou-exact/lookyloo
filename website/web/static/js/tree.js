@@ -100,6 +100,16 @@ try {
 } catch (e) { /* default */ }
 // Highest value of the heat map measure shown (applyHeat), for the node info panel
 let heat_max = 0;
+// Risk badge of a node (riskReasons): what makes a host worth a look, from the tree dump
+const RISKS = [
+    {key: 'malicious', level: 'danger', label: 'known malicious content'},
+    {key: 'hostname_is_ip', level: 'danger', label: 'the host is a bare IP address, no domain name'},
+    {key: 'downloaded_filename', level: 'danger', label: 'a file was downloaded from it'},
+    {key: 'posted_data', level: 'warning', label: 'data is sent to it (POST)'},
+    {key: 'http_content', level: 'warning', label: 'plain HTTP, not encrypted'},
+    {key: 'mixed_content', level: 'warning', label: 'HTTPS page loading plain HTTP content'},
+    {key: 'redirect_to_nothing', level: 'warning', label: 'redirects to a URL missing in the capture'},
+];
 // Measures of the heat map (applyHeat)
 const HEAT = {
     size: { label: 'Bytes received', value: d => tree_stats[d.data.uuid]?.size || 0, format: formatBytes, stats: true },
@@ -1568,6 +1578,10 @@ function hideLinkInfo(d) {
     d3.select('#tooltip').classed('is-link-info', false).style('opacity', 0);
 }
 
+function riskReasons(d) {
+    return RISKS.filter(risk => nodeHas(d, risk.key));
+}
+
 function controlsStatus(message) {
     const status = document.getElementById('tree-controls-status');
     status.textContent = message;
@@ -2249,6 +2263,28 @@ function update(root, computed_node_width=0) {
                 // Note: removing .select('rect') breaks rendering on firefox but not on chrome.
                 let selected_node_bbox = d3.select(this).select('rect').node().getBBox();
                 d.node_width = selected_node_bbox.width;
+
+                // Risk badge: top left corner of the card, the number of reasons, listed on hover
+                const risks = riskReasons(d);
+                if (risks.length) {
+                    const level = risks.some(r => r.level === 'danger') ? 'danger' : 'warning';
+                    const badge = d3.select(this.parentNode).append('g')
+                        .attr('class', `node-risk is-${level}`)
+                        .attr('transform', 'translate(-8, -38)')
+                        .attr('role', 'img')
+                        .attr('aria-label', `Points of risk: ${risks.map(r => r.label).join(', ')}`)
+                        .on('mouseover', (event) => {
+                            d3.select('#tooltip')
+                                .classed('is-link-info', true)
+                                .style('opacity', 1)
+                                .style('left', `${tipX(event) + 10}px`)
+                                .style('top', `${tipY(event) + 10}px`)
+                                .text(['Worth a look:', ...risks.map(r => `• ${r.label}`)].join('\n'));
+                        })
+                        .on('mouseout', () => d3.select('#tooltip').classed('is-link-info', false).style('opacity', 0));
+                    badge.append('circle').attr('r', 10).attr('cx', 0).attr('cy', 0);
+                    badge.append('text').attr('text-anchor', 'middle').attr('dy', '0.35em').text(risks.length > 1 ? risks.length : '!');
+                }
 
                 // Third-party host: a coloured bar on the left edge of the card
                 if (d.data.third_party) {

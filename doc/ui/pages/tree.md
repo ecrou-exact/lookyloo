@@ -381,7 +381,7 @@ Copy buttons (MISP export, notes) say **Copied** (green) or **Copy failed**
 
 ## Tutorial
 
-The capture page has the most detailed tour of the tutorial mode
+The capture page has the most detailed tour of the tutorial
 (doc/ui/tour.md), started by `js/tree.js` once the tree is drawn.
 
 ## View the tree from a node

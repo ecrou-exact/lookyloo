@@ -1,4 +1,4 @@
-# Tutorial mode (guided tours)
+# Tutorial (guided tours)
 
 For beginners: every page can explain itself, one element at a time.
 
@@ -7,12 +7,13 @@ For beginners: every page can explain itself, one element at a time.
 The **Tutorial** button of the site header (graduation cap) opens a menu:
 
 - **Start the tour of this page**;
-- **Tutorial mode** (switch): when on, the tour of a page starts by itself the
-  first time the page is opened (then not again; kept in this browser).
+- **Full tour of Lookyloo**: every page, one after the other (section *Full
+  tour* below). A tour only starts by itself during the full tour (the former
+  *Tutorial mode* switch is gone).
 
 A tour highlights an element (the rest of the page is veiled) with a card that
-explains it: **Next** / **Previous** (or the arrow keys), **Skip the tour** (or
-Esc, or a click outside). Steps without an element (the first one, usually)
+explains it: **Next** / **Previous** (or the arrow keys), **Stop the tour**
+(only this button stops it). Steps without an element (the first one, usually)
 show a centred card on a veiled and slightly blurred page.
 
 ## Adding the tour of a page

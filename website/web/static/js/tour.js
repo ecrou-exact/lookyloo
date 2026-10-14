@@ -1,13 +1,11 @@
 "use strict";
-// Tutorial mode: a guided tour of the current page, for beginners.
+// Tutorial: a guided tour of the current page, for beginners.
 // Each page lists its steps in templates (block tour of layouts/base.html, read
 // from <script type="application/json" id="lk-tour">): [{selector, title, text}].
-// The "Tutorial" menu of the site header starts the tour of the page, and turns
-// the tutorial mode on / off: when on, the tour of a page starts by itself the
-// first time the page is opened (localStorage). Steps whose element is missing
+// The "Tutorial" menu of the site header starts the tour of the page, or the full
+// tour of the site (every page, one after the other). Steps whose element is missing
 // or hidden are skipped. Doc: doc/ui/tour.md
 (() => {
-    const MODE_KEY = 'lk-tour-mode';
     // Full tour (every page, one after the other): {page: index in the list} in sessionStorage
     const FULL_KEY = 'lk-tour-full';
     const session = {
@@ -114,11 +112,6 @@
         };
         place();
     }
-    const SEEN_KEY = 'lk-tour-seen';
-    const storage = {
-        get: (key) => { try { return localStorage.getItem(key); } catch (e) { return null; } },
-        set: (key, value) => { try { localStorage.setItem(key, value); } catch (e) { /* not kept */ } },
-    };
 
     let steps = [];
     let index = 0;
@@ -344,9 +337,6 @@
         build();
         document.body.classList.add('lk-tour-running');
         go(0);
-        const seen = JSON.parse(storage.get(SEEN_KEY) || '{}');
-        seen[document.body.dataset.lkTour || location.pathname] = true;
-        storage.set(SEEN_KEY, JSON.stringify(seen));
     }
 
     function stop() {
@@ -364,15 +354,7 @@
         if (was_running) document.dispatchEvent(new CustomEvent('lk-tour:stop'));
     }
 
-    function showMode() {
-        const on = storage.get(MODE_KEY) === 'on';
-        const toggle = document.getElementById('lk-tour-mode');
-        if (toggle) toggle.checked = on;
-        document.getElementById('lk-tour-menu-btn')?.classList.toggle('is-on', on);
-        return on;
-    }
-
-    // Tutorial mode on and this page not seen yet: start its tour
+    // A tour starts by itself only during the full tour
     function autoStart() {
         steps = readSteps();
         // Full tour going on: the tour of this page starts at once
@@ -392,11 +374,7 @@
         if (full) {
             if (steps.length) setTimeout(start, 300);
             else goToFullPage(session.get().page + 1);   // a page without a tour: the next one
-            return;
         }
-        const page = document.body.dataset.lkTour || location.pathname;
-        const seen = JSON.parse(storage.get(SEEN_KEY) || '{}');
-        if (storage.get(MODE_KEY) === 'on' && steps.length && !seen[page]) setTimeout(start, 300);
     }
 
     window.lkTour = { start, stop, autoStart, startFull };
@@ -412,15 +390,9 @@
         document.addEventListener('click', (event) => {
             if (event.target.closest('[data-lk-tour-full]')) setTimeout(startFull, 50);
         });
-        document.getElementById('lk-tour-mode')?.addEventListener('change', (event) => {
-            storage.set(MODE_KEY, event.target.checked ? 'on' : 'off');
-            showMode();
-            if (event.target.checked) setTimeout(start, 50);
-        });
-        // Tutorial mode: the tour of a page starts by itself the first time.
-        // Pages that build their content later (the tree: data-lk-tour-auto="manual"
-        // on <body>) call window.lkTour.autoStart() once it is there.
-        showMode();
+        // Full tour: the tour of each page starts by itself. Pages that build their
+        // content later (the tree: data-lk-tour-auto="manual" on <body>) call
+        // window.lkTour.autoStart() once it is there.
         if (document.body.dataset.lkTourAuto !== 'manual') setTimeout(autoStart, 300);
     });
 })();

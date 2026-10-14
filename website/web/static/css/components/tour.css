@@ -1,5 +1,5 @@
 /*
- * Tutorial mode (js/tour.js): spotlight on the explained element, card with the
+ * Tutorial (js/tour.js): spotlight on the explained element, card with the
  * explanation, and the "Tutorial" menu of the site header. Doc: doc/ui/tour.md
  */
 
@@ -66,7 +66,6 @@ body.lk-tour-running .dropdown-menu.show { z-index: 1093; }
 body.lk-tour-running g.node .node-capture { opacity: 1; }
 
 /* Header: Tutorial menu */
-#lk-tour-menu-btn.is-on { color: var(--lk-color-accent); }
 .lk-tour-menu { min-width: 17rem; }
 .lk-tour-menu .form-check { margin: var(--lk-space-1) var(--lk-space-3); }
 .lk-tour-menu .form-text { margin: 0 var(--lk-space-3) var(--lk-space-2); font-size: var(--lk-font-size-xs); }

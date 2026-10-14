@@ -422,13 +422,6 @@ is shown, on the background of the tree area), **Screenshot**, **HTTP archive
 trusted timestamp (`downloadModal`). A capture made without trusted timestamps
 gets a note there, not a warning (`no_timestamps` in `download_elements`).
 
-At the end of that panel, **View the files** shows the text files of the
-capture in vitrine: HAR, cookies and storage in `<vt-json>`, the rendered HTML
-and the hashes in `<vt-code>`, the HTML as Markdown in `<vt-markdown>`
-(`data-lk-view-src` / `data-lk-view-kind` buttons, handled in
-`js/capture_components.js`). A file is loaded only when it is chosen: the
-element gets `src` (same origin), `max-height="60vh"`, and a `download` name.
-
 The OpenSSL commands to check a trusted timestamp by hand are vitrine
 `<vt-terminal>` elements (commands after `$`, a copy button per command).
 The download link of each file is shown as a small **Download** button

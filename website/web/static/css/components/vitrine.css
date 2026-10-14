@@ -42,14 +42,9 @@
 .btn.is-copied { border-color: var(--lk-color-success); color: var(--lk-color-success); background: var(--lk-color-success-soft); }
 .btn.is-copy-failed { border-color: var(--lk-color-danger); color: var(--lk-color-danger); background: var(--lk-color-danger-soft); }
 
-/* File viewer of the forensic acquisition (tree/modals/download_elements.html) */
-.lk-file-viewer { margin-top: var(--lk-space-5); padding-top: var(--lk-space-4); border-top: 1px solid var(--lk-color-rule); }
-.lk-file-viewer-title { display: flex; align-items: center; gap: var(--lk-space-2); margin-bottom: var(--lk-space-3); font-weight: var(--lk-font-weight-semibold); }
-.lk-file-viewer-choices { display: flex; flex-wrap: wrap; gap: var(--lk-space-2); margin-bottom: var(--lk-space-3); }
-.lk-file-viewer-choices [aria-pressed="true"] { background: var(--lk-color-accent); border-color: var(--lk-color-accent); color: var(--lk-color-surface); }
-.lk-file-viewer-content { display: block; }
 /* OpenSSL commands to check a trusted timestamp (download_elements.html) */
 .lk-tsr-help { margin-top: var(--lk-space-4); }
+.lk-tsr-title { display: flex; align-items: center; gap: var(--lk-space-2); margin-bottom: var(--lk-space-2); font-weight: var(--lk-font-weight-semibold); }
 .lk-tsr-terminal { display: block; margin-bottom: var(--lk-space-3); }
 /* Forensic acquisition table: the download link of each file, as a small button */
 .lk-forensic-table th:nth-child(2) { min-width: 7.5rem; }

@@ -410,6 +410,16 @@
           <div><span class="lk-link-swatch"></span>other</div>
           <div>Thicker: more bytes loaded from the host.</div>
         </li>
+        {# Heat map (js/tree.js, setupHeat): the cards tinted by a measure of the host #}
+        <li><hr class="dropdown-divider"></li>
+        <li><h6 class="dropdown-header">Colour the nodes by</h6></li>
+        {% for value, label in [('none', 'Nothing'), ('size', 'Bytes received'), ('duration', 'Loading time'), ('arrival', 'Time of the first call'), ('urls', 'Number of URLs')] %}
+        <li><button type="button" class="dropdown-item" data-tree-heat="{{ value }}" aria-pressed="false">{{ label }}</button></li>
+        {% endfor %}
+        <li class="lk-heat-legend" id="tree-heat-legend" hidden>
+          <span class="lk-heat-gradient" aria-hidden="true"></span>
+          <span class="lk-heat-scale"><span id="tree-heat-min">0</span><span id="tree-heat-max"></span></span>
+        </li>
       </ul>
     </div>
     {# Full screen: only the tree area (js/tree.js, setupFullscreen); the icon follows the state #}
@@ -943,7 +953,7 @@
   (".lk-tree-controls", "Tree tools", "Draw the tree from left to right or from top to bottom, fold or unfold everything, compare with another capture, change the background, full screen, zoom."),
   ("#tree-controls-compact", "Icons only", "Hide the labels of these tools to keep only their icons, or show them again. Your choice is remembered."),
   ("#tree-replay", "Replay", "Watch the capture again: each host appears when the browser first called it. The player under the tree pauses, goes back or forward, changes the speed; a click on a node goes to the moment it arrived."),
-  ("#tree-background-btn", "Display", "The background of the tree, and the links: plain, or coloured by what the host serves (redirect, iframe, script, style, image) and as thick as the bytes it sent."),
+  ("#tree-background-btn", "Display", "The background of the tree; the links: plain, or coloured by what the host serves (redirect, iframe, script, style, image) and as thick as the bytes it sent; and a heat map: the cards tinted by bytes received, loading time, time of the first call or number of URLs."),
   ("#tree-orientation", "Orientation", "Draw the tree from left to right, from top to bottom when it is very wide, or as a circle with the root in the centre. The icon shows the current way; your choice is remembered."),
   ("#tree-collapse-all", "Collapse all", "Fold every branch: only the first level stays. Then open the branches you are interested in."),
   ("#tree-expand-all", "Expand all", "Unfold the branches again, level after level, up to 400 hosts to keep the page fast; a message says when some stay folded."),

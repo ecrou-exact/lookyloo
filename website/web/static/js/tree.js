@@ -83,6 +83,21 @@ const REPLAY_MAX_GAP = 600;   // ms of the capture: longer waits are shortened i
 let link_style = 'plain';
 const LINK_TYPES = ['redirect', 'iframe', 'script', 'style', 'image', 'other'];
 try { if (localStorage.getItem('lk-tree-links') === 'meaning') link_style = 'meaning'; } catch (e) { /* default */ }
+// Heat map of the nodes: 'none', 'size', 'duration', 'arrival' or 'urls', remembered
+const HEAT_MEASURES = ['none', 'size', 'duration', 'arrival', 'urls'];
+let heat_measure = 'none';
+try {
+    const saved = localStorage.getItem('lk-tree-heat');
+    if (HEAT_MEASURES.includes(saved)) heat_measure = saved;
+} catch (e) { /* default */ }
+// Measures of the heat map (applyHeat)
+const HEAT = {
+    size: { value: d => tree_stats[d.data.uuid]?.size || 0, format: formatBytes, stats: true },
+    duration: { value: d => { const s = tree_stats[d.data.uuid]; return s ? s.end - s.start : 0; },
+                format: ms => `${(ms / 1000).toFixed(2)} s`, stats: true },
+    arrival: { value: d => tree_stats[d.data.uuid]?.start || 0, format: ms => `${(ms / 1000).toFixed(2)} s`, stats: true },
+    urls: { value: d => d.data.urls_count || 0, format: n => `${n} URL${n > 1 ? 's' : ''}`, stats: false },
+};
 // Radial: centre of the rings (coordinates of node_container), set by update()
 const radial_center = { x: 0, y: 0 };
 // Vertical: height of a depth row (card + thumbnail of the rendered node + gap)
@@ -296,6 +311,7 @@ try {
   setupTreeControls();
   setupReplay();
   setupLinkStyle();
+  setupHeat();
   setupControlsCompact();
   setupZoom();
   setupShortcutsHelp();
@@ -1384,6 +1400,62 @@ function setupLinkStyle() {
     applyLinkStyle();
 }
 
+// ****************** Heat map of the nodes ******************
+
+function formatBytes(bytes) {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KiB`;
+    return `${(bytes / 1024 / 1024).toFixed(1)} MiB`;
+}
+
+// Tint each card from the surface (0) to --lk-color-tree-heat (the highest value
+// of the whole capture), square-root scale so the small values still show
+async function applyHeat() {
+    const legend = document.getElementById('tree-heat-legend');
+    const measure = HEAT[heat_measure];
+    if (!measure) {
+        tree_viewport.classList.remove('lk-tree-heat');
+        if (legend) legend.hidden = true;
+        return;
+    }
+    if (measure.stats) {
+        try {
+            await loadTreeStats();
+        } catch (error) {
+            controlsStatus('Unable to load the sizes and timings of the hosts.');
+            return;
+        }
+    }
+    const all = allNodes(tree_root);
+    const max = d3.max(all, measure.value) || 1;
+    const tint = d3.scaleSqrt().domain([0, max]).range([0, 75]);
+    node_container.selectAll('g.node').style('--lk-heat', d => `${tint(measure.value(d)).toFixed(1)}%`);
+    tree_viewport.classList.add('lk-tree-heat');
+    if (legend) {
+        legend.hidden = false;
+        document.getElementById('tree-heat-min').textContent = measure.format(0);
+        document.getElementById('tree-heat-max').textContent = measure.format(max);
+    }
+}
+
+function setupHeat() {
+    const items = document.querySelectorAll('[data-tree-heat]');
+    const show = () => items.forEach(item => {
+        const on = item.dataset.treeHeat === heat_measure;
+        item.setAttribute('aria-pressed', on ? 'true' : 'false');
+        item.classList.toggle('active', on);
+    });
+    items.forEach(item => item.addEventListener('click', (event) => {
+        event.stopPropagation();   // the menu stays open: the scale shows
+        heat_measure = item.dataset.treeHeat;
+        try { localStorage.setItem('lk-tree-heat', heat_measure); } catch (e) { /* not kept */ }
+        show();
+        applyHeat();
+    }));
+    show();
+    applyHeat();
+}
+
 function controlsStatus(message) {
     const status = document.getElementById('tree-controls-status');
     status.textContent = message;
@@ -2442,6 +2514,7 @@ function update(root, computed_node_width=0) {
   markPaths();
   // New links (expand, layout) get their type and width
   if (link_style === 'meaning' && tree_entry_done) applyLinkStyle();
+  if (heat_measure !== 'none' && tree_entry_done) applyHeat();
   // Nodes shown again after an expand keep the filters
   if (active_filters.size > 0 || search_text || focus_uuid || compare_only_new) applyTreeFilter();
 }

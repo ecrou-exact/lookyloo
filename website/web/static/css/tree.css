@@ -265,7 +265,7 @@ body.lk-capture-page .lk-header { position: static; }
 }
 
 /* Background menu: a swatch per choice */
-.lk-tree-bg-menu { min-width: 12rem; }
+.lk-tree-bg-menu { min-width: 12rem; max-height: min(70vh, 34rem); overflow-y: auto; }
 .lk-tree-bg-menu .dropdown-item { display: flex; align-items: center; gap: var(--lk-space-2); }
 .lk-tree-bg-swatch {
   flex: none;
@@ -974,6 +974,22 @@ path.link {
 @media (prefers-reduced-motion: reduce) {
   .lk-tree-links-meaning path.link.link-redirect { animation: none; }
 }
+/* Heat map (js/tree.js, applyHeat): the card is tinted from the surface to
+   --lk-color-tree-heat, --lk-heat (0% to 75%) is set on each node */
+.lk-tree-heat g.node:not(.is-focused) .node-card {
+  fill: color-mix(in srgb, var(--lk-color-tree-heat) var(--lk-heat, 0%), var(--lk-color-surface));
+}
+.lk-heat-legend { padding: var(--lk-space-1) var(--lk-space-3) var(--lk-space-2); font-size: var(--lk-font-size-xs); color: var(--lk-color-muted); }
+.lk-heat-legend[hidden] { display: none; }
+.lk-heat-gradient {
+  display: block;
+  height: 8px;
+  margin: var(--lk-space-1) 0;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--lk-color-surface), color-mix(in srgb, var(--lk-color-tree-heat) 75%, var(--lk-color-surface)));
+  border: 1px solid var(--lk-color-rule);
+}
+.lk-heat-scale { display: flex; justify-content: space-between; font-family: var(--lk-font-mono); }
 /* Swatches of the link types, in the Display menu */
 .lk-link-swatch { display: inline-block; width: 1.4em; height: 3px; margin-right: var(--lk-space-2); vertical-align: middle; border-radius: 2px; background: var(--lk-color-tree-link); }
 .lk-link-swatch.link-redirect { background: repeating-linear-gradient(90deg, var(--lk-color-tree-link-redirect) 0 5px, transparent 5px 8px); }

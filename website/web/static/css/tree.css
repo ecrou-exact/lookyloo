@@ -295,6 +295,10 @@ body.lk-capture-page > .lk-footer { flex: none; display: block; width: 100%; }
   height: calc(100dvh - var(--lk-capture-top-height, 200px) + 1px);
   min-height: 320px;
   position: relative;
+  /* Own stacking context: what is in the tree area (controls, legend, side panel…)
+     stays under the top block and its dropdown menus */
+  isolation: isolate;
+  z-index: 0;
   display: flex;
 }
 

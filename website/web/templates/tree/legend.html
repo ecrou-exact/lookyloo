@@ -58,6 +58,21 @@
       </li>
       {% endfor %}
     </ul>
+    {# Links: the link to a node is the type of what that host serves (js/tree.js, linkType);
+       the keys are "link:<type>", the matching nodes are the ends of those links #}
+    <h3 class="lk-legend-section">Links</h3>
+    <ul class="lk-legend-list" id="legend-links">
+      {% for type, label in [('redirect', 'Redirect'), ('iframe', 'iFrame'), ('script', 'Script'), ('style', 'Style, font'), ('image', 'Image'), ('other', 'Other')] %}
+      <li>
+        <button type="button" class="lk-legend-item" data-key="link:{{ type }}" data-link
+                title="Links to hosts serving: {{ label | lower }}" aria-pressed="false">
+          <span class="lk-link-swatch link-{{ type }}" aria-hidden="true"></span>
+          <span class="lk-legend-label">{{ label }}</span>
+          <span class="lk-legend-count" aria-label="links"></span>
+        </button>
+      </li>
+      {% endfor %}
+    </ul>
     <details class="lk-legend-absent" id="legend-absent-panel" hidden>
       <summary>Not in this capture (<span id="legend-absent-count">0</span>)</summary>
       <ul class="lk-legend-list" id="legend-absent"></ul>

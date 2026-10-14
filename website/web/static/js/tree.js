@@ -841,6 +841,7 @@ function markPaths() {
     node_container.selectAll('path.link').classed('is-main-path', l => main_path.has(l.data.uuid));
 }
 function showHoverPath(d) {
+    tree_viewport.classList.toggle('is-hover-active', Boolean(d));
     const path = new Set(d ? d.ancestors().map(a => a.data.uuid) : []);
     node_container.selectAll('path.link').classed('is-hover-path', l => path.has(l.data.uuid));
 }
@@ -903,6 +904,8 @@ function animateTreeEntry(root) {
 // Does the node have this icon? Same test as icon_list(): true, a non-empty
 // string, a number > 0 or a non-empty list.
 function nodeHas(d, key) {
+    // Type of the link to the node (legend "Links"): the root has none
+    if (key.startsWith('link:')) return Boolean(d.parent) && linkType(d) === key.slice(5);
     const value = d.data[key];
     if (value instanceof Array) return value.length > 0;
     if (typeof value === 'number') return value > 0;
@@ -958,8 +961,10 @@ function applyTreeFilter() {
           .classed('is-focused', d.data.uuid === focus_uuid);
     });
     // A link stays lit when both its ends do (its datum is the child node)
+    // or when it is of a link type chosen in the legend
+    const link_keys = [...active_filters].filter(key => key.startsWith('link:'));
     node_container.selectAll('path.link')
-        .classed('is-filter-dimmed', l => filtering && !(nodeMatches(l) && nodeMatches(l.parent)));
+        .classed('is-filter-dimmed', l => filtering && !(nodeMatches(l) && (nodeMatches(l.parent) || link_keys.some(key => nodeHas(l, key)))));
     const label = `${matches} node${matches === 1 ? '' : 's'}`;
     const active = document.getElementById('legend-active');
     if (active) {
@@ -1733,7 +1738,15 @@ function refreshLegend(root) {
     const absent = document.getElementById('legend-absent');
     const nodes = allNodes(root);
     let absent_count = 0;
-    document.querySelectorAll('.lk-legend-item').forEach(button => {
+    // Links: counted, never moved (their own list)
+    document.querySelectorAll('.lk-legend-item[data-link]').forEach(button => {
+        const count = nodes.filter(d => nodeHas(d, button.dataset.key)).length;
+        button.querySelector('.lk-legend-count').textContent = count;
+        button.disabled = count === 0;
+        if (count === 0 && active_filters.delete(button.dataset.key)) button.setAttribute('aria-pressed', 'false');
+        button.title = count ? `${button.dataset.title}: ${count} links` : button.dataset.title;
+    });
+    document.querySelectorAll('.lk-legend-item:not([data-link])').forEach(button => {
         const key = button.dataset.key;
         const count = nodes.filter(d => nodeHas(d, key)).length;
         button.querySelector('.lk-legend-count').textContent = count;

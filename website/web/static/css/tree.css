@@ -970,6 +970,9 @@ path.link {
 .lk-tree-links-meaning path.link.link-script { stroke: var(--lk-color-tree-link-script); }
 .lk-tree-links-meaning path.link.link-style { stroke: var(--lk-color-tree-link-style); }
 .lk-tree-links-meaning path.link.link-image { stroke: var(--lk-color-tree-link-image); }
+/* Hover of a node: its path to the root keeps its colours, glows, the other links fade */
+.lk-tree-links-meaning.is-hover-active path.link:not(.is-hover-path) { stroke-opacity: 0.2; }
+.lk-tree-links-meaning path.link.is-hover-path { stroke-opacity: 1; filter: drop-shadow(0 0 3px var(--lk-color-ink)); }
 @keyframes lk-link-flow { to { stroke-dashoffset: 28; } }
 @media (prefers-reduced-motion: reduce) {
   .lk-tree-links-meaning path.link.link-redirect { animation: none; }
@@ -997,6 +1000,15 @@ path.link {
 .lk-link-swatch.link-script { background: var(--lk-color-tree-link-script); }
 .lk-link-swatch.link-style { background: var(--lk-color-tree-link-style); }
 .lk-link-swatch.link-image { background: var(--lk-color-tree-link-image); }
+.lk-legend-section {
+  margin: var(--lk-space-3) 0 var(--lk-space-1);
+  font-size: var(--lk-font-size-xs);
+  font-weight: var(--lk-font-weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--lk-color-muted);
+}
+#legend-links .lk-link-swatch { width: 18px; margin-right: 0; }
 .lk-link-legend { padding: var(--lk-space-1) var(--lk-space-3) var(--lk-space-2); font-size: var(--lk-font-size-xs); color: var(--lk-color-muted); }
 .lk-link-legend div { white-space: nowrap; }
 

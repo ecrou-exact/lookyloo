@@ -563,3 +563,17 @@ still show): `--lk-heat` (0% to 75%) on each `g.node`, used by a `color-mix()`
 on `.lk-tree-heat g.node .node-card` (a focused card keeps its accent fill). The
 scale (0 and the maximum, formatted) shows under the choices in the menu, which
 scrolls when it is taller than the screen.
+
+### Links in the filter, hover
+
+The legend (`tree/legend.html`) has a **Links** section: one entry per link
+type (`data-key="link:<type>"`, `data-link`), with its count. The link to a
+node has the type of what that host serves (`linkType()`), so `nodeHas(d,
+'link:<type>')` is true for the child end; the link itself stays lit when it is
+of a chosen type (`applyTreeFilter()`). It combines with the icons (Any / All)
+and works in both link styles. The link entries keep their own list (never
+moved to "Not in this capture"; disabled at 0).
+
+With *Type & size*, hovering a node keeps the colours of its path to the root
+and makes it glow (`path.link.is-hover-path`), the other links fade
+(`#tree_viewport.is-hover-active`).

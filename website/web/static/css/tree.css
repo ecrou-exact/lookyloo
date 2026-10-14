@@ -894,10 +894,13 @@ path.link {
   stroke: var(--lk-color-rule-strong);
   stroke-width: 1px;
 }
-.node-thumb-frame {
-  fill: var(--lk-color-surface);
+/* Frames of the favicon and of the screenshot thumbnail of the rendered node */
+.node-favicon-chip { fill: var(--lk-color-tree-icon-bg); }   /* a dark favicon stays visible in dark mode */
+.node-thumb-frame { fill: var(--lk-color-surface); }
+.node-thumb-frame,
+.node-favicon-chip {
   stroke: var(--lk-color-rule-strong);
-  stroke-width: 1px;
+  stroke-width: 1.5px;
 }
 .node-bookmark { font-size: 15px; }
 

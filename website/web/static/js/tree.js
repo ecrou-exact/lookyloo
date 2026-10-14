@@ -26,6 +26,8 @@ let min_width = Math.max(tree_viewport.clientWidth - margin.left - margin.right,
 let node_width = 10;
 // Height of a node card (the card is node_height + 5 high, drawn from y = -30)
 let node_height = 64;
+// Space between the screenshot thumbnail of the rendered node and its frame
+const THUMB_PAD = 4;
 // Bottom of a card, relative to its node (links of the vertical layout start there)
 const CARD_BOTTOM = node_height + 5 - 30;
 let center_node = null;
@@ -139,7 +141,7 @@ function placeNodeParts(selection) {
             .attr('cy', vertical ? node_height + 5 : node_height / 2);
         const thumb_x = vertical ? width / 2 + 16 : width / 2;
         node.select('#screenshot_thumbnail').attr('x', thumb_x);
-        node.select('.node-thumb-frame').attr('x', thumb_x);
+        node.select('.node-thumb-frame').attr('x', thumb_x - THUMB_PAD);
         const favicon_x = vertical ? width / 2 - 16 - 35 : width / 6;
         node.select('#favicon').attr('x', favicon_x);
         node.select('.node-favicon-chip').attr('x', favicon_x - 3);
@@ -1772,12 +1774,14 @@ function update(root, computed_node_width=0) {
                             .text('Potential favicon.');
                       });
                   }
-                  d3.select(this).append("svg").append('rect')
-                    .attr('x', selected_node_bbox.width/2)
-                    .attr('y', node_height - 3)
+                  // Frame around the thumbnail (a little larger, so it shows)
+                  d3.select(this).append('rect')
+                    .attr('x', selected_node_bbox.width/2 - THUMB_PAD)
+                    .attr('y', node_height - 3 - THUMB_PAD)
+                    .attr('rx', 6)
                     .attr('class', 'node-thumb-frame')
-                    .attr('width', thumbnail_size)
-                    .attr('height', thumbnail_size);
+                    .attr('width', thumbnail_size + 2 * THUMB_PAD)
+                    .attr('height', thumbnail_size + 2 * THUMB_PAD);
 
                   d3.select(this).append('image')
                     .attr('x', selected_node_bbox.width/2)

@@ -161,6 +161,9 @@ document.addEventListener("DOMContentLoaded", () => {
       };
     }, false);
 
+    // Actions > Download > Tree as PNG
+    document.getElementById("tree-download-png")?.addEventListener("click", downloadSvg);
+
     document.getElementById("unbookmarkAllNodes")?.addEventListener("click", UnbookmarkAllNodes);
 
     document.getElementById("markAsKnown")?.addEventListener("click", function (e) {

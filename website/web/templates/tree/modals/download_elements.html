@@ -3,6 +3,8 @@
 <div class="alert alert-warning" role="alert">
  Issue while getting trusted timestamps: {{error}}
 </div>
+{% elif no_timestamps %}
+<p class="lk-modal-note">{{ icon('bi:info-circle') }} This capture was made without trusted timestamps (RFC 3161): every file can be downloaded, none of them is timestamped.</p>
 {% endif %}
 
 <table class="table">

@@ -40,13 +40,14 @@ class OllamaReport():
         if not self.available:
             raise LookylooException('Ollama not available, probably not able to reach the server.')
 
-        messages = [{"role": "system", "content": "You are an infosec analyst investigating websites. Describe your reasoning."}]
+        messages: list[dict[str, Any]] = [{"role": "system", "content": "You are an infosec analyst investigating websites. Describe your reasoning."}]
         if redirects := ai_export.get('redirects'):
             messages.append({"role": "user", "content": f"A chain of redirects to the screenshot submited next {redirects}"})
         if md := ai_export.get('html_as_markdown'):
             messages.append({"role": "user", "content": f"This is the HTML content of the rendered page turned into a markdown document\n {md}"})
         if s := ai_export.get('screenshot'):
-            messages.append({"role": "user", "content": "what is this image?", "image": s})
+            # Ollama takes the images as a list of base64 strings ("images")
+            messages.append({"role": "user", "content": "This is the screenshot of the page. What is on it?", "images": [s]})
         messages.append({"role": "user", "content": "What kind of website is it? Assign a MISP taxonomy."})
         response = self.client.chat(model=self.model, messages=messages)
         return response.message.content

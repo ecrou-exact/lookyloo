@@ -1258,10 +1258,13 @@ def all_trusted_timestamp(tree_uuid: str) -> Response:
 @app.route('/tree/<uuid:tree_uuid>/download_elements', methods=['GET'])
 def download_elements(tree_uuid: str) -> str:
     error: str | None
+    # Captured without trusted timestamps: not an error, the files have none
+    no_timestamps = False
     tts = lookyloo.check_trusted_timestamps(tree_uuid)
     tt_entries: dict[str, tuple[datetime, str, bool]]
     if isinstance(tts, dict):
-        error = list(tts.values())[0]
+        no_timestamps = 'warning' in tts
+        error = None if no_timestamps else list(tts.values())[0]
         tt_entries = {}
         cert = ''
     else:
@@ -1272,6 +1275,7 @@ def download_elements(tree_uuid: str) -> str:
     has_downloads, _, _ = lookyloo.get_data(tree_uuid)
     has_video, _, _ = lookyloo.get_video(tree_uuid)
     return render_template('tree/modals/download_elements.html', tree_uuid=tree_uuid,
+                           no_timestamps=no_timestamps,
                            seed=request.args.get('seed'),
                            tt_entries=tt_entries, parent_uuid=parent_uuid,
                            b64_certificate=cert, error=error,

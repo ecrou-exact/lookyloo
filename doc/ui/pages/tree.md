@@ -411,3 +411,17 @@ the Capture menu.
 **Capture → Page screenshot** (`#screenshotModal`) is always blurred first, with a **Blur / Unblur**
 button (`#blurScreenshot`, `js/tree_modals.js`): the page captured may be
 shocking, the analyst unblurs it when they want to see it.
+
+## Download menu
+
+The **Download** menu of the toolbar (`#download-menu`, after Actions) has shortcuts to the files of the
+forensic acquisition: **Full capture (zip)** (`export`), **Tree as PNG**
+(`#tree-download-png`, `downloadSvg()` in `js/tree_modals.js`: the tree as it
+is shown, on the background of the tree area), **Screenshot**, **HTTP archive
+(HAR)**, and **Forensic acquisition**, the panel with every file and its
+trusted timestamp (`downloadModal`). A capture made without trusted timestamps
+gets a note there, not a warning (`no_timestamps` in `download_elements`).
+
+On the rendered node, the favicon and the screenshot thumbnail have a frame
+(`.node-favicon-chip`, `.node-thumb-frame`, `THUMB_PAD` in `js/tree.js`), so
+they show on every background.

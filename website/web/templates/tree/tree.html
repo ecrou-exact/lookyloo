@@ -274,11 +274,23 @@
           <li><hr class="dropdown-divider"></li>
           <li><h6 class="dropdown-header">Share &amp; export</h6></li>
           {{ menu_item('visibilityModal', 'Visibility and sharing', 'bi:eye', title='Change the visibility of the capture, get a new seed') }}
-          {{ menu_item('downloadModal', 'Get forensic acquisition', 'bi:archive', url_for('download_elements', tree_uuid=tree_uuid, seed=seed), 'Forensic Acquisition of the Web Capture') }}
           {% if misp_push %}
           {{ menu_item('mispPushModal', 'Prepare push to MISP', 'bi:send', url_for('web_misp_push_view', tree_uuid=tree_uuid, seed=seed)) }}
           {% endif %}
           {{ menu_item('lookylooPushModal', 'Push to another Lookyloo', 'bi:cloud-upload', title='Push the capture to another Lookyloo Instance') }}
+        </ul>
+      </div>
+
+      {# Shortcuts to the files of the forensic acquisition (downloadModal) #}
+      <div id="download-menu" class="dropdown">
+        <button class="btn btn-sm lk-tool-btn dropdown-toggle" type="button" id="download-menu-btn"
+                data-bs-toggle="dropdown" aria-expanded="false">{{ icon('bi:download') }}<span>Download</span></button>
+        <ul class="dropdown-menu lk-tool-menu" aria-labelledby="download-menu-btn">
+          {{ menu_link(url_for('export', tree_uuid=tree_uuid, seed=seed), 'Full capture (zip)', 'bi:file-earmark-zip', 'Everything Lookyloo stored for this capture, to import it in another instance', id='download-full-capture') }}
+          <li><button type="button" class="dropdown-item" id="tree-download-png" title="The tree as shown, as a PNG image">{{ icon('bi:file-earmark-image') }}<span>Tree as PNG</span></button></li>
+          {{ menu_link(url_for('image', tree_uuid=tree_uuid, seed=seed), 'Screenshot', 'bi:image', 'The screenshot of the page (PNG)') }}
+          {{ menu_link(url_for('har_download', tree_uuid=tree_uuid, seed=seed), 'HTTP archive (HAR)', 'bi:file-earmark-code', 'Every request and response of the capture') }}
+          {{ menu_item('downloadModal', 'Forensic acquisition', 'bi:archive', url_for('download_elements', tree_uuid=tree_uuid, seed=seed), 'Forensic Acquisition of the Web Capture, with trusted timestamps') }}
         </ul>
       </div>
 
@@ -665,7 +677,7 @@
 
 {{ remote_modal('historyModal', 'Historical lookups', 'Loading results historical context', note='Historical data and context about this capture.', icon_name='bi:clock-history') }}
 
-{{ remote_modal('downloadModal', 'Get forensic acquisition', 'Loading elements', note='Forensic acquisition of the web capture.', icon_name='bi:archive') }}
+{{ remote_modal('downloadModal', 'Forensic acquisition', 'Loading elements', note='Every file of the capture, with its trusted timestamp when there is one.', icon_name='bi:archive') }}
 
 <div class="modal fade" id="visibilityModal" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-xl" role="document">
@@ -832,7 +844,9 @@
   ("#actions-menu a[data-bs-target=\"#urlsInPageModal\"]", "Subsequent captures", "Capture some of the links found in the page, with the same settings.", "#actions-menu-btn"),
   ("#actions-menu a[data-bs-target=\"#monitoringModal\"]", "Monitor capture", "Capture the URL again regularly and get notified when it changes.", "#actions-menu-btn"),
   ("#actions-menu a[data-bs-target=\"#visibilityModal\"]", "Visibility and sharing", "Who can see this capture: public, unlisted or private (with a secret link).", "#actions-menu-btn"),
-  ("#actions-menu a[data-bs-target=\"#downloadModal\"]", "Get forensic acquisition", "Download everything (HAR, screenshot, HTML, cookies…), and the tree as an image.", "#actions-menu-btn"),
+  ("#download-full-capture", "Full capture", "Everything Lookyloo stored for this capture, as a zip: it can be imported in another instance.", "#download-menu-btn"),
+  ("#tree-download-png", "Tree as PNG", "The tree as it is shown (orientation, collapsed branches, background), as an image.", "#download-menu-btn"),
+  ("#download-menu a[data-bs-target=\"#downloadModal\"]", "Forensic acquisition", "Every file of the capture (HAR, screenshot, HTML, cookies, storage…), with its trusted timestamp when there is one.", "#download-menu-btn"),
   ("#actions-menu a[data-bs-target=\"#mispPushModal\"]", "Prepare push to MISP", "Send the capture to a MISP instance as an event.", "#actions-menu-btn"),
   ("#actions-menu a[data-bs-target=\"#lookylooPushModal\"]", "Push to another Lookyloo", "Copy this capture to another Lookyloo instance.", "#actions-menu-btn"),
   ("#extra-menu-btn", "Extras menu", "Extra features enabled on this instance."),

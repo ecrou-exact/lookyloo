@@ -54,6 +54,8 @@ let search_text = '';
 let search_index = -1;   // match centred by the previous / next buttons
 // Node focused by a click on its card: it and its neighbours (parent, children) stay lit
 let focus_uuid = null;
+// Root -> focused node (uuids of its ancestors, itself included)
+let focus_path = new Set();
 
 // Orientation of the tree: 'horizontal' (root on the left), 'vertical' (root at
 // the top) or 'radial' (root in the centre, one ring per depth), switched with the
@@ -943,8 +945,10 @@ function nodeText(d) {
 // The filters of the tree: icons (legend) AND text (search field). A node
 // matches when it passes every active filter; the others are dimmed.
 // The focused node, its parent or one of its children
+// The focused node, its parent and children, and the path from the root to it
 function isNeighbour(d) {
     if (d.data.uuid === focus_uuid) return true;
+    if (focus_path.has(d.data.uuid)) return true;
     if (d.parent && d.parent.data.uuid === focus_uuid) return true;
     return (d.children || []).some(child => child.data.uuid === focus_uuid);
 }
@@ -970,6 +974,7 @@ function applyTreeFilter() {
         const match = filtering && nodeMatches(d);
         if (match) matches++;
         d3.select(this)
+          .classed('is-focus-path', focus_path.has(d.data.uuid) && d.data.uuid !== focus_uuid)
           .classed('is-filter-match', match)
           .classed('is-filter-dimmed', filtering && !match)
           .classed('is-focused', d.data.uuid === focus_uuid);
@@ -977,6 +982,9 @@ function applyTreeFilter() {
     // A link stays lit when both its ends do (its datum is the child node)
     // or when it is of a link type chosen in the legend
     const link_keys = [...active_filters].filter(key => key.startsWith('link:'));
+    // Path from the root to the focused node: lit, flowing towards it
+    node_container.selectAll('path.link').classed('is-focus-path', l => focus_path.has(l.data.uuid))
+        .classed('is-forward', orientation === 'radial');   // radial paths go from parent to child
     node_container.selectAll('path.link')
         .classed('is-filter-dimmed', l => filtering && !(nodeMatches(l) && (nodeMatches(l.parent) || link_keys.some(key => nodeHas(l, key)))));
     const label = `${matches} node${matches === 1 ? '' : 's'}`;
@@ -1084,6 +1092,7 @@ function clearView() {
 // Click on a card: focus the node and its neighbours; again on it: show everything
 function toggleNeighbours(d) {
     focus_uuid = focus_uuid === d.data.uuid ? null : d.data.uuid;
+    focus_path = new Set(focus_uuid ? d.ancestors().map(a => a.data.uuid) : []);
     const pill = document.getElementById('tree-focus');
     if (pill) {
         pill.hidden = focus_uuid === null;
@@ -1095,6 +1104,7 @@ function toggleNeighbours(d) {
 function clearNeighbours() {
     if (focus_uuid === null) return;
     focus_uuid = null;
+    focus_path = new Set();
     document.getElementById('tree-focus').hidden = true;
     applyTreeFilter();
 }

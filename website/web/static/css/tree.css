@@ -1102,6 +1102,18 @@ path.link.is-link-hover { stroke: var(--lk-color-accent); stroke-opacity: 1; fil
 .node-bookmark { font-size: 15px; }
 
 /* Main path: root -> redirects -> node of the rendered page (always shown) */
+/* Path from the root to the focused node (click on a card) */
+path.link.is-focus-path {
+  stroke: var(--lk-color-accent);
+  stroke-width: 3px;
+  stroke-opacity: 1;
+  stroke-dasharray: 10 6;
+  animation: lk-link-flow 0.9s linear infinite;
+}
+.lk-tree-links-meaning path.link.is-focus-path { stroke: var(--lk-color-accent); }
+g.node.is-focus-path .node-card { stroke: var(--lk-color-accent); stroke-width: 2px; stroke-dasharray: 4 3; }
+path.link.is-focus-path.is-forward { animation-direction: reverse; }
+@media (prefers-reduced-motion: reduce) { path.link.is-focus-path { animation: none; } }
 path.link.is-main-path { stroke: var(--lk-color-accent); stroke-width: 2.5px; stroke-opacity: 0.75; }
 g.node.is-main-path .node-card { stroke: color-mix(in srgb, var(--lk-color-accent) 55%, var(--lk-color-rule-strong)); }
 /* Path from the root to the hovered node */

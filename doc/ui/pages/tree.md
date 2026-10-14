@@ -170,7 +170,7 @@ icons (`nodeMatches()`, `applyTreeFilter()`); the others are dimmed.
   or the arrows centre the next / previous match (`.is-search-current`);
 - **/** anywhere on the page focuses the field, **Esc** clears it.
 
-## Neighbours of a node
+## Neighbours of a node, path to it
 
 A click on a node card (`.node-card`, outside the hostname and the icons)
 focuses the node: it (`.is-focused`), its parent and its children stay lit,
@@ -179,6 +179,12 @@ under the search says which node is focused. Click the card again, the
 background of the tree, the pill's ✕ or press Esc to show everything. It is a
 third filter, combined with the search and the icons (`isNeighbour()` in
 `nodeMatches()`).
+
+The **path from the root** to the focused node stays lit too (`focus_path`,
+set by `toggleNeighbours()`): its links are dashed in the accent colour and
+flow towards the node (`path.link.is-focus-path`, still with
+prefers-reduced-motion), the cards on the way get a dashed accent border
+(`g.node.is-focus-path`). The pill says "Path to … and its neighbours".
 
 ## Moving around the tree
 

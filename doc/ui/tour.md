@@ -52,9 +52,11 @@ Home, recent captures, new capture, search, import a capture, categories,
 resources, cookies, favicons, HTTP headers hashes, API, and the capture page
 (the most detailed: capture bar, search, every entry of the menus, report,
 points of attention, a host card and its tools — new capture, note, view from
-here —, its icons, branches, the path to the page, every tree tool —
-orientation, collapse / expand all, compare, notes, each background, full
-screen —, legend, moving around). The tools of the cards only show on hover:
+here —, its icons, branches, the path to the page and the details of a link,
+every tree tool — replay and its player, orientation (with the radial layout),
+collapse / expand all, compare, notes, the Display menu: each background, the
+link styles, the heat map —, zoom and back to the tree, full screen —, legend
+with its link filter, moving around (drag, elastic edge, wheel)). The tools of the cards only show on hover:
 they are visible while a tour runs.
 
 Files: `js/tour.js`, `css/components/tour.css` (veil colour: `--lk-tour-veil`

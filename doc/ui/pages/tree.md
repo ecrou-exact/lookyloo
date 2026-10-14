@@ -50,10 +50,11 @@ remembered in `localStorage` (`lk-capture-bar-folded`).
     (third party reports, MISP lookup, historical lookups, Hashlookup) and
     *In this capture* (resources, IPs, hostnames, URLs, favicons, hashes types,
     other identifiers);
-  - **Actions**: re-capture, subsequent captures, monitoring, then *Share &
-    export* (visibility, forensic acquisition, MISP push, push to another
-    Lookyloo);
-  - **Extras** (when enabled): categories, unbookmark all nodes, mark as known;
+  - **Actions**: re-capture, subsequent captures, monitoring, *Organize*
+    (when enabled: manage categories, unbookmark all nodes, mark as known),
+    then *Share & export* (visibility, MISP push, push to another Lookyloo);
+  - **Download**: full capture, tree as PNG, screenshot, HAR, forensic
+    acquisition;
   - **Admin** (logged in): rebuild, Ollama report, remove capture;
   - **Report suspicious capture** button (`#report-capture-btn`, red), shown
     when `enable_mail_notification` is on in `config/generic.json`: it opens
@@ -88,7 +89,7 @@ so the tree follows the light and dark themes.
 | `.node-badge` | insecure / malicious / known / empty badges, inside the card on the right |
 | `.node-thumb-frame` | frame of the screenshot thumbnail of the rendered node |
 | `circle.node`, `.is-collapsed` | expand / collapse circle (filled when collapsed) |
-| `.node_data.is-bookmarked` | bookmarked node (Extras) |
+| `.node_data.is-bookmarked` | bookmarked node (Actions → Organize) |
 | `.tree-parent-*` | "triggered from a previous capture" box above the root |
 | `#tooltip` | tooltip of the tree |
 
@@ -374,7 +375,7 @@ bookmark): they never cover the hostname or the badges.
 
 ## Side panel
 
-The entries of the menus (Capture, Analysis, Actions, Extras, Admin) open in a
+The entries of the menus (Capture, Analysis, Actions, Download, Admin) open in a
 panel at the right of the tree (`#lk-side-panel`, `js/side_panel.js`), not in
 modals: the tree stays visible and usable next to it. **Capture details** is in
 the Capture menu.
@@ -429,7 +430,7 @@ The download link of each file is shown as a small **Download** button
 links of the template are icons). The table always has its trusted timestamp and validation columns
 (*Unavailable* / *N/A* when there is none).
 
-The **Ollama report** (Extras) sends the redirects, the page as Markdown (cut at
+The **Ollama report** (Admin) sends the redirects, the page as Markdown (cut at
 8000 characters) and, when the model can read images (`vision` in its
 capabilities), the screenshot. The context of the model is raised to 8192
 tokens (`num_ctx` in the `Ollama` settings of `config/modules.json`), or the

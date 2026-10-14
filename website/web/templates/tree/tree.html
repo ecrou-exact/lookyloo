@@ -271,6 +271,19 @@
             {{ menu_item('monitoringModal', 'Monitor capture', 'bi:activity') }}
             {% endif %}
           {% endif %}
+          {% if enable_categorization or enable_bookmark or enable_context_by_users %}
+          <li><hr class="dropdown-divider"></li>
+          <li><h6 class="dropdown-header">Organize</h6></li>
+          {% if enable_categorization %}
+          {{ menu_item('categoriesModal', 'Manage categories', 'bi:tags', url_for('categories_capture', tree_uuid=tree_uuid, seed=seed)) }}
+          {% endif %}
+          {% if enable_bookmark %}
+          {{ menu_link('#/', 'Unbookmark all nodes', 'bi:flag', id='unbookmarkAllNodes') }}
+          {% endif %}
+          {% if enable_context_by_users %}
+          {{ menu_link('#/', "Mark all the capture's entries as known", 'bi:check2-all', id='markAsKnown') }}
+          {% endif %}
+          {% endif %}
           <li><hr class="dropdown-divider"></li>
           <li><h6 class="dropdown-header">Share &amp; export</h6></li>
           {{ menu_item('visibilityModal', 'Visibility and sharing', 'bi:eye', title='Change the visibility of the capture, get a new seed') }}
@@ -294,23 +307,6 @@
         </ul>
       </div>
 
-      {% if enable_categorization or enable_bookmark or enable_context_by_users %}
-      <div id="extra-menu" class="dropdown">
-        <button class="btn btn-sm lk-tool-btn dropdown-toggle" type="button" id="extra-menu-btn"
-                data-bs-toggle="dropdown" aria-expanded="false">{{ icon('bi:three-dots') }}<span>Extras</span></button>
-        <ul class="dropdown-menu lk-tool-menu" aria-labelledby="extra-menu-btn">
-          {% if enable_categorization %}
-          {{ menu_item('categoriesModal', 'Manage categories', 'bi:tags', url_for('categories_capture', tree_uuid=tree_uuid, seed=seed)) }}
-          {% endif %}
-          {% if enable_bookmark %}
-          {{ menu_link('#/', 'Unbookmark all nodes', 'bi:flag', id='unbookmarkAllNodes') }}
-          {% endif %}
-          {% if enable_context_by_users %}
-          {{ menu_link('#/', "Mark all the capture's entries as known", 'bi:check2-all', id='markAsKnown') }}
-          {% endif %}
-        </ul>
-      </div>
-      {% endif %}
 
       {% if current_user.is_authenticated %}
       <div id="admin-menu" class="dropdown">
@@ -881,10 +877,9 @@
   ("#download-menu a[data-bs-target=\"#downloadModal\"]", "Forensic acquisition", "Every file of the capture (HAR, screenshot, HTML, cookies, storage…), with its trusted timestamp when there is one.", "#download-menu-btn"),
   ("#actions-menu a[data-bs-target=\"#mispPushModal\"]", "Prepare push to MISP", "Send the capture to a MISP instance as an event.", "#actions-menu-btn"),
   ("#actions-menu a[data-bs-target=\"#lookylooPushModal\"]", "Push to another Lookyloo", "Copy this capture to another Lookyloo instance.", "#actions-menu-btn"),
-  ("#extra-menu-btn", "Extras menu", "Extra features enabled on this instance."),
-  ("#extra-menu a[data-bs-target=\"#categoriesModal\"]", "Manage categories", "Tag the capture: phishing, malware, legitimate service… Categories help find captures later.", "#extra-menu-btn"),
-  ("#unbookmarkAllNodes", "Unbookmark all nodes", "Remove every bookmark put on the hosts of this tree.", "#extra-menu-btn"),
-  ("#markAsKnown", "Mark as known", "Mark every entry of this capture as known (legitimate) content.", "#extra-menu-btn"),
+  ("#actions-menu a[data-bs-target=\"#categoriesModal\"]", "Manage categories", "Tag the capture: phishing, malware, legitimate service… Categories help find captures later.", "#actions-menu-btn"),
+  ("#unbookmarkAllNodes", "Unbookmark all nodes", "Remove every bookmark put on the hosts of this tree.", "#actions-menu-btn"),
+  ("#markAsKnown", "Mark as known", "Mark every entry of this capture as known (legitimate) content.", "#actions-menu-btn"),
   ("#admin-menu-btn", "Admin menu", "For the administrators of the instance."),
   ("#admin-menu a[href*=\"rebuild\"]", "Rebuild capture", "Build the tree of the capture again, from the recorded data.", "#admin-menu-btn"),
   ("#admin-menu a[data-bs-target=\"#ollamaModal\"]", "Ollama report", "Ask a local language model to summarise the capture.", "#admin-menu-btn"),

@@ -1130,21 +1130,25 @@ function sizeTreeSvg() {
 // dragging (js/capture_page.js). Out there, the wheel can still come back.
 function wheelScroll(event) {
     if (event.defaultPrevented) return;   // the page scrolls first (js/capture_page.js)
+    event.preventDefault();
     const unit = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? tree_viewport.clientHeight : 1;
     let dx = event.deltaX * unit, dy = event.deltaY * unit;
     if (event.shiftKey && !dx) { dx = dy; dy = 0; }
+    // Edges of the drawn tree (its cards, with a little space), on screen
+    const box = node_container.node().getBBox();
+    const pad = 40;
     const clamp = (current, delta, start, size, view) => {
-        const low = start * tree_zoom;
-        const high = Math.max(low, (start + size) * tree_zoom - view);
+        const low = start * tree_zoom - pad;
+        const high = Math.max(low, (start + size) * tree_zoom + pad - view);
         const next = current + delta;
         return Math.min(Math.max(next, Math.min(current, low)), Math.max(current, high));
     };
-    const left = clamp(tree_viewport.scrollLeft, dx, PAN_ROOM, tree_page.width, tree_viewport.clientWidth);
-    const top = clamp(tree_viewport.scrollTop, dy, PAN_ROOM, tree_page.height, tree_viewport.clientHeight);
-    // At the bottom of the tree, going down: the page scrolls (the footer shows)
-    if (dy > 0 && !dx && Math.round(top) <= Math.round(tree_viewport.scrollTop)) return;
-    event.preventDefault();
-    tree_viewport.scrollLeft = left;
+    const top = clamp(tree_viewport.scrollTop, dy, box.y + margin.top + PAN_ROOM, box.height, tree_viewport.clientHeight);
+    tree_viewport.scrollLeft = clamp(tree_viewport.scrollLeft, dx, box.x + margin.left + PAN_ROOM, box.width, tree_viewport.clientWidth);
+    // At the bottom of the tree, going down: the page scrolls, the footer shows
+    if (dy > 0 && top - tree_viewport.scrollTop < dy && !document.fullscreenElement) {
+        window.scrollBy({ top: dy - (top - tree_viewport.scrollTop), behavior: 'auto' });
+    }
     tree_viewport.scrollTop = top;
 }
 

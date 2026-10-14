@@ -195,9 +195,11 @@ still clears the focus). Only the drag goes there:
 
 - the tree area has **no scrollbars** (they would show the room);
 - the **wheel** scrolls inside the tree only (`wheelScroll()`): it stops at
-  the edges of the tree, can come back from the room, and at the bottom of
-  the tree going down it lets the page scroll (the footer shows; going up,
-  `js/capture_page.js` scrolls the page back first);
+  the edges of the drawn tree (the box of its cards, 40 px around), can come
+  back from the room, and at the bottom of the tree going down it scrolls the
+  page itself (the footer shows; letting the browser do it would scroll the
+  room under the tree). Going up, `js/capture_page.js` scrolls the page back
+  first;
 - the **drag** goes up to the edge of the room. Past it, the tree follows the
   mouse with resistance (up to 70 px, `stretch()`), that side of the tree area
   glows (`.lk-tree-area.is-edge-{left,right,top,bottom}::after`), and it springs

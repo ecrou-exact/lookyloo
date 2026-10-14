@@ -607,3 +607,14 @@ moved to "Not in this capture"; disabled at 0).
 With *Type & size*, hovering a node keeps the colours of its path to the root
 and makes it glow (`path.link.is-hover-path`), the other links fade
 (`#tree_viewport.is-hover-active`).
+
+### Details of a link
+
+Hovering a link shows its details in the tree tooltip (`showLinkInfo()` in
+`js/tree.js`, `#tooltip.is-link-info`, one fact per line): parent → child host,
+type of the link (`linkType()`), and for the child host the bytes received, the
+time of its first call and its loading time (`/json/<uuid>/tree_stats`, loaded
+on the first hover if needed) and its number of URLs. The link is outlined
+(`path.link.is-link-hover`; with *Type & size* it keeps its colour and glows).
+Links are thin: a wide transparent path over each one (`path.link-hit`, 14 px,
+`pointer-events: stroke`) catches the pointer; `path.link` itself ignores it.

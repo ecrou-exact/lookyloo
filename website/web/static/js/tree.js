@@ -1517,6 +1517,46 @@ function setupHeat() {
     applyHeat();
 }
 
+// ****************** Details of a link (hover) ******************
+
+const LINK_TYPE_LABEL = {
+    redirect: 'redirect', iframe: 'iframe', script: 'scripts', style: 'styles or fonts', image: 'images', other: 'other content',
+};
+function moveTooltip(event) {
+    d3.select('#tooltip').style('left', `${tipX(event) + 12}px`).style('top', `${tipY(event) + 12}px`);
+}
+// d: the child node; the link goes from its parent to it
+async function showLinkInfo(event, d) {
+    node_container.selectAll('path.link').classed('is-link-hover', l => l === d);
+    const tooltip = d3.select('#tooltip').classed('is-link-info', true);
+    const render = () => {
+        const lines = [
+            `${d.parent.data.idna || d.parent.data.name} → ${d.data.idna || d.data.name}`,
+            linkType(d) === 'redirect'
+                ? `Type: redirect (${d.parent.data.name} redirects to it)`
+                : `Type: ${LINK_TYPE_LABEL[linkType(d)]} (what ${d.data.name} mostly serves)`,
+        ];
+        const stats = tree_stats?.[d.data.uuid];
+        if (stats) {
+            lines.push(`Bytes received: ${formatBytes(stats.size)}`);
+            lines.push(`First call: ${(stats.start / 1000).toFixed(2)} s · loading ${((stats.end - stats.start) / 1000).toFixed(2)} s`);
+        }
+        lines.push(`URLs: ${d.data.urls_count || 0}`);
+        tooltip.text(lines.join('\n'));
+    };
+    render();
+    tooltip.style('opacity', 1);
+    moveTooltip(event);
+    if (!tree_stats) {
+        try { await loadTreeStats(); } catch (error) { return; }
+        if (tooltip.classed('is-link-info')) render();
+    }
+}
+function hideLinkInfo(d) {
+    node_container.selectAll('path.link').classed('is-link-hover', false);
+    d3.select('#tooltip').classed('is-link-info', false).style('opacity', 0);
+}
+
 function controlsStatus(message) {
     const status = document.getElementById('tree-controls-status');
     status.textContent = message;
@@ -2583,6 +2623,18 @@ function update(root, computed_node_width=0) {
     update => update,
     exit => exit.call(exit => exit.attr('d', diagonal).remove())
   ).call(link => (tree_entry_done && !reduce_motion ? link.transition().duration(300).ease(d3.easeCubicOut) : link)
+                    .attr('d', diagonal));
+
+  // A wide transparent path over each link catches the pointer: details of the link
+  node_container.selectAll('path.link-hit').data(links, d => d.data.uuid).join(
+    enter => enter.insert('path', 'g')
+        .attr('class', 'link-hit')
+        .on('mouseenter', (event, d) => showLinkInfo(event, d))
+        .on('mousemove', (event) => moveTooltip(event))
+        .on('mouseleave', (event, d) => hideLinkInfo(d)),
+    update => update,
+    exit => exit.remove()
+  ).call(hit => (tree_entry_done && !reduce_motion ? hit.transition().duration(300).ease(d3.easeCubicOut) : hit)
                     .attr('d', diagonal));
 
   if (computed_node_width === 0) {

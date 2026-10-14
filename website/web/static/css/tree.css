@@ -990,7 +990,11 @@ path.link {
   fill: none;
   stroke: var(--lk-color-tree-link);
   stroke-width: 1.5px;
+  pointer-events: none;
 }
+/* Wide transparent path over each link: the hover shows its details */
+path.link-hit { fill: none; stroke: transparent; stroke-width: 14px; pointer-events: stroke; cursor: help; }
+path.link.is-link-hover { stroke: var(--lk-color-accent); stroke-opacity: 1; filter: drop-shadow(0 0 3px var(--lk-color-accent)); }
 /* Links by type & size (js/tree.js, applyLinkStyle): colour of what the child host
    serves, width from its bytes (inline stroke-width), redirects dashed and flowing */
 .lk-tree-links-meaning path.link { stroke-opacity: 0.85; stroke-linecap: round; }
@@ -1161,6 +1165,8 @@ circle.node.is-collapsed { fill: var(--lk-color-tree-node); }
   box-shadow: var(--lk-shadow-sm);
   transition: opacity var(--lk-transition-fast);
 }
+/* Details of a link (js/tree.js, showLinkInfo): one fact per line */
+#tooltip.is-link-info { white-space: pre-line; line-height: 1.5; }
 
 /* ---------- Modals loaded from the server (macros/modals.html) ---------- */
 

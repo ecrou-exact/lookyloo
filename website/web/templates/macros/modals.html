@@ -5,28 +5,39 @@
   loader, fetches the data-remote URL of the link and puts the answer in
   .modal-body. Doc: doc/ui/pages/tree.md
 
-  remote_modal(id, title, loading, note=None, body_id=None)
+  panel_header(id, title, icon_name=None, note=None)
+    The header of every panel of the capture page, like the page headers of the
+    site (macros/page.html): icon, title (.modal-title, id <id>Label) and a short
+    note; the close button (hidden in the side panel, which has its own).
+
+  remote_modal(id, title, loading, note=None, body_id=None, icon_name=None)
     id       id of the modal: the links target it with data-bs-target="#<id>"
              (also from the fragments: details buttons, see details_modal_button)
     title    title of the modal
     loading  label of the loader while the content loads
     note     optional line under the title
     body_id  optional id of the .modal-body
+    icon_name icon of the panel, the one of its menu entry ('bi:<name>')
     {% call %} optional extra buttons in the footer (before Close)
 #}
 {% from 'macros/loader.html' import loader %}
 
-{% macro remote_modal(id, title, loading, note=None, body_id=None) -%}
+{% macro panel_header(id, title, icon_name=None, note=None) -%}
+<div class="modal-header lk-panel-head">
+  {% if icon_name %}<span class="lk-panel-head-icon">{{ icon(icon_name) }}</span>{% endif %}
+  <div class="lk-panel-head-text">
+    <h5 class="modal-title" id="{{ id }}Label">{{ title }}</h5>
+    {% if note %}<p class="lk-modal-note">{{ note }}</p>{% endif %}
+  </div>
+  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+</div>
+{%- endmacro %}
+
+{% macro remote_modal(id, title, loading, note=None, body_id=None, icon_name=None) -%}
 <div class="modal fade lk-modal" id="{{ id }}" tabindex="-1" role="dialog" aria-labelledby="{{ id }}Label" data-lk-remote-modal>
   <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
     <div class="modal-content">
-      <div class="modal-header">
-        <div>
-          <h5 class="modal-title" id="{{ id }}Label">{{ title }}</h5>
-          {% if note %}<p class="lk-modal-note">{{ note }}</p>{% endif %}
-        </div>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
+      {{ panel_header(id, title, icon_name, note) }}
       <div class="modal-body"{% if body_id %} id="{{ body_id }}"{% endif %}>
         {{ loader(loading, show_label=True) }}
       </div>

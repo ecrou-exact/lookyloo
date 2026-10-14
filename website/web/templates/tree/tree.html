@@ -1,6 +1,6 @@
 {% extends "layouts/base.html" %}
 {% from 'macros/loader.html' import loader %}
-{% from 'macros/modals.html' import remote_modal %}
+{% from 'macros/modals.html' import remote_modal, panel_header %}
 {% from 'macros/tour.html' import tour %}
 
 {% from 'bootstrap5/utils.html' import render_messages %}
@@ -479,13 +479,7 @@
 <div class="modal fade lk-modal" id="mispExportModal" tabindex="-1" role="dialog" aria-labelledby="mispExportModalLabel">
   <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
     <div class="modal-content">
-      <div class="modal-header">
-        <div>
-          <h5 class="modal-title" id="mispExportModalLabel">MISP export</h5>
-          <p class="lk-modal-note">The capture as a MISP event (JSON), ready to import in MISP.</p>
-        </div>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
+      {{ panel_header('mispExportModal', 'MISP export', 'bi:box-arrow-up-right', 'The capture as a MISP event (JSON), ready to import in MISP.') }}
       <div class="modal-body">
         <p class="lk-misp-export-status" id="misp-export-status" role="status"></p>
         <vt-json id="misp-export-json" class="lk-vitrine lk-misp-export-json" variant="full" view="tree" depth="2"
@@ -506,9 +500,11 @@
 <div class="modal fade lk-modal" id="noteModal" tabindex="-1" role="dialog" aria-labelledby="noteModalLabel">
   <div class="modal-dialog modal-xl modal-dialog-scrollable" role="document">
     <div class="modal-content">
-      <div class="modal-header">
-        <div>
-          <h5 class="modal-title" id="noteModalLabel">{{ icon('bi:pencil') }} Note on <span id="note-modal-host"></span></h5>
+      {# Same layout as panel_header(), with the host in the title #}
+      <div class="modal-header lk-panel-head">
+        <span class="lk-panel-head-icon">{{ icon('bi:pencil') }}</span>
+        <div class="lk-panel-head-text">
+          <h5 class="modal-title" id="noteModalLabel">Note on <span id="note-modal-host"></span></h5>
           <p class="lk-modal-note">Markdown: headings, lists, links, code… Kept in this browser only. Ctrl+Enter saves.</p>
         </div>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -533,10 +529,7 @@
 <div class="modal fade" id="detailsModal" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-xl" role="document">
   <div class="modal-content">
-    <div class="modal-header">
-      <h5 class="modal-title" id="detailsModalLabel">Details of the capture at the time it happened</h5>
-        <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-    </div>
+    {{ panel_header('detailsModal', 'Capture details', 'bi:info-circle', 'How the capture was made, at the time it happened.') }}
     <div class="modal-body">
       <dl class="row">
         <dt class="col-sm-2">URL captured</dt>
@@ -592,58 +585,55 @@
   </div>
 </div>
 
-{{ remote_modal('statsModal', 'Statistics', 'Loading statistics') }}
+{{ remote_modal('statsModal', 'Statistics', 'Loading statistics', note='The capture in numbers.', icon_name='bi:bar-chart') }}
 
-{{ remote_modal('storageStateModal', 'Storage State', 'Loading storage state') }}
+{{ remote_modal('storageStateModal', 'Storage state', 'Loading storage state', note='Cookies and storage of the browser at the end of the capture.', icon_name='bi:database') }}
 
-{{ remote_modal('consoleMessagesModal', 'Console Messages', 'Loading console messages') }}
+{{ remote_modal('consoleMessagesModal', 'Console messages', 'Loading console messages', note='The messages in the debug console during the capture.', icon_name='bi:terminal') }}
 
-{{ remote_modal('downloadsModal', 'Downloads', 'Loading downloads') }}
+{{ remote_modal('downloadsModal', 'Downloads', 'Loading downloads', note='The file(s) downloaded during the capture.', icon_name='bi:download') }}
 
-{{ remote_modal('videoModal', 'Video', 'Loading video') }}
+{{ remote_modal('videoModal', 'Video', 'Loading video', note='The video recorded during the capture.', icon_name='bi:film') }}
 
-{{ remote_modal('identifiersModal', 'Identifiers found on the rendered page', 'Loading identifiers') }}
+{{ remote_modal('identifiersModal', 'Other identifiers', 'Loading identifiers', note='Identifiers found on the rendered page.', icon_name='bi:upc-scan') }}
 
-{{ remote_modal('identifierDetailsModal', 'Other occurrences of the identifier', 'Loading identifier details') }}
+{{ remote_modal('identifierDetailsModal', 'Identifier', 'Loading identifier details', note='The other captures with this identifier.', icon_name='bi:upc-scan') }}
 
-{{ remote_modal('faviconsModal', 'Favicons found on the rendered page', 'Loading favicons') }}
+{{ remote_modal('faviconsModal', 'Favicons', 'Loading favicons', note='Favicons found on the rendered page.', icon_name='bi:star') }}
 
-{{ remote_modal('faviconDetailsModal', 'Other occurrences of the favicon', 'Loading favicon details') }}
+{{ remote_modal('faviconDetailsModal', 'Favicon', 'Loading favicon details', note='The other captures with this favicon.', icon_name='bi:star') }}
 
-{{ remote_modal('captureHashesTypesModal', 'Hashes of the rendered page', 'Loading hash types') }}
+{{ remote_modal('captureHashesTypesModal', '(Fuzzy) hashes types', 'Loading hash types', note='Hashes of the rendered page, to find similar pages.', icon_name='bi:fingerprint') }}
 
-{{ remote_modal('captureHashesTypesDetailsModal', 'Other occurrences of the hash', 'Loading hash details') }}
+{{ remote_modal('captureHashesTypesDetailsModal', 'Hash', 'Loading hash details', note='The other captures with this hash.', icon_name='bi:fingerprint') }}
 
-{{ remote_modal('faviconDetailsProbabilisticHashModal', 'Other occurrences of the favicon from a probabilistic hash', 'Loading favicon details from probabilistic hash') }}
+{{ remote_modal('faviconDetailsProbabilisticHashModal', 'Favicon (probabilistic hash)', 'Loading favicon details from probabilistic hash', note='The other captures with a favicon close to this one.', icon_name='bi:star') }}
 
-{{ remote_modal('bodyHashesModal', 'Resources in tree', 'Loading resources') }}
+{{ remote_modal('bodyHashesModal', 'Resources', 'Loading resources', note='All the resources contained in the tree.', icon_name='bi:file-earmark-code') }}
 
-{{ remote_modal('bodyHashDetailsModal', 'Other occurrences of the resource', 'Loading resource details') }}
+{{ remote_modal('bodyHashDetailsModal', 'Resource', 'Loading resource details', note='The other captures with this resource.', icon_name='bi:file-earmark-code') }}
 
-{{ remote_modal('ipsModal', 'IPs in tree', 'Loading IPs') }}
+{{ remote_modal('ipsModal', 'IP addresses', 'Loading IPs', note='All the IP addresses contained in the tree.', icon_name='bi:hdd-network') }}
 
-{{ remote_modal('ipDetailsModal', 'Other occurrences of the IP', 'Loading IP details') }}
+{{ remote_modal('ipDetailsModal', 'IP address', 'Loading IP details', note='The other captures with this IP address.', icon_name='bi:hdd-network') }}
 
 
-{{ remote_modal('hostnamesModal', 'Hostnames in tree', 'Loading hostnames') }}
+{{ remote_modal('hostnamesModal', 'Hostnames', 'Loading hostnames', note='All the hostnames contained in the tree.', icon_name='bi:globe2') }}
 
-{{ remote_modal('hostnameDetailsModal', 'Other occurrences of the hostname', 'Loading hostname details') }}
+{{ remote_modal('hostnameDetailsModal', 'Hostname', 'Loading hostname details', note='The other captures with this hostname.', icon_name='bi:globe2') }}
 
-{{ remote_modal('urlsModal', 'URLs in tree', 'Loading urls') }}
+{{ remote_modal('urlsModal', 'URLs', 'Loading urls', note='All the URLs contained in the tree.', icon_name='bi:link-45deg') }}
 
-{{ remote_modal('urlDetailsModal', 'Other occurrences of the URL', 'Loading url details') }}
+{{ remote_modal('urlDetailsModal', 'URL', 'Loading url details', note='The other captures with this URL.', icon_name='bi:link-45deg') }}
 
-{{ remote_modal('mispPushModal', 'MISP Push', 'Loading MISP Push view') }}
+{{ remote_modal('mispPushModal', 'Prepare push to MISP', 'Loading MISP Push view', note='The capture as a MISP event, to push to a MISP instance.', icon_name='bi:send') }}
 
-{{ remote_modal('mispLookupModal', 'MISP Lookup', 'Loading MISP Lookup view') }}
+{{ remote_modal('mispLookupModal', 'Search events on MISP', 'Loading MISP Lookup view', note='MISP events with attributes of this capture.', icon_name='bi:search') }}
 
 <div class="modal fade" id="screenshotModal" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-xl" role="document">
   <div class="modal-content">
-    <div class="modal-header">
-      <h5 class="modal-title" id="screenshotModalLabel">Screenshot</h5>
-        <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-    </div>
+    {{ panel_header('screenshotModal', 'Page screenshot', 'bi:image', 'The URL rendered in the browser, at the end of the capture.') }}
     <div class="modal-body">
     <center>
       {% set screenshot_too_big = screenshot_size > 10 * 1024 * 1024 %}
@@ -667,26 +657,20 @@
   </div>
 </div>
 
-{% call remote_modal('modulesModal', 'Reports from 3rd party services', 'Loading results from 3rd party modules',
-                     note='If a link below gives an error, the capture is probably still ongoing: reload the page in a few seconds.',
-                     body_id='modulesBody') %}
+{% call remote_modal('modulesModal', 'Third party reports', 'Loading results from 3rd party modules',
+                     note='Lookups from the supported third party services. If a link gives an error, the capture is probably still ongoing: reload the page in a few seconds.',
+                     body_id='modulesBody', icon_name='bi:shield-check') %}
 <button type="button" class="btn btn-success" id="modulesForceRefresh">Re-run all modules</button>
 {% endcall %}
 
-{{ remote_modal('historyModal', 'Historical data and context about this capture', 'Loading results historical context') }}
+{{ remote_modal('historyModal', 'Historical lookups', 'Loading results historical context', note='Historical data and context about this capture.', icon_name='bi:clock-history') }}
 
-{{ remote_modal('downloadModal', 'Forensic Acquisition of the Web Capture', 'Loading elements') }}
+{{ remote_modal('downloadModal', 'Get forensic acquisition', 'Loading elements', note='Forensic acquisition of the web capture.', icon_name='bi:archive') }}
 
 <div class="modal fade" id="visibilityModal" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-xl" role="document">
       <div class="modal-content">
-          <div class="modal-header">
-              <h4 class="modal-title" id="visibilityModalLabel">
-                  Change the visibility of the capture
-              </h4>
-              <br>
-              <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
+          {{ panel_header('visibilityModal', 'Visibility and sharing', 'bi:eye', 'Who can find and open the capture; get a new seed for a private capture.') }}
           <br>
           <div class="modal-body">
               <div class="alert alert-info" role="alert">
@@ -748,13 +732,7 @@
 <div class="modal fade" id="lookylooPushModal" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-xl" role="document">
       <div class="modal-content">
-          <div class="modal-header">
-              <h4 class="modal-title" id="lookylooPushModalLabel">
-                  Push the current capture to another Lookyloo instance
-              </h4>
-              <br>
-              <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
+          {{ panel_header('lookylooPushModal', 'Push to another Lookyloo', 'bi:cloud-upload', 'Send the capture to another Lookyloo instance.') }}
           <br>
           <div class="modal-body">
               <form role="form" action="{{ url_for('web_lookyloo_push_view', tree_uuid=tree_uuid, seed=seed) }}"
@@ -768,12 +746,12 @@
   </div>
 </div>
 
-{{ remote_modal('ollamaModal', 'Ollama Report', 'Loading report from ollama') }}
+{{ remote_modal('ollamaModal', 'Ollama report', 'Loading report from ollama', note='The capture analysed by a local LLM (Ollama).', icon_name='bi:robot') }}
 
-{{ remote_modal('hashlookupModal', 'Hits in Hashlookup', 'Loading results from hashlookup') }}
+{{ remote_modal('hashlookupModal', 'Hashlookup hits', 'Loading results from hashlookup', note='Resources of the capture known by Hashlookup.', icon_name='bi:hash') }}
 
 {% if enable_categorization %}
-{{ remote_modal('categoriesModal', 'Categorize the capture', 'Loading the categorization options') }}
+{{ remote_modal('categoriesModal', 'Manage categories', 'Loading the categorization options', note='Categorize the capture.', icon_name='bi:tags') }}
 {% endif %}
 
 {% if enable_monitoring %}
@@ -781,10 +759,7 @@
   <div class="modal-dialog modal-xl" role="document">
     <form role="form" action="{{ url_for('monitor', tree_uuid=tree_uuid, seed=seed) }}" method=post enctype=multipart/form-data>
       <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title" id="monitorModalLabel">Monitor capture</h5>
-              <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
+          {{ panel_header('monitoringModal', 'Monitor capture', 'bi:activity', 'Capture the URL again on a schedule, and see what changes.') }}
           <div class="modal-body">
             <p>The capture will be submitted to the monitoring interface.</p>
             {{monitoring_form(monitoring_settings, monitoring_collections, confirm_message="Yes, I want to submit this capture for monitoring.", auth=current_user.is_authenticated)}}
@@ -804,10 +779,7 @@
   <div class="modal-dialog modal-xl" role="document">
     <form role="form" action="{{ url_for('send_mail', tree_uuid=tree_uuid, seed=seed) }}" method=post enctype=multipart/form-data>
       <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title" id="emailModalLabel">Notify by email</h5>
-              <button type="button" class="btn btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
+          {{ panel_header('emailModal', 'Report suspicious capture', 'bi:flag', 'Notify the team of this Lookyloo instance about this capture.') }}
           <div class="modal-body">
             <p>A notification of this capture will be sent to the owners of this Lookyloo instance. They may or may not act on it.</p>
             {{notify_form(confirm_message)}}
@@ -822,7 +794,7 @@
 </div>
 {% endif %}
 
-{{ remote_modal('urlsInPageModal', 'URLs in the rendered page', 'Loading URLs in rendered page') }}
+{{ remote_modal('urlsInPageModal', 'Subsequent captures', 'Loading URLs in rendered page', note='Start a capture from one of the URLs rendered in the page.', icon_name='bi:diagram-3') }}
 {% endblock content %}
 {% endblock body %}
 

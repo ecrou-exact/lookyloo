@@ -393,6 +393,12 @@ the Capture menu.
 - Width: drag the left edge (or focus it and use the arrows), remembered in
   `localStorage` (`lk-side-panel-width`); the expand button makes it wide. The
   tree controls and the legend move left of the panel, the controls icons only.
+- Every panel has the same header (`panel_header()` in `macros/modals.html`,
+  `.lk-panel-head`), like the page headers of the site: the icon of its menu
+  entry in a tinted square, the title of the menu entry, and one line on what
+  it shows. `remote_modal()` takes `icon_name` and `note` for it; the panels
+  written in `tree/tree.html` call `panel_header()`. A panel opened from
+  another one (e.g. **Hostname** from **Hostnames**) uses the icon of its list.
 - Kept as a real modal: the note editor (`noteModal`, `KEPT_AS_MODALS`).
   Code can open a panel with `window.lkSidePanel.open(id)` (the screenshot of
   the tree does).

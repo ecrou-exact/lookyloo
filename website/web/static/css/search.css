@@ -93,3 +93,8 @@
     justify-content: center;
   }
 }
+
+/* One field at a time (js/search.js): the chosen one stands out, the others are greyed */
+.lk-search-field.is-chosen { border-color: var(--lk-color-accent); box-shadow: 0 0 0 1px var(--lk-color-accent); }
+.lk-search-field.is-disabled { opacity: 0.45; cursor: not-allowed; }
+.lk-search-field.is-disabled input { pointer-events: none; }

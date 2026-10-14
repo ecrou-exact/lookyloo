@@ -31,6 +31,14 @@
       crossorigin="anonymous">
 {% endblock %}
 
+{% block scripts %}
+{{ super() }}
+<script src="{{ url_for('static', filename='js/search.js') }}"
+        {{get_sri('static', 'js/search.js')}}
+        nonce="{{ csp_nonce() }}"
+        crossorigin="anonymous"></script>
+{% endblock %}
+
 {% block main %}
 <form class="lk-search lk-card" role="search" action="{{ url_for('search') }}" method=post
       enctype=multipart/form-data data-lk-loading="Searching">

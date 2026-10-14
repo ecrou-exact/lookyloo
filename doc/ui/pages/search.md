@@ -31,3 +31,12 @@ ressource", its "Sha521" typo fixed), *Cookie name*, *Favicon SHA512*,
 *Favicon*. Only the two hash fields keep a hint under their label: where to
 copy a SHA512 from (Analysis > Resources or Favicons of a capture,
 Explore > Resources).
+
+## One field at a time
+
+The server searches one field only, so `js/search.js` disables the others as
+soon as one is filled (text typed or file chosen): greyed out
+(`.lk-search-field.is-disabled`), the filled one outlined (`.is-chosen`), and
+the note at the top says "Searching by <label>. Empty this field to search by
+another one." Emptying it brings the others back; a click on a greyed field
+focuses the filled one. After an error the kept value greys the others too.

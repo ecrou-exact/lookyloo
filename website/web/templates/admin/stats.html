@@ -40,6 +40,14 @@
   <p class="lk-stats-note">URLs and domains include the redirects. Only the recent captures are counted in detail: archived ones only count as captures.</p>
 </section>
 
+{% if stats['years'] %}
+{# Chart type (js/stats_graph.js), remembered #}
+<div class="lk-stats-mode" role="group" aria-label="Chart type">
+  <span>Chart:</span>
+  <button type="button" data-stats-mode="bars" aria-pressed="true">{{ icon('bi:bar-chart') }} Bars</button>
+  <button type="button" data-stats-mode="curve" aria-pressed="false">{{ icon('bi:graph-up') }} Curve</button>
+</div>
+{% endif %}
 {% for year in stats['years']|reverse %}
 <section class="lk-stats-section" aria-labelledby="stats-year-{{ year['year'] }}">
   <h2 class="lk-stats-title" id="stats-year-{{ year['year'] }}">{{ year['year'] }}

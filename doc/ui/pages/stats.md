@@ -24,3 +24,12 @@ On arrival on the page, the bars grow from the axis one month after the other,
 their labels fade in, and the numbers of the cards count up to their value
 (`data-value`). Nothing moves with `prefers-reduced-motion`, nor when the
 charts are drawn again after a resize of the window.
+
+### Bars or curve
+
+**Chart: Bars / Curve** above the charts switches every chart (remembered in
+`localStorage`, `lk-stats-mode`). The curve (`drawCurve`) is a smooth line
+(`d3.curveMonotoneX`) through the months, with the area under it and a dot per
+month; on arrival (and when switching) the line draws itself from left to
+right, then the area, the dots and the values appear. In the current year, the
+months still to come have no bar and no point.

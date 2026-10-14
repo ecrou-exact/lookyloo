@@ -375,6 +375,12 @@
     <button type="button" id="tree-notes-toggle" title="Your notes on this capture" aria-label="Your notes on this capture"
             aria-expanded="false" aria-controls="tree-notes">{{ icon('bi:journal-text') }}<span class="lk-tree-control-label">Notes</span><span class="lk-notes-count" id="tree-notes-count" hidden></span></button>
     {% endif %}
+    {# Zoom (js/tree.js, setupZoom): also Ctrl + wheel, Ctrl + 0 / + / - #}
+    <div class="lk-tree-zoom" role="group" aria-label="Zoom">
+      <button type="button" id="tree-zoom-out" title="Zoom out (Ctrl + -)" aria-label="Zoom out">{{ icon('bi:zoom-out') }}</button>
+      <button type="button" id="tree-zoom-reset" title="Back to 100 % (Ctrl + 0)" aria-label="Zoom: back to 100 %">100 %</button>
+      <button type="button" id="tree-zoom-in" title="Zoom in (Ctrl + +)" aria-label="Zoom in">{{ icon('bi:zoom-in') }}</button>
+    </div>
     {# Background of the tree (js/tree.js, setupBackground): plain, dots, grid or depth columns #}
     <div class="dropdown">
       <button type="button" id="tree-background-btn" data-bs-toggle="dropdown" aria-expanded="false"
@@ -881,7 +887,7 @@
   ("[data-tree-background=\"columns\"]", "Depth columns", "One band out of two per level of the tree (rows from top to bottom): the hosts of the same level line up.", "#tree-background-btn"),
   ("#tree-fullscreen", "Full screen", "Only the tree, on the whole screen; Esc or the same button to leave."),
   ("#legend", "Legend & filter", "What every icon means, how many hosts have it, and a filter: click entries to light up the hosts that have them. With several icons, choose Any (OR) or All (AND)."),
-  ("#tree_viewport", "Zoom", "Ctrl + mouse wheel zooms in and out on the tree, around the pointer; Ctrl + 0 comes back to 100 %."),
+  (".lk-tree-zoom", "Zoom", "Zoom out, back to 100 %, zoom in. Ctrl + mouse wheel also zooms, around the pointer; Ctrl + 0 comes back to 100 %."),
   ("#tree_viewport", "Move around", "Drag the tree with the mouse to move it, or use the scroll bars. Hover a card to see the path from the URL to it."),
   ("#lk-tour-menu-btn", "The tutorial, any time", "This button starts the tour of the page you are on. Turn the tutorial mode on to get the tour of each page the first time you open it.")
 ]) }}{% endblock %}

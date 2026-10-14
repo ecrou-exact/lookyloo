@@ -1550,6 +1550,10 @@ def modules(tree_uuid: str) -> str | WerkzeugResponse | Response:
     modules_responses = lookyloo.get_modules_responses(tree_uuid)
     if not modules_responses:
         return render_template('tree/modals/modules.html', nothing_found=True)
+    # The modules that answered, to say they were checked even without a hit
+    module_labels = {'vt': 'VirusTotal', 'pi': 'Phishing Initiative', 'phishtank': 'Phishtank',
+                     'urlhaus': 'URLhaus', 'urlscan': 'urlscan.io'}
+    checked = [label for key, label in module_labels.items() if key in modules_responses]
 
     vt_short_result: dict[str, dict[str, Any]] = {}
     if 'vt' in modules_responses:
@@ -1623,7 +1627,11 @@ def modules(tree_uuid: str) -> str | WerkzeugResponse | Response:
             else:
                 # unable to run the query, probably an invalid key
                 pass
+    has_hits = bool(vt_short_result or pi_short_result or urlscan_to_display
+                    or phishtank_short_result['urls'] or phishtank_short_result['ips_hits']
+                    or urlhaus_short_result['urls'])
     return render_template('tree/modals/modules.html', uuid=tree_uuid, vt=vt_short_result,
+                           checked=checked, has_hits=has_hits,
                            pi=pi_short_result, urlscan=urlscan_to_display,
                            phishtank=phishtank_short_result,
                            urlhaus=urlhaus_short_result)

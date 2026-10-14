@@ -1,7 +1,10 @@
 <div>
 {% if nothing_found %}
-    Nothing found on any of the modules.
+    <p class="lk-modal-note">{{ icon('bi:info-circle') }} No third party module is enabled on this instance, or the capture is not ready yet.</p>
 {% else %}
+{% if checked %}
+<p class="lk-modal-note">{{ icon('bi:shield-check') }} Checked with {{ checked|join(', ') }}{% if not has_hits %}: nothing found, none of them knows the URLs of this capture{% endif %}.</p>
+{% endif %}
 {% if urlscan %}
   <hr>
   <center>

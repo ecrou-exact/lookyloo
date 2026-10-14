@@ -1033,10 +1033,14 @@ function setZoom(zoom, anchor_x=null, anchor_y=null) {
     sizeTreeSvg();
     tree_viewport.scrollLeft = point_x * zoom - mx;
     tree_viewport.scrollTop = point_y * zoom - my;
-    controlsStatus(`Zoom ${Math.round(zoom * 100)} % · Ctrl + 0 to reset`);
+    const reset = document.getElementById('tree-zoom-reset');
+    if (reset) reset.textContent = `${Math.round(zoom * 100)} %`;
 }
 
 function setupZoom() {
+    document.getElementById('tree-zoom-in')?.addEventListener('click', () => setZoom(tree_zoom * 1.2));
+    document.getElementById('tree-zoom-out')?.addEventListener('click', () => setZoom(tree_zoom / 1.2));
+    document.getElementById('tree-zoom-reset')?.addEventListener('click', () => setZoom(1));
     tree_viewport.addEventListener('wheel', (event) => {
         if (!event.ctrlKey && !event.metaKey) return;
         event.preventDefault();   // not the zoom of the browser

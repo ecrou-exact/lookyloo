@@ -1123,3 +1123,22 @@ circle.node.is-collapsed { fill: var(--lk-color-tree-node); }
   font-size: var(--lk-font-size-xs);
 }
 .lk-legend-mode button[aria-pressed="true"] { background: var(--lk-color-accent-soft); border-color: var(--lk-color-accent); color: var(--lk-color-accent); font-weight: var(--lk-font-weight-semibold); }
+
+/* Zoom of the tree controls: − / 100 % / + */
+.lk-tree-zoom { display: inline-flex; align-items: center; border-inline: 1px solid var(--lk-color-rule); padding-inline: 2px; }
+.lk-tree-zoom button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  min-width: 28px;
+  padding: 0 4px;
+  border: 0;
+  border-radius: var(--lk-radius-sm);
+  background: none;
+  color: var(--lk-color-ink);
+  font-size: var(--lk-font-size-xs);
+  font-variant-numeric: tabular-nums;
+}
+.lk-tree-zoom button:hover { background: var(--lk-color-surface-2); }
+#tree-zoom-reset { min-width: 3.2rem; font-weight: var(--lk-font-weight-medium); }

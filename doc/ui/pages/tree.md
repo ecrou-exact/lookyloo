@@ -455,11 +455,20 @@ other filters (search, neighbours, compare) always combine with AND.
 
 ## Zoom
 
-**Ctrl + mouse wheel** on the tree zooms in and out (20 % to 250 %), keeping
+The tree controls have **− / 100 % / +** (`.lk-tree-zoom`: the percentage is
+the current zoom, a click on it comes back to 100 %). **Ctrl + mouse wheel** on
+the tree also zooms in and out (20 % to 250 %), keeping
 the point under the pointer in place; **Ctrl + 0** resets, **Ctrl + +** /
 **Ctrl + -** zoom when the pointer is over the tree area (`setupZoom()`,
 `setZoom()` in `js/tree.js`). The SVG is drawn at its size times `tree_zoom`,
 with a `viewBox` on the size of the layout (`tree_page`, `sizeTreeSvg()`): the
 coordinates of the tree don't change, scrolling and centring keep working, and
-**Tree as PNG** exports the tree at the current zoom. The zoom is shown for a
-few seconds under the tree controls.
+**Tree as PNG** exports the tree at the current zoom.
+
+## Third party reports
+
+**Analysis → Third party reports** (`modules`, `tree/modals/modules.html`) starts
+with the modules that were checked (`checked`), and says when none of them
+found anything (`has_hits`): a module without a hit has no section, the panel
+was empty before. Modules with an API key (VirusTotal, urlscan.io, Phishing
+Initiative…) only run when their key is in `config/modules.json`.

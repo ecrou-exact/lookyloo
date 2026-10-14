@@ -431,7 +431,9 @@ element gets `src` (same origin), `max-height="60vh"`, and a `download` name.
 
 The OpenSSL commands to check a trusted timestamp by hand are vitrine
 `<vt-terminal>` elements (commands after `$`, a copy button per command).
-The table always has its trusted timestamp and validation columns
+The download link of each file is shown as a small **Download** button
+(`.lk-forensic-table td:nth-child(2) > a`, the label comes from CSS: the
+links of the template are icons). The table always has its trusted timestamp and validation columns
 (*Unavailable* / *N/A* when there is none).
 
 The **Ollama report** (Extras) sends the redirects, the page as Markdown (cut at

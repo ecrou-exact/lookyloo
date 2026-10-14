@@ -51,6 +51,19 @@
 /* OpenSSL commands to check a trusted timestamp (download_elements.html) */
 .lk-tsr-help { margin-top: var(--lk-space-4); }
 .lk-tsr-terminal { display: block; margin-bottom: var(--lk-space-3); }
-/* Forensic acquisition table: the download column, tight */
-.lk-forensic-table th:nth-child(2),
-.lk-forensic-table td:nth-child(2) { width: 1%; white-space: nowrap; text-align: center; }
+/* Forensic acquisition table: the download link of each file, as a small button */
+.lk-forensic-table th:nth-child(2) { min-width: 7.5rem; }
+.lk-forensic-table td:nth-child(2) > a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--lk-space-1);
+  padding: 2px var(--lk-space-2);
+  border: 1px solid var(--lk-color-accent);
+  border-radius: var(--lk-radius-sm);
+  color: var(--lk-color-accent);
+  font-size: var(--lk-font-size-sm);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.lk-forensic-table td:nth-child(2) > a:hover { background: var(--lk-color-accent-soft); }
+.lk-forensic-table td:nth-child(2) > a::after { content: "Download"; }

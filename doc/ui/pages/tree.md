@@ -647,3 +647,13 @@ networks (AS, from the `ipasn` of the tree dump) of the capture with at least
 a few well-known networks are named (`KNOWN_AS`, a fixed list in the file, no
 lookup). Colours: `--lk-color-tree-group-1` … `-6` (light and dark,
 `css/theme.css`).
+
+## Map of the tree
+
+At the bottom left, next to the shortcuts button (`#tree-minimap`,
+`setupMinimap()` / `drawMinimap()` in `js/tree.js`): the cards shown, in small
+(the main path in the accent colour), and a frame on the part of the tree on
+screen. Click or drag in it: that point goes to the middle of the tree area
+(the drag of the tree itself is not started). It follows the scroll, the zoom
+and every change of the tree (`refreshMinimap()`, one redraw per frame). The
+map button folds it (remembered: `lk-tree-minimap`). Hidden on phones.

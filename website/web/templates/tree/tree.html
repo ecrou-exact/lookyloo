@@ -539,6 +539,13 @@
 
   {# Keyboard shortcuts of the page (js/tree.js, setupShortcutsHelp): a small button
      in the bottom left corner of the tree, or "?" #}
+  {# Mini-map (js/tree.js, setupMinimap): the whole tree, the visible part framed;
+     click or drag in it to move there. Folded to its button, remembered #}
+  <div class="lk-minimap" id="tree-minimap">
+    <button type="button" class="lk-minimap-toggle" id="tree-minimap-toggle" aria-expanded="true" aria-controls="tree-minimap-map"
+            title="Hide the map of the tree" aria-label="Hide the map of the tree">{{ icon('bi:map') }}</button>
+    <svg class="lk-minimap-map" id="tree-minimap-map" role="img" aria-label="Map of the tree: click or drag to move there"></svg>
+  </div>
   <div class="lk-shortcuts">
     <button type="button" class="lk-shortcuts-btn" id="tree-shortcuts-btn" aria-expanded="false" aria-controls="tree-shortcuts"
             title="Keyboard shortcuts (?)" aria-label="Keyboard shortcuts">{{ icon('bi:keyboard') }}</button>
@@ -987,6 +994,7 @@
   ("#tree-center", "Back to the tree", "Lost far from the tree? This button brings its centre back to the middle of the screen."),
   ("#legend", "Legend & filter", "What every icon means, how many hosts have it, and a filter: click entries to light up the hosts that have them. The Links section filters by type of link (redirect, iframe, script…). With several entries, Any (OR) or All (AND)."),
   ("#tree_viewport", "Move around", "Drag the tree with the mouse to move it anywhere around it, up to an edge that glows and springs back. The wheel scrolls inside the tree, then the page. Hover a card to see the path from the URL to it."),
+  ("#tree-minimap", "Map of the tree", "The whole tree in small, the part on screen framed. Click or drag in it to go there; the map button folds it."),
   ("#tree-shortcuts-btn", "Keyboard shortcuts", "This small button (or ?) lists the keyboard shortcuts of the page: search, zoom, panel, notes."),
   ("#lk-tour-menu-btn", "The tutorial, any time", "This button starts the tour of the page you are on. Turn the tutorial mode on to get the tour of each page the first time you open it.")
 ]) }}{% endblock %}

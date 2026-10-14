@@ -7,11 +7,12 @@
 <p class="lk-modal-note">{{ icon('bi:info-circle') }} This capture was made without trusted timestamps (RFC 3161): every file can be downloaded, none of them is timestamped.</p>
 {% endif %}
 
-<table class="table">
+{# Without trusted timestamps, the two timestamp columns are hidden (css/components/vitrine.css) #}
+<table class="table lk-forensic-table{% if no_timestamps %} is-without-timestamps{% endif %}">
   <thead>
     <tr>
-      <th scope="col">#</th>
-      <th scope="col" width="10%">Download</th>
+      <th scope="col">File</th>
+      <th scope="col">Download</th>
       <th scope="col">Trusted Timestamp (RFC 3161)</th>
       <th scope="col">Validation status</th>
     </tr>
@@ -32,7 +33,7 @@
         </div>
        </td>
       {% else %}
-       <td>Unavailable<td>
+       <td>Unavailable</td>
        <td></td>
       {%endif%}
     </tr>
@@ -49,7 +50,7 @@
          </div>
        </td>
       {% else %}
-       <td>Unavailable<td>
+       <td>Unavailable</td>
        <td></td>
       {% endif %}
     </tr>
@@ -66,7 +67,7 @@
          </div>
        </td>
       {% else %}
-       <td>Unavailable<td>
+       <td>Unavailable</td>
        <td></td>
       {% endif %}
     </tr>
@@ -83,7 +84,7 @@
         </div>
       </td>
        {% else %}
-        <td>Unavailable<td>
+        <td>Unavailable</td>
         <td></td>
        {% endif %}
     </tr>
@@ -100,7 +101,7 @@
          </div>
        </td>
       {% else %}
-       <td>Unavailable<td>
+       <td>Unavailable</td>
        <td></td>
       {% endif %}
     </tr>

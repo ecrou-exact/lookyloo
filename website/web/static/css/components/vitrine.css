@@ -51,3 +51,8 @@
 /* OpenSSL commands to check a trusted timestamp (download_elements.html) */
 .lk-tsr-help { margin-top: var(--lk-space-4); }
 .lk-tsr-terminal { display: block; margin-bottom: var(--lk-space-3); }
+/* Forensic acquisition table: a capture without trusted timestamps shows the files only */
+.lk-forensic-table.is-without-timestamps th:nth-child(n+3),
+.lk-forensic-table.is-without-timestamps td:nth-child(n+3) { display: none; }
+.lk-forensic-table th:nth-child(2),
+.lk-forensic-table td:nth-child(2) { width: 1%; white-space: nowrap; text-align: center; }

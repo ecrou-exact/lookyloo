@@ -37,6 +37,12 @@
     <span class="lk-legend-active" id="legend-active" hidden></span></summary>
   <div class="lk-legend-body">
     <p class="lk-legend-hint">Click an icon to highlight the nodes that have it.</p>
+    {# With several icons chosen: the nodes with any of them (OR) or with all of them (AND) #}
+    <div class="lk-legend-mode" role="group" aria-label="Nodes with several icons">
+      <span class="lk-legend-mode-label">Several icons:</span>
+      <button type="button" data-legend-mode="or" aria-pressed="true" title="The nodes with at least one of the icons chosen">Any (OR)</button>
+      <button type="button" data-legend-mode="and" aria-pressed="false" title="The nodes with every icon chosen">All (AND)</button>
+    </div>
     <ul class="lk-legend-list" id="legend-present">
       {% for key, file, label, title in legend %}
       <li>

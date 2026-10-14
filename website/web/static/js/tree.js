@@ -35,6 +35,14 @@ let center_node = null;
 // Keys selected in the legend filter (tree/legend.html): the nodes having at
 // least one of them are highlighted, the others dimmed. Before the first await.
 const active_filters = new Set();
+// Zoom of the tree (Ctrl + wheel, Ctrl + 0 resets): the SVG is drawn at its size times
+// tree_zoom, its viewBox keeps the coordinates of the layout (tree_page = their size)
+let tree_zoom = 1;
+const tree_page = { width: 0, height: 0 };
+const ZOOM_MIN = 0.2, ZOOM_MAX = 2.5;
+// Several icons chosen: the nodes with any of them ('or') or all of them ('and'), remembered
+let filter_mode = 'or';
+try { if (localStorage.getItem('lk-tree-filter-mode') === 'and') filter_mode = 'and'; } catch (e) { /* default */ }
 // Text of the search field over the tree (lower case, '' = no text filter)
 let search_text = '';
 let search_index = -1;   // match centred by the previous / next buttons
@@ -223,6 +231,7 @@ try {
   setupTreeSearch();
   setupTreeControls();
   setupControlsCompact();
+  setupZoom();
   setupNotes();
   setupCompare();
   setupFullscreen();
@@ -841,7 +850,9 @@ function isNeighbour(d) {
 }
 
 function nodeMatches(d) {
-    const icon_ok = active_filters.size === 0 || [...active_filters].some(key => nodeHas(d, key));
+    const icon_ok = active_filters.size === 0 || (filter_mode === 'and'
+        ? [...active_filters].every(key => nodeHas(d, key))
+        : [...active_filters].some(key => nodeHas(d, key)));
     const text_ok = !search_text || nodeText(d).includes(search_text);
     const focus_ok = !focus_uuid || isNeighbour(d);
     const compare_ok = !compare_only_new || isNewHost(d);
@@ -998,6 +1009,46 @@ function allNodes(root) {
         (d.children || d._children || []).forEach(walk);
     })(root);
     return nodes;
+}
+
+// Size of the SVG for the zoom: the layout keeps its coordinates (viewBox)
+function sizeTreeSvg() {
+    const { width, height } = tree_page;
+    main_svg.attr('viewBox', `0 0 ${width} ${height}`)
+            .attr('width', width * tree_zoom).attr('height', height * tree_zoom);
+    document.getElementById('tree_svg').style.width = `${Math.max(width * tree_zoom, min_width)}px`;
+    document.getElementById('tree_svg').style.height = `${Math.max(height * tree_zoom, min_height)}px`;
+}
+
+// Zoom, keeping the point under the pointer (or the centre of the view) in place
+function setZoom(zoom, anchor_x=null, anchor_y=null) {
+    zoom = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, Math.round(zoom * 100) / 100));
+    if (zoom === tree_zoom) return;
+    const view = tree_viewport.getBoundingClientRect();
+    const mx = anchor_x === null ? view.width / 2 : anchor_x - view.left;
+    const my = anchor_y === null ? view.height / 2 : anchor_y - view.top;
+    const point_x = (tree_viewport.scrollLeft + mx) / tree_zoom;
+    const point_y = (tree_viewport.scrollTop + my) / tree_zoom;
+    tree_zoom = zoom;
+    sizeTreeSvg();
+    tree_viewport.scrollLeft = point_x * zoom - mx;
+    tree_viewport.scrollTop = point_y * zoom - my;
+    controlsStatus(`Zoom ${Math.round(zoom * 100)} % · Ctrl + 0 to reset`);
+}
+
+function setupZoom() {
+    tree_viewport.addEventListener('wheel', (event) => {
+        if (!event.ctrlKey && !event.metaKey) return;
+        event.preventDefault();   // not the zoom of the browser
+        setZoom(tree_zoom * Math.exp(-event.deltaY * 0.0015), event.clientX, event.clientY);
+    }, { passive: false });
+    document.addEventListener('keydown', (event) => {
+        if (!(event.ctrlKey || event.metaKey) || event.target.closest('input, textarea, [contenteditable]')) return;
+        if (!tree_viewport.closest('.lk-tree-area').matches(':hover') && !document.fullscreenElement) return;
+        if (event.key === '0') { event.preventDefault(); setZoom(1); }
+        else if (event.key === '+' || event.key === '=') { event.preventDefault(); setZoom(tree_zoom * 1.2); }
+        else if (event.key === '-') { event.preventDefault(); setZoom(tree_zoom / 1.2); }
+    });
 }
 
 function controlsStatus(message) {
@@ -1240,6 +1291,16 @@ function setupLegendFilter(root) {
         button.dataset.title = button.title;
         button.addEventListener('click', () => toggleLegendFilter(button.dataset.key));
     });
+    // Any (OR) / All (AND)
+    const modes = document.querySelectorAll('[data-legend-mode]');
+    const showMode = () => modes.forEach(b => b.setAttribute('aria-pressed', b.dataset.legendMode === filter_mode ? 'true' : 'false'));
+    showMode();
+    modes.forEach(button => button.addEventListener('click', () => {
+        filter_mode = button.dataset.legendMode;
+        try { localStorage.setItem('lk-tree-filter-mode', filter_mode); } catch (e) { /* not kept */ }
+        showMode();
+        applyTreeFilter();
+    }));
     document.getElementById('legend-clear').addEventListener('click', () => {
         active_filters.clear();
         document.querySelectorAll('.lk-legend-item').forEach(b => b.setAttribute('aria-pressed', 'false'));
@@ -1544,9 +1605,9 @@ function update(root, computed_node_width=0) {
     pattern.attr('x', orientation === 'horizontal' ? margin.left : 0)
            .attr('y', orientation === 'horizontal' ? 0 : margin.top - 40 - VERTICAL_ROW / 4);
 
-    main_svg.attr("width", pageWidth).attr("height", pageHeight);
-    document.getElementById('tree_svg').style.width = `${Math.max(pageWidth, min_width)}px`;
-    document.getElementById('tree_svg').style.height = `${Math.max(pageHeight, min_height)}px`;
+    tree_page.width = pageWidth;
+    tree_page.height = pageHeight;
+    sizeTreeSvg();
   }
 
   // Assigns the x and y position for the nodes

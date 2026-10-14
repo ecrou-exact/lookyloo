@@ -444,3 +444,22 @@ gunicorn stops a request after 300 s.
 On the rendered node, the favicon and the screenshot thumbnail have a frame
 (`.node-favicon-chip`, `.node-thumb-frame`, `THUMB_PAD` in `js/tree.js`), so
 they show on every background.
+
+## Several icons in the filter: Any (OR) / All (AND)
+
+In the legend, **Several icons** chooses how the icons chosen combine:
+**Any (OR)**, the nodes with at least one of them (default), or **All (AND)**,
+the nodes with every one of them (`filter_mode` in `js/tree.js`, used by
+`nodeMatches()`; remembered in `localStorage`, `lk-tree-filter-mode`). The
+other filters (search, neighbours, compare) always combine with AND.
+
+## Zoom
+
+**Ctrl + mouse wheel** on the tree zooms in and out (20 % to 250 %), keeping
+the point under the pointer in place; **Ctrl + 0** resets, **Ctrl + +** /
+**Ctrl + -** zoom when the pointer is over the tree area (`setupZoom()`,
+`setZoom()` in `js/tree.js`). The SVG is drawn at its size times `tree_zoom`,
+with a `viewBox` on the size of the layout (`tree_page`, `sizeTreeSvg()`): the
+coordinates of the tree don't change, scrolling and centring keep working, and
+**Tree as PNG** exports the tree at the current zoom. The zoom is shown for a
+few seconds under the tree controls.

@@ -1110,3 +1110,16 @@ circle.node.is-collapsed { fill: var(--lk-color-tree-node); }
 .lk-panel-head .modal-title { margin: 0; line-height: 1.3; }
 .lk-panel-head .lk-modal-note { margin-top: 2px; }
 .lk-panel-head .btn-close { align-self: flex-start; }
+
+/* Legend: several icons chosen, Any (OR) / All (AND) */
+.lk-legend-mode { display: flex; align-items: center; gap: var(--lk-space-1); margin: 0 0 var(--lk-space-2); font-size: var(--lk-font-size-xs); }
+.lk-legend-mode-label { margin-right: auto; color: var(--lk-color-muted); }
+.lk-legend-mode button {
+  padding: 2px var(--lk-space-2);
+  border: 1px solid var(--lk-color-rule);
+  border-radius: var(--lk-radius-pill);
+  background: none;
+  color: var(--lk-color-ink);
+  font-size: var(--lk-font-size-xs);
+}
+.lk-legend-mode button[aria-pressed="true"] { background: var(--lk-color-accent-soft); border-color: var(--lk-color-accent); color: var(--lk-color-accent); font-weight: var(--lk-font-weight-semibold); }

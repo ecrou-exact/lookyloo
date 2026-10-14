@@ -136,6 +136,34 @@ class TreeDump(Resource):  # type: ignore[misc]
             return make_response({'error': "Unable to get dump."}, 401)
 
 
+@api.route('/json/<uuid:capture_uuid>/tree_stats')
+@api.doc(description='Size and timings of the hosts of the tree: {hostnode uuid: {size, start, end}}. '
+                     'size: bytes of the response bodies; start / end: milliseconds since the first request.',
+         params={'capture_uuid': 'The UUID of the capture'})
+class TreeStats(Resource):  # type: ignore[misc]
+
+    @api.param('seed', '[Private Capture] The seed allowing to access the capture')  # type: ignore[untyped-decorator]
+    def get(self, capture_uuid: str) -> Response:
+        try:
+            hartree = lookyloo.capture_cache(capture_uuid).tree.root_hartree
+        except Exception:
+            return make_response({'error': "Unable to get the tree."}, 401)
+        first = hartree.start_time
+        to_return: dict[str, dict[str, int]] = {}
+        for host_node in hartree.hostname_tree.traverse():
+            size, start, end = 0, None, None
+            for url in host_node.urls:
+                if hasattr(url, 'body'):
+                    size += url.body.getbuffer().nbytes
+                if hasattr(url, 'start_time'):
+                    url_start = (url.start_time - first).total_seconds() * 1000
+                    url_end = url_start + url.time.total_seconds() * 1000
+                    start = url_start if start is None else min(start, url_start)
+                    end = url_end if end is None else max(end, url_end)
+            to_return[host_node.uuid] = {'size': size, 'start': round(start or 0), 'end': round(end or 0)}
+        return make_response(to_return)
+
+
 @api.route('/json/<uuid:capture_uuid>/status')
 @api.doc(description='Get the status of a capture',
          params={'capture_uuid': 'The UUID of the capture'})

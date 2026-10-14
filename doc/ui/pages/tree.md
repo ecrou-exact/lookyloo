@@ -479,3 +479,12 @@ A small keyboard button in the bottom left corner of the tree area
 `js/tree.js`), or **?**, shows the list of the shortcuts of the page (Esc or a
 click elsewhere hides it). The list is written in `tree/tree.html`: add a line
 there with every new shortcut.
+
+## Size and timings of the hosts (`/json/<uuid>/tree_stats`)
+
+The tree dump has no size or time. `GET /json/<uuid>/tree_stats` (`TreeStats`
+in `website/web/genericapi.py`, same `seed` check as `tree_dump`) answers, for
+each host node, `{size, start, end}`: the bytes of the response bodies of its
+URLs, and the first start / last end of its requests, in milliseconds since the
+first request of the capture. `js/tree.js` loads it once, only when a mode needs
+it (`loadTreeStats()`): replay, link thickness, heat map.

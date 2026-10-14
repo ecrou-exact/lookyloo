@@ -1523,6 +1523,8 @@ html[data-lk-mode="simple"] g.node .node-view { display: none; }
 html[data-lk-mode="simple"] g.node-risk,
 html[data-lk-mode="simple"] .lk-tree-alert-risks,
 html[data-lk-mode="simple"] #tree-risks { display: none !important; }
+/* Simple mode: no chips of the points of attention either (top left of the tree) */
+html[data-lk-mode="simple"] #tree-alerts { display: none !important; }
 
 /* Mode of the tree (tree/tree.html, js/ui_mode.js) */
 .lk-mode-menu { width: 20rem; }

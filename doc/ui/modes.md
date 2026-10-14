@@ -21,9 +21,9 @@ every entry in every mode. The default, **Simple**, keeps the tool simple.
   layout in Full only. The orientation button from Analyst (horizontal ⇄
 vertical; + radial in Full): Simple always draws the tree from left to right.
 - **Legend & filter**: the *Worth a look* and *Links* sections from Analyst.
-- **Nodes**: attention chips, click (path and neighbours) and double click
-  (tree from a host) in every mode; risk badges and the *worth a look* chip and
-  list from Analyst; the
+- **Nodes**: click (path and neighbours) and double click (tree from a host)
+  in every mode; the chips of the points of attention (top left), the risk
+  badges and the *worth a look* chip and list from Analyst; the
   network info and the details of a link on hover from Analyst; on the card,
   Simple keeps the camera (the note and *view from here* buttons from Analyst).
 

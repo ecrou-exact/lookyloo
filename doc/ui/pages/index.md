@@ -1,6 +1,6 @@
 # Recent captures (index)
 
-Route `index` (`/index`, "Recent captures" in the header), hidden captures on
+Route `index` (`/index`, "Captures" in the header), hidden captures on
 `index_hidden` (`/hidden`, logged-in users). Template `home/index.html`, CSS
 `css/index.css`. This page only lists captures: the capture form is on the
 home page ([home.md](home.md)).

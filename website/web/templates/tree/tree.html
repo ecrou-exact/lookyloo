@@ -221,7 +221,7 @@
           <li><hr class="dropdown-divider"></li>
           <li><a href="#mispExportModal" class="dropdown-item" role="button" data-bs-toggle="modal" data-bs-target="#mispExportModal"
                  data-export="{{ url_for('GenericAPI_misp_export', capture_uuid=tree_uuid, seed=seed) }}"
-                 title="Show the capture as a MISP event, and download it">{{ icon('bi:box-arrow-up-right') }}<span>MISP export</span></a></li>
+                 title="Show the capture as a MISP event, to read, copy or download">{{ icon('bi:box-arrow-up-right') }}<span>MISP export</span></a></li>
         </ul>
       </div>
 
@@ -486,8 +486,8 @@
                  label="MISP event" hidden></vt-json>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-outline-primary" id="misp-export-copy">{{ icon('bi:clipboard') }} Copy</button>
-        <button type="button" class="btn btn-outline-primary" id="misp-export-download">{{ icon('bi:download') }} Download again</button>
+        <button type="button" class="btn btn-outline-primary" id="misp-export-copy" disabled>{{ icon('bi:clipboard') }} Copy</button>
+        <button type="button" class="btn btn-primary" id="misp-export-download" disabled>{{ icon('bi:download') }} Download</button>
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
       </div>
     </div>
@@ -813,7 +813,7 @@
   ("#capture-menu a[data-bs-target=\"#downloadsModal\"]", "Downloads", "Files the page made the browser download: often the payload of a phishing or malware page.", "#capture-menu-btn"),
   ("#capture-menu a[data-bs-target=\"#videoModal\"]", "Video", "A video of the page while it was captured.", "#capture-menu-btn"),
   ("#capture-menu a[data-bs-target=\"#screenshotModal\"]", "Page screenshot", "The page as the browser rendered it, full size.", "#capture-menu-btn"),
-  ("#capture-menu a[data-bs-target=\"#mispExportModal\"]", "MISP export", "The capture as a MISP event: downloaded, and shown to read or copy.", "#capture-menu-btn"),
+  ("#capture-menu a[data-bs-target=\"#mispExportModal\"]", "MISP export", "The capture as a MISP event, shown to read, copy or download.", "#capture-menu-btn"),
   ("#tools-menu-btn", "Analysis menu", "Look at the capture from other angles: third-party services, history, and the lists of what it contains."),
   ("#tools-menu a.lk-tool-warning", "Index capture", "This capture is not (fully) indexed yet: some correlations with other captures are missing. Index it now.", "#tools-menu-btn"),
   ("#tools-menu a[data-bs-target=\"#modulesModal\"]", "Third party reports", "What reputation services configured on this instance (VirusTotal, URLscan, PhishTank…) say about the URLs.", "#tools-menu-btn"),

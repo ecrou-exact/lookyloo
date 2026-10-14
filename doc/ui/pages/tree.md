@@ -325,12 +325,13 @@ The **Compare** button of the tree controls opens a panel (`setupCompare()` in
 ## MISP export
 
 *Capture > MISP export* opens `#mispExportModal` (`js/capture_components.js`):
-the export (`GenericAPI_misp_export`, `data-export` of the link) is fetched,
-**downloaded** as `lookyloo-<uuid>.misp.json`, and shown in vitrine `<vt-json>`
-(tree / raw views, search, copy path or value). *Copy* and *Download again* in
-the footer. The exports embed the resources of the capture (often several MiB):
-the vitrine size limit is raised to its maximum (50 MiB) on this page; a
-bigger export is only downloaded, with a message.
+the export (`GenericAPI_misp_export`, `data-export` of the link) is fetched and
+shown in vitrine `<vt-json>` (tree / raw views, search, copy path or value). It
+is not downloaded by itself: **Download** (as `lookyloo-<uuid>.misp.json`) and
+**Copy** in the footer, enabled once it is loaded. The exports embed the
+resources of the capture (often several MiB): the vitrine size limit is raised
+to its maximum (50 MiB) on this page; a bigger export is not shown, a message
+says to download it.
 
 `js/capture_components.js` is the vitrine module of the page: it imports
 `js/vitrine_setup.js` (and so `<vt-markdown>` for the notes) and `<vt-json>`.

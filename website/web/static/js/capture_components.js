@@ -30,12 +30,14 @@ function copyWithFeedback(button, text) {
 window.copyWithFeedback = copyWithFeedback;   // also used by js/tree.js (notes)
 
 // MISP export: the menu entry opens #mispExportModal, which loads the export
-// (data-export of the link), downloads it and shows it in <vt-json>.
+// (data-export of the link) and shows it in <vt-json>; Download and Copy buttons.
 const modal = document.getElementById('mispExportModal');
 if (modal) {
     const viewer = document.getElementById('misp-export-json');
     const status = document.getElementById('misp-export-status');
     let current = null;   // {text, filename}
+    const buttons = [document.getElementById('misp-export-download'), document.getElementById('misp-export-copy')];
+    const ready = (on) => buttons.forEach(button => { button.disabled = !on; });
 
     const download = () => {
         if (!current) return;
@@ -50,6 +52,7 @@ if (modal) {
         const url = event.relatedTarget?.dataset.export;
         if (!url) return;
         current = null;
+        ready(false);
         viewer.hidden = true;
         status.hidden = false;
         status.innerHTML = lkLoader('Preparing the MISP export', 'md', true);
@@ -58,13 +61,13 @@ if (modal) {
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const text = await response.text();
             current = { text, filename: `lookyloo-${treeUUID}.misp.json` };
-            download();
+            ready(true);
             const size = `${(text.length / 1048576).toFixed(1)} MiB`;
             if (text.length > MAX_JSON) {
-                status.textContent = `The export (${size}) is too big to be shown here; it was downloaded as ${current.filename}.`;
+                status.textContent = `The export (${size}) is too big to be shown here: download it.`;
                 return;
             }
-            status.textContent = `Downloaded as ${current.filename} (${size}).`;
+            status.hidden = true;
             await customElements.whenDefined('vt-json');
             viewer.content = text;
             viewer.hidden = false;

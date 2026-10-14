@@ -1423,36 +1423,6 @@ circle.node.is-collapsed { fill: var(--lk-color-tree-node); }
 #tree-zoom-reset { min-width: 3.2rem; font-weight: var(--lk-font-weight-medium); }
 
 /* Keyboard shortcuts: a small button in the bottom left corner of the tree area */
-/* Mini-map (js/tree.js, setupMinimap): bottom left, next to the shortcuts button */
-.lk-minimap {
-  position: absolute;
-  left: calc(var(--lk-space-4) + 38px);
-  bottom: var(--lk-space-4);
-  z-index: 1020;
-  display: flex;
-  align-items: flex-end;
-  gap: var(--lk-space-1);
-  padding: var(--lk-space-1);
-  border: 1px solid var(--lk-color-rule);
-  border-radius: var(--lk-radius-md);
-  background: color-mix(in srgb, var(--lk-color-surface) 92%, transparent);
-  box-shadow: var(--lk-shadow-md);
-}
-.lk-minimap.is-folded { padding: 0; border: 0; background: none; box-shadow: none; }
-.lk-minimap-toggle {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 30px; height: 30px; padding: 0;
-  border: 1px solid var(--lk-color-rule); border-radius: var(--lk-radius-md);
-  background: var(--lk-color-surface); color: var(--lk-color-muted);
-}
-.lk-minimap:not(.is-folded) .lk-minimap-toggle { border: 0; width: 24px; height: 24px; }
-.lk-minimap-toggle:hover { color: var(--lk-color-ink); }
-.lk-minimap-map { display: block; cursor: crosshair; touch-action: none; }
-.lk-minimap.is-folded .lk-minimap-map { display: none; }
-.lk-minimap-node { fill: var(--lk-color-tree-link); }
-.lk-minimap-node.is-main-path { fill: var(--lk-color-accent); }
-.lk-minimap-view { fill: color-mix(in srgb, var(--lk-color-accent) 12%, transparent); stroke: var(--lk-color-accent); }
-@media (max-width: 575.98px) { .lk-minimap { display: none; } }
 .lk-shortcuts { position: absolute; left: var(--lk-space-4); bottom: var(--lk-space-4); z-index: 1020; }
 .lk-shortcuts-btn {
   display: inline-flex;

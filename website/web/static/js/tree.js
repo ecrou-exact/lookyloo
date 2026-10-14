@@ -121,11 +121,6 @@ const KNOWN_AS = {
     '54113': 'Fastly', '24940': 'Hetzner', '16276': 'OVH', '14061': 'DigitalOcean', '13414': 'X (Twitter)',
     '36459': 'GitHub', '2635': 'Automattic', '46489': 'Twitch', '19551': 'Incapsula', '209242': 'Cloudflare',
 };
-// Mini-map (setupMinimap): shown or folded, remembered; redraw scheduled (one per frame)
-let minimap_open = true;
-try { if (localStorage.getItem('lk-tree-minimap') === '0') minimap_open = false; } catch (e) { /* default */ }
-let minimap_frame = null;
-const MINIMAP_WIDTH = 200, MINIMAP_HEIGHT = 130;
 // Measures of the heat map (applyHeat)
 const HEAT = {
     size: { label: 'Bytes received', value: d => tree_stats[d.data.uuid]?.size || 0, format: formatBytes, stats: true },
@@ -349,7 +344,6 @@ try {
   setupLinkStyle();
   setupHeat();
   setupGroups();
-  setupMinimap();
   setupControlsCompact();
   setupZoom();
   setupShortcutsHelp();
@@ -1165,7 +1159,6 @@ function sizeTreeSvg() {
     document.getElementById('tree_svg').style.width = `${full_width * tree_zoom}px`;
     document.getElementById('tree_svg').style.height = `${full_height * tree_zoom}px`;
     applyColumnsGeometry();
-    refreshMinimap();
 }
 
 // The wheel scrolls inside the tree only: the free room around it is reached by
@@ -1670,99 +1663,6 @@ function setupGroups() {
     }));
     show();
     applyGroups();
-}
-
-// ****************** Mini-map ******************
-
-// Box of the drawn nodes, in the coordinates of node_container
-function treeBox() {
-    const nodes = node_container.selectAll('g.node').data();
-    if (!nodes.length) return null;
-    const boxes = nodes.map(d => {
-        const [x, y] = nodePos(d);
-        return [x, y - 30, x + (d.node_width || 0), y - 30 + node_height + 5];
-    });
-    return [d3.min(boxes, b => b[0]), d3.min(boxes, b => b[1]), d3.max(boxes, b => b[2]), d3.max(boxes, b => b[3])];
-}
-
-function drawMinimap() {
-    minimap_frame = null;
-    const map = document.getElementById('tree-minimap-map');
-    if (!map || !minimap_open) return;
-    const box = treeBox();
-    if (!box) return;
-    const pad = 40;
-    const [x0, y0, x1, y1] = [box[0] - pad, box[1] - pad, box[2] + pad, box[3] + pad];
-    // Keep the shape of the tree, in at most MINIMAP_WIDTH x MINIMAP_HEIGHT
-    const scale = Math.min(MINIMAP_WIDTH / (x1 - x0), MINIMAP_HEIGHT / (y1 - y0));
-    map.setAttribute('width', Math.round((x1 - x0) * scale));
-    map.setAttribute('height', Math.round((y1 - y0) * scale));
-    map.setAttribute('viewBox', `${x0} ${y0} ${x1 - x0} ${y1 - y0}`);
-    const svg = d3.select(map);
-    svg.selectAll('rect.lk-minimap-node')
-        .data(node_container.selectAll('g.node').data(), d => d.data.uuid)
-        .join('rect')
-        .attr('class', 'lk-minimap-node')
-        .classed('is-main-path', d => main_path.has(d.data.uuid))
-        .attr('x', d => nodePos(d)[0]).attr('y', d => nodePos(d)[1] - 30)
-        .attr('width', d => d.node_width || 0).attr('height', node_height + 5)
-        .attr('rx', 6);
-    // The part of the tree on screen
-    const view_x = tree_viewport.scrollLeft / tree_zoom - PAN_ROOM - margin.left;
-    const view_y = tree_viewport.scrollTop / tree_zoom - PAN_ROOM - margin.top;
-    let frame = svg.select('rect.lk-minimap-view');
-    if (frame.empty()) frame = svg.append('rect').attr('class', 'lk-minimap-view');
-    frame.raise()
-        .attr('x', view_x).attr('y', view_y)
-        .attr('width', tree_viewport.clientWidth / tree_zoom)
-        .attr('height', tree_viewport.clientHeight / tree_zoom)
-        .attr('stroke-width', 2 / scale);
-}
-function refreshMinimap() {
-    if (minimap_frame === null) minimap_frame = requestAnimationFrame(drawMinimap);
-}
-
-function setupMinimap() {
-    const container = document.getElementById('tree-minimap');
-    const map = document.getElementById('tree-minimap-map');
-    const toggle = document.getElementById('tree-minimap-toggle');
-    if (!container) return;
-    const show = () => {
-        // (an SVG element has no `hidden` property: the class hides it, css/tree.css)
-        container.classList.toggle('is-folded', !minimap_open);
-        toggle.setAttribute('aria-expanded', minimap_open ? 'true' : 'false');
-        const label = minimap_open ? 'Hide the map of the tree' : 'Show the map of the tree';
-        toggle.title = label;
-        toggle.setAttribute('aria-label', label);
-        refreshMinimap();
-    };
-    toggle.addEventListener('click', () => {
-        minimap_open = !minimap_open;
-        try { localStorage.setItem('lk-tree-minimap', minimap_open ? '1' : '0'); } catch (e) { /* not kept */ }
-        show();
-    });
-    // Click or drag in the map: the point goes to the middle of the tree area
-    const goTo = (event) => {
-        const point = map.createSVGPoint();
-        point.x = event.clientX;
-        point.y = event.clientY;
-        const p = point.matrixTransform(map.getScreenCTM().inverse());
-        tree_viewport.scrollLeft = (p.x + PAN_ROOM + margin.left) * tree_zoom - tree_viewport.clientWidth / 2;
-        tree_viewport.scrollTop = (p.y + PAN_ROOM + margin.top) * tree_zoom - tree_viewport.clientHeight / 2;
-    };
-    map.addEventListener('pointerdown', (event) => {
-        event.preventDefault();
-        event.stopPropagation();   // not a drag of the tree (js/capture_page.js)
-        map.setPointerCapture(event.pointerId);
-        goTo(event);
-        const move = (e) => goTo(e);
-        const stop = () => { map.removeEventListener('pointermove', move); map.removeEventListener('pointerup', stop); };
-        map.addEventListener('pointermove', move);
-        map.addEventListener('pointerup', stop);
-    });
-    tree_viewport.addEventListener('scroll', refreshMinimap, { passive: true });
-    window.addEventListener('resize', refreshMinimap);
-    show();
 }
 
 function riskReasons(d) {
@@ -2951,8 +2851,6 @@ function update(root, computed_node_width=0) {
   if (link_style === 'meaning' && tree_entry_done) applyLinkStyle();
   if (heat_measure !== 'none' && tree_entry_done) applyHeat();
   if (group_mode === 'asn' && tree_entry_done) applyGroups();
-  // Positions are known now (the nodes move to them): the map follows at once
-  refreshMinimap();
   // Nodes shown again after an expand keep the filters
   if (active_filters.size > 0 || search_text || focus_uuid || compare_only_new) applyTreeFilter();
 }

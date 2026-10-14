@@ -79,6 +79,10 @@ try {
     if (REPLAY_SPEEDS.includes(saved)) replay_speed = saved;
 } catch (e) { /* default */ }
 const REPLAY_MAX_GAP = 600;   // ms of the capture: longer waits are shortened in the replay
+// Links: 'plain' or 'meaning' (coloured by type, as thick as the bytes), remembered
+let link_style = 'plain';
+const LINK_TYPES = ['redirect', 'iframe', 'script', 'style', 'image', 'other'];
+try { if (localStorage.getItem('lk-tree-links') === 'meaning') link_style = 'meaning'; } catch (e) { /* default */ }
 // Radial: centre of the rings (coordinates of node_container), set by update()
 const radial_center = { x: 0, y: 0 };
 // Vertical: height of a depth row (card + thumbnail of the rendered node + gap)
@@ -291,6 +295,7 @@ try {
   setupTreeSearch();
   setupTreeControls();
   setupReplay();
+  setupLinkStyle();
   setupControlsCompact();
   setupZoom();
   setupShortcutsHelp();
@@ -1296,6 +1301,60 @@ function setupReplay() {
         try { localStorage.setItem('lk-tree-replay-speed', String(replay_speed)); } catch (e) { /* not kept */ }
         showSpeed();
     }));
+}
+
+// ****************** Links by type & size ******************
+
+// What the child host mostly serves, for the colour of the link to it. A redirect:
+// the parent answered with a redirect and the child is a page.
+function linkType(d) {
+    const data = d.data;
+    if (d.parent?.data.redirect && (data.html || data.redirect)) return 'redirect';
+    if (data.iframe) return 'iframe';
+    if (data.js) return 'script';
+    if (data.css || data.font) return 'style';
+    if (data.image) return 'image';
+    return 'other';
+}
+
+async function applyLinkStyle() {
+    tree_viewport.classList.toggle('lk-tree-links-meaning', link_style === 'meaning');
+    const legend = document.getElementById('tree-link-legend');
+    if (legend) legend.hidden = link_style !== 'meaning';
+    const links = node_container.selectAll('path.link');
+    if (link_style !== 'meaning') {
+        links.style('stroke-width', null);
+        return;
+    }
+    LINK_TYPES.forEach(type => links.classed(`link-${type}`, d => linkType(d) === type));
+    links.classed('is-forward', orientation === 'radial');   // radial paths go from parent to child
+    try {
+        await loadTreeStats();
+    } catch (error) {
+        controlsStatus('Unable to load the sizes of the hosts: links by type only.');
+        return;
+    }
+    const max = d3.max(Object.values(tree_stats), s => s.size) || 1;
+    const width = d3.scaleSqrt().domain([0, max]).range([1.5, 10]);
+    node_container.selectAll('path.link').style('stroke-width', d => `${width(tree_stats[d.data.uuid]?.size || 0)}px`);
+}
+
+function setupLinkStyle() {
+    const items = document.querySelectorAll('[data-tree-links]');
+    const show = () => items.forEach(item => {
+        const on = item.dataset.treeLinks === link_style;
+        item.setAttribute('aria-pressed', on ? 'true' : 'false');
+        item.classList.toggle('active', on);
+    });
+    items.forEach(item => item.addEventListener('click', (event) => {
+        event.stopPropagation();   // the menu stays open: the legend shows
+        link_style = item.dataset.treeLinks;
+        try { localStorage.setItem('lk-tree-links', link_style); } catch (e) { /* not kept */ }
+        show();
+        applyLinkStyle();
+    }));
+    show();
+    applyLinkStyle();
 }
 
 function controlsStatus(message) {
@@ -2354,6 +2413,8 @@ function update(root, computed_node_width=0) {
   }
   // Main path to the rendered page (nodes and links of this update included)
   markPaths();
+  // New links (expand, layout) get their type and width
+  if (link_style === 'meaning' && tree_entry_done) applyLinkStyle();
   // Nodes shown again after an expand keep the filters
   if (active_filters.size > 0 || search_text || focus_uuid || compare_only_new) applyTreeFilter();
 }

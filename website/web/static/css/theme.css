@@ -87,6 +87,12 @@
   --lk-color-tree-link: #C3CAD5;
   --lk-color-tree-icon-bg: transparent;
   --lk-color-tree-card-shadow: rgba(0, 0, 0, 0.08);
+  /* Links by type (Display > Links: type & size) */
+  --lk-color-tree-link-redirect: #D9480F;
+  --lk-color-tree-link-iframe: #9C36B5;
+  --lk-color-tree-link-script: #2B4BEE;
+  --lk-color-tree-link-style: #0C8599;
+  --lk-color-tree-link-image: #2F9E44;
 
   /* Tag tints (category tags, css/components/tag.css): text + background */
   --lk-tag-blue: #1D4ED8;    --lk-tag-blue-bg: #E6EDFD;
@@ -169,6 +175,11 @@
   /* The node icons are PNGs drawn for light backgrounds: light chips in dark mode */
   --lk-color-tree-icon-bg: #E9EAEE;
   --lk-color-tree-card-shadow: rgba(0, 0, 0, 0.45);
+  --lk-color-tree-link-redirect: #FF8A4C;
+  --lk-color-tree-link-iframe: #DA77F2;
+  --lk-color-tree-link-script: #7C93FF;
+  --lk-color-tree-link-style: #3BC9DB;
+  --lk-color-tree-link-image: #69DB7C;
 
   --lk-tag-blue: #93B4FF;    --lk-tag-blue-bg: #1A2747;
   --lk-tag-teal: #5ED3C4;    --lk-tag-teal-bg: #12302D;

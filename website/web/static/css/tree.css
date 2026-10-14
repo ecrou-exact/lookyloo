@@ -940,6 +940,28 @@ path.link {
   stroke: var(--lk-color-tree-link);
   stroke-width: 1.5px;
 }
+/* Links by type & size (js/tree.js, applyLinkStyle): colour of what the child host
+   serves, width from its bytes (inline stroke-width), redirects dashed and flowing */
+.lk-tree-links-meaning path.link { stroke-opacity: 0.85; stroke-linecap: round; }
+.lk-tree-links-meaning path.link.link-redirect { stroke: var(--lk-color-tree-link-redirect); stroke-dasharray: 8 6; animation: lk-link-flow 0.9s linear infinite; }
+.lk-tree-links-meaning path.link.link-redirect.is-forward { animation-direction: reverse; }
+.lk-tree-links-meaning path.link.link-iframe { stroke: var(--lk-color-tree-link-iframe); }
+.lk-tree-links-meaning path.link.link-script { stroke: var(--lk-color-tree-link-script); }
+.lk-tree-links-meaning path.link.link-style { stroke: var(--lk-color-tree-link-style); }
+.lk-tree-links-meaning path.link.link-image { stroke: var(--lk-color-tree-link-image); }
+@keyframes lk-link-flow { to { stroke-dashoffset: 28; } }
+@media (prefers-reduced-motion: reduce) {
+  .lk-tree-links-meaning path.link.link-redirect { animation: none; }
+}
+/* Swatches of the link types, in the Display menu */
+.lk-link-swatch { display: inline-block; width: 1.4em; height: 3px; margin-right: var(--lk-space-2); vertical-align: middle; border-radius: 2px; background: var(--lk-color-tree-link); }
+.lk-link-swatch.link-redirect { background: repeating-linear-gradient(90deg, var(--lk-color-tree-link-redirect) 0 5px, transparent 5px 8px); }
+.lk-link-swatch.link-iframe { background: var(--lk-color-tree-link-iframe); }
+.lk-link-swatch.link-script { background: var(--lk-color-tree-link-script); }
+.lk-link-swatch.link-style { background: var(--lk-color-tree-link-style); }
+.lk-link-swatch.link-image { background: var(--lk-color-tree-link-image); }
+.lk-link-legend { padding: var(--lk-space-1) var(--lk-space-3) var(--lk-space-2); font-size: var(--lk-font-size-xs); color: var(--lk-color-muted); }
+.lk-link-legend div { white-space: nowrap; }
 
 /* Node card: hostname, URL count, icons, badges */
 .node-card {

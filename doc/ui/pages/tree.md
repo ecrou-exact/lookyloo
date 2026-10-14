@@ -228,7 +228,7 @@ The buttons at the top right of the tree (`setupTreeControls()` in `js/tree.js`)
   thicker bands with the *columns* background).
 - **Collapse all**: every node but the root is collapsed (the first level stays
   visible).
-- **Background** (palette): plain, dots, grid or depth columns (one band out
+- **Display** (palette), *Background*: plain, dots, grid or depth columns (one band out
   of two per depth, rows in the vertical layout), drawn by `css/tree.css` on
   the whole tree area (`#tree_viewport.lk-tree-bg-*`, scrolling with the tree)
   with `--lk-color-tree-canvas` / `--lk-color-tree-pattern`; remembered in
@@ -524,3 +524,22 @@ glow (`g.node.is-replay-arrived`). The toolbar button becomes **Stop**.
 The chips of the points of attention stay clear of the tree controls, whatever
 their width: `setupControlsCompact()` measures the bar (`ResizeObserver`) into
 `--lk-tree-controls-width`.
+
+## Links by type & size
+
+*Display* > *Links* (`setupLinkStyle()` / `applyLinkStyle()` in `js/tree.js`),
+remembered in `localStorage` (`lk-tree-links`):
+
+- **Plain** (default): every link the same.
+- **Type & size**: the colour of a link says what the child host mostly serves
+  (`linkType()`): a **redirect** (the parent answered with a redirect and the
+  child is a page; dashed, flowing from the parent to the child, still with
+  prefers-reduced-motion), an **iframe**, **scripts**, **styles or fonts**,
+  **images**, or other. Its width grows with the bytes the child host sent
+  (`size` of `/json/<uuid>/tree_stats`, square-root scale from 1.5 to 10 px).
+  A legend shows under the choice in the menu.
+
+Classes: `.lk-tree-links-meaning` on `#tree_viewport`, `path.link.link-<type>`
+(`.is-forward` in the radial layout, whose paths go from parent to child).
+Colours: `--lk-color-tree-link-{redirect,iframe,script,style,image}` tokens
+(light and dark, `css/theme.css`).

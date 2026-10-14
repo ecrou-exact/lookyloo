@@ -387,13 +387,29 @@
     {# Background of the tree (js/tree.js, setupBackground): plain, dots, grid or depth columns #}
     <div class="dropdown">
       <button type="button" id="tree-background-btn" data-bs-toggle="dropdown" aria-expanded="false"
-              title="Background of the tree" aria-label="Background of the tree">{{ icon('bi:palette') }}<span class="lk-tree-control-label">Background</span></button>
+              title="Background of the tree and meaning of the links" aria-label="Display: background and links">{{ icon('bi:palette') }}<span class="lk-tree-control-label">Display</span></button>
       <ul class="dropdown-menu dropdown-menu-end lk-tree-bg-menu" aria-labelledby="tree-background-btn">
         <li><h6 class="dropdown-header">Background</h6></li>
         {% for value, label in [('plain', 'Plain'), ('dots', 'Dots'), ('grid', 'Grid'), ('columns', 'Depth columns')] %}
         <li><button type="button" class="dropdown-item" data-tree-background="{{ value }}" aria-pressed="false">
           <span class="lk-tree-bg-swatch lk-tree-bg-{{ value }}" aria-hidden="true"></span>{{ label }}</button></li>
         {% endfor %}
+        {# Links (js/tree.js, setupLinkStyle): plain, or coloured by type and as thick as the bytes loaded #}
+        <li><hr class="dropdown-divider"></li>
+        <li><h6 class="dropdown-header">Links</h6></li>
+        <li><button type="button" class="dropdown-item" data-tree-links="plain" aria-pressed="false">
+          <span class="lk-link-swatch" aria-hidden="true"></span>Plain</button></li>
+        <li><button type="button" class="dropdown-item" data-tree-links="meaning" aria-pressed="false">
+          <span class="lk-link-swatch link-script" aria-hidden="true"></span>Type &amp; size</button></li>
+        <li class="lk-link-legend" id="tree-link-legend" hidden>
+          <div><span class="lk-link-swatch link-redirect"></span>redirect</div>
+          <div><span class="lk-link-swatch link-iframe"></span>iframe</div>
+          <div><span class="lk-link-swatch link-script"></span>script</div>
+          <div><span class="lk-link-swatch link-style"></span>style, font</div>
+          <div><span class="lk-link-swatch link-image"></span>image</div>
+          <div><span class="lk-link-swatch"></span>other</div>
+          <div>Thicker: more bytes loaded from the host.</div>
+        </li>
       </ul>
     </div>
     {# Full screen: only the tree area (js/tree.js, setupFullscreen); the icon follows the state #}
@@ -925,6 +941,7 @@
   (".lk-tree-controls", "Tree tools", "Draw the tree from left to right or from top to bottom, fold or unfold everything, compare with another capture, change the background, full screen, zoom."),
   ("#tree-controls-compact", "Icons only", "Hide the labels of these tools to keep only their icons, or show them again. Your choice is remembered."),
   ("#tree-replay", "Replay", "Watch the capture again, sped up: each host appears when the browser first called it, with the time of the capture under the tree."),
+  ("#tree-background-btn", "Display", "The background of the tree, and the links: plain, or coloured by what the host serves (redirect, iframe, script, style, image) and as thick as the bytes it sent."),
   ("#tree-orientation", "Orientation", "Draw the tree from left to right, from top to bottom when it is very wide, or as a circle with the root in the centre. The icon shows the current way; your choice is remembered."),
   ("#tree-collapse-all", "Collapse all", "Fold every branch: only the first level stays. Then open the branches you are interested in."),
   ("#tree-expand-all", "Expand all", "Unfold the branches again, level after level, up to 400 hosts to keep the page fast; a message says when some stay folded."),

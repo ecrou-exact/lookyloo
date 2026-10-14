@@ -13,6 +13,7 @@ same commit as the code.
 | [pages/resources.md](pages/resources.md) | Resources page: type icon, context pills |
 | [pages/search.md](pages/search.md) | Search page: one card, a tile per criterion |
 | [pages/index.md](pages/index.md) | Recent captures page: the list and the data it uses |
+| [pages/stats.md](pages/stats.md) | Statistics page (admin): cards of the week, animated bar chart per year |
 | [page-header.md](page-header.md) | Page header component: breadcrumb + card with icon, title, description |
 | [pivot-pages.md](pivot-pages.md) | Pivot pages (hostname, IP, favicon, resource, cookie...): page and modal modes |
 | [tags.md](tags.md) | Category tags: coloured pills with icons |

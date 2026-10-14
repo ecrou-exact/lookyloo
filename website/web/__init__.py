@@ -2503,19 +2503,40 @@ def search() -> str | Response | WerkzeugResponse:
         except ValueError:
             app.logger.warning(f'Not a hostname, unable to do anything: {url}.')
 
+    def back_to_form(error: str) -> str:
+        # The form again, with what was typed and why it cannot be searched
+        flash(error, 'error')
+        return render_template('home/search.html', version=pkg_version, values=request.form)
+
+    def sha512_of(field: str) -> str | None:
+        # A SHA512 pasted with spaces, line breaks or in upper case is still a SHA512
+        value = re.sub(r'\s+', '', request.form.get(field, '')).lower()
+        return value if re.fullmatch(r'[0-9a-f]{128}', value) else None
+
+    if request.method == 'POST' and url:
+        return back_to_form(f'"{url}" is neither a URL nor a hostname.')
     if request.form.get('ip'):
         return redirect(url_for('ip_details', from_popup=True, ip=request.form.get('ip')))
-    if request.form.get('ressource'):
-        return redirect(url_for('body_hash_details', from_popup=True, body_hash=request.form.get('ressource')))
+    if request.form.get('ressource', '').strip():
+        if body_hash := sha512_of('ressource'):
+            return redirect(url_for('body_hash_details', from_popup=True, body_hash=body_hash))
+        return back_to_form('A resource is searched by its SHA512: 128 hexadecimal characters (0-9, a-f).')
     if request.form.get('cookie'):
         return redirect(url_for('cookies_name_detail', from_popup=True, cookie_name=request.form.get('cookie')))
-    if request.form.get('favicon_sha512'):
-        return redirect(url_for('favicon_detail', from_popup=True, favicon_sha512=request.form.get('favicon_sha512')))
-    if 'favicon_file' in request.files:
-        favicon = request.files['favicon_file'].stream.read()
-        favicon_sha512 = hashlib.sha512(favicon).hexdigest()
-        return redirect(url_for('favicon_detail', from_popup=True, favicon_sha512=favicon_sha512))
-    return render_template('home/search.html', version=pkg_version)
+    if request.form.get('favicon_sha512', '').strip():
+        if favicon_sha512 := sha512_of('favicon_sha512'):
+            return redirect(url_for('favicon_detail', from_popup=True, favicon_sha512=favicon_sha512))
+        return back_to_form('A favicon is searched by its SHA512: 128 hexadecimal characters (0-9, a-f).')
+    # The browser always sends the file field: only a chosen, non-empty file counts
+    if (favicon_file := request.files.get('favicon_file')) and favicon_file.filename:
+        favicon = favicon_file.stream.read()
+        if favicon:
+            favicon_sha512 = hashlib.sha512(favicon).hexdigest()
+            return redirect(url_for('favicon_detail', from_popup=True, favicon_sha512=favicon_sha512))
+        return back_to_form('The favicon file is empty.')
+    if request.method == 'POST':
+        return back_to_form('Fill in one of the fields to search.')
+    return render_template('home/search.html', version=pkg_version, values={})
 
 
 def _prepare_capture_template(user_ua: str | None, predefined_settings: dict[str, Any] | None=None, *,

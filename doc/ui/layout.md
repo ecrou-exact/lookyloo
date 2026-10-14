@@ -109,7 +109,7 @@ From left to right:
 
 - **Logo**: link to the home page (`landing_page`, `/`; the full capture form
   instead when `index_is_capture` is set).
-- **Main links**: Recent captures (`index`, also active on `index_hidden`),
+- **Main links**: Captures (`index`, the Recent captures page, also active on `index_hidden`),
   Search, Categories, **Explore** menu (resources, cookies, favicons and HTTP
   headers hashes seen in recent captures), **Help** menu (documentation, API,
   changelog, project page).

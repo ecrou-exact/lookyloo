@@ -59,6 +59,7 @@ from lookyloo.exceptions import (UnknownUUID, NoValidHarFile, LacusUnreachable, 
                                  LookylooPrivateCapture, UUIDMissingInCache, MissingCaptureDirectory,
                                  TreeBuildFailed, ZipBomb)
 from lookyloo.helpers import (UserAgents,
+                              is_locked,
                               load_user_config,
                               get_taxonomies,
                               mimetype_to_generic,
@@ -2093,6 +2094,16 @@ def tree(tree_uuid: str, node_uuid: str | None=None) -> Response | str | Werkzeu
     seed_expire_at = None
     if seed:
         seed_expire_at = lookyloo.get_seed_expire_at(seed)
+    # The tree of a big capture can take minutes to build: while another process builds
+    # it (lock on the capture directory), show the loading page (it reloads by itself)
+    # instead of waiting in this request until the worker is killed (500)
+    try:
+        quick_cache = lookyloo.capture_cache(tree_uuid, quick=True)
+        if not quick_cache.tree_ready and is_locked(quick_cache.capture_dir):
+            return render_template('tree/tree_wait.html', message='The capture is done, its tree is being built.',
+                                   tree_uuid=tree_uuid, seed=seed)
+    except Exception:
+        pass   # not cached yet, or no capture directory: the usual way below
     try:
         cache = lookyloo.capture_cache(tree_uuid, force_update=True)
     except UUIDMissingInCache:

@@ -63,3 +63,13 @@ so the click gets immediate feedback. To change it for one place:
 | Module reload (tree), bulk captures status | `lkLoader()` instead of "please wait" texts |
 | Submit buttons of the capture / upload forms | `data-lk-loading` |
 | Every DataTable while it loads data | `js/render_tables.js` sets `DataTable.defaults.language.processing` to the same markup (constant `LK_LOADER_MARKUP`, keep it in sync with the macro); `loader.css` hides DataTables' default dots and styles the box |
+
+## Tree still being built
+
+A big capture (thousands of requests) can take minutes to turn into a tree.
+When the capture is done but its tree is being built by another process (lock
+file in the capture directory, no pickle yet: `is_locked()` and `tree_ready`
+on the quick cache), the `tree` route shows the loading page ("The capture is
+done, its tree is being built.") instead of waiting in the request: the web
+worker was killed after its timeout (300 s) and the browser got an Internal
+Server Error. The loading page reloads by itself until the tree is there.
